@@ -71,7 +71,12 @@ public class GuideDefinitionCommonLoader implements IdentifiableResourceReloadLi
 				}
 			}
 			return guideDefinitions;
-		}, executor);
+		}, executor)
+		.exceptionally(thrw -> 
+		{
+			LOGGER.error("An unexpected error occured during the LOAD stage of common guide definition loading", thrw);
+			return null;
+		});
 	}
 	
 	private SAXBuilder createBuilder(Schema schema)
@@ -90,7 +95,6 @@ public class GuideDefinitionCommonLoader implements IdentifiableResourceReloadLi
 
 	public CompletableFuture<Void> apply(Collection<GuideDefinitionCommon> guideDefinitionsIn, ResourceManager resourceManager, Profiler profiler, Executor executor)
 	{
-		System.out.println("THONK");
 		return CompletableFuture.runAsync(() -> 
 		{
 			this.guideDefinitions.clear();
@@ -104,7 +108,12 @@ public class GuideDefinitionCommonLoader implements IdentifiableResourceReloadLi
 				}
 				LOGGER.info("[Inscribe] Sent {} common guide definitions to clients", guideDefinitionsIn.size());
 			}
-		}, executor);
+		}, executor)
+		.exceptionally(thrw -> 
+		{
+			LOGGER.error("An unexpected error occured during the APPLY stage of common guide definition loading", thrw);
+			return null;
+		});
 	}
 
 	public void setServer(MinecraftServer server)

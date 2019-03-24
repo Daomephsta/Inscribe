@@ -83,7 +83,12 @@ public class GuideManager implements IdentifiableResourceReloadListener
 			}
 			
 			return guides;
-		}, executor);
+		}, executor)
+		.exceptionally(thrw -> 
+		{
+			GUIDE_LOGGER.error("An unexpected error occured during the LOAD stage of guide loading", thrw);
+			return null;
+		});
 	}
 	
 	private SAXBuilder createBuilder(Schema schema)
@@ -138,7 +143,12 @@ public class GuideManager implements IdentifiableResourceReloadListener
 				this.guides.put(guide.getIdentifier(), guide);
 			}
 			GUIDE_LOGGER.info("[Inscribe] Loaded {} guides", guidesIn.size());
-		}, executor);
+		}, executor)
+		.exceptionally(thrw -> 
+		{
+			GUIDE_LOGGER.error("An unexpected error occured during the APPLY stage of guide loading", thrw);
+			return null;
+		});
 	}
 
 	public boolean getErrored()

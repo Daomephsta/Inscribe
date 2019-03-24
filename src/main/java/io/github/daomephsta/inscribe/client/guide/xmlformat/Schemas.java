@@ -85,6 +85,10 @@ public class Schemas
 			this.themeSchema = schemas.get(SchemaId.THEME);
 			LOGGER.info("[Inscribe] Loaded schemas");
 			loaded = true;
+		}).exceptionally(thrw -> 
+		{
+			LOGGER.error("An unexpected error occured while loading schemas", thrw);
+			return null;
 		});
 	}
 

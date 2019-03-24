@@ -61,7 +61,12 @@ public class GuideThemeLoader implements SimpleResourceReloadListener<Collection
 				}
 			}
 			return themes;
-		}, executor);
+		}, executor)
+		.exceptionally(thrw -> 
+		{
+			LOGGER.error("An unexpected error occured during the LOAD stage of guide theme loading", thrw);
+			return null;
+		});
 	}
 
 	private Theme loadTheme(SAXBuilder builder, ResourceManager resourceManager, Identifier themePath) throws JDOMException, IOException
@@ -80,7 +85,12 @@ public class GuideThemeLoader implements SimpleResourceReloadListener<Collection
 				this.themes.put(theme.getIdentifier(), theme);
 			}
 			LOGGER.info("[Inscribe] Loaded {} themes", themes.size());
-		}, executor); 
+		}, executor)
+		.exceptionally(thrw -> 
+		{
+			LOGGER.error("An unexpected error occured during the APPLY stage of guide theme loading", thrw);
+			return null;
+		}); 
 	}
 
 	public boolean getErrored()
