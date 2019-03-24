@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "io.github.daomephsta.inscribe.client.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.7.11",
+  "mixins": 
+  [
+    "MixinMinecraftClient",
+    "MixinClientPlayNetworkHandler"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

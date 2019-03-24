@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "daomephsta.inscribe.common.mixin",
+	"compatibilityLevel": "JAVA_8",
+    "minVersion": "0.7.11",
+	"mixins": 
+	[
+	],
+	"injectors": 
+	{
+		"defaultRequire": 1
+	}
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<xs:schema 
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb" 
+    xmlns:ver="http://www.w3.org/2007/XMLSchema-versioning" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns="https://github.com/Daomephsta/inscribe"  
+    targetNamespace="https://github.com/Daomephsta/inscribe" elementFormDefault="qualified" jxb:version="1.0">
+    <xs:include schemaLocation="../../util/identifier.xsd"/>
+    <xs:include schemaLocation="../../util/stack.xsd"/>
+
+    <xs:element name="guide">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="id" type="identifier" minOccurs="1"/>
+                <xs:element name="item" minOccurs="1">
+                	<xs:complexType>
+                        <xs:choice>
+                            <xs:element name="standard">
+                                <xs:complexType>
+                                    <xs:attribute name="item_group" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="custom" type="stack"/>
+                            <xs:element name="none">
+                                <xs:complexType/>
+                            </xs:element>
+                        </xs:choice>
+                	</xs:complexType>
+                </xs:element>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

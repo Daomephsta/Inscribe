@@ -1,0 +1,3 @@
+{
+    "inscribe.chat_message.load_failure": "[Inscribe] One or more guides or themes failed to load properly. Check the log for details."
+}
