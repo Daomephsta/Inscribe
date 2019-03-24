@@ -24,23 +24,24 @@ public class GuideDefinitionCommon
 	public static GuideDefinitionCommon fromXml(Element xml)
 	{
 		Identifier guideId = Inscribe.ELEMENT_HELPER.asIdentifier(xml, "id");
-		ItemSpecification itemSpecification = getItemSpecification(xml); 
-		return new GuideDefinitionCommon(guideId, itemSpecification);
+		ItemSpecification itemSpecification = getItemSpecification(xml.getChild("item", Inscribe.XML_NAMESPACE));
+		GuideDefinitionCommon guideDefinitionCommon = new GuideDefinitionCommon(guideId, itemSpecification);
+		return guideDefinitionCommon;
 	}
 	
 	private static ItemSpecification getItemSpecification(Element xml)
 	{
 		Element element;
-		if ((element = xml.getChild("standard")) != null)
+		if ((element = xml.getChild("standard", Inscribe.XML_NAMESPACE)) != null)
 		{
-			return new ItemSpecification.Standard(element.getAttributeValue("item_group", Inscribe.XML_NAMESPACE));
+			return new ItemSpecification.Standard(element.getAttributeValue("item_group"));
 		}
-		else if ((element = xml.getChild("custom")) != null)
+		else if ((element = xml.getChild("custom", Inscribe.XML_NAMESPACE)) != null)
 		{
 			ItemStack stack = XmlItemStack.fromXml(element).getStack();
 			return new ItemSpecification.Custom(stack );
 		}
-		else if (xml.getChild("none") != null)
+		else if (xml.getChild("none", Inscribe.XML_NAMESPACE) != null)
 		{
 			return new ItemSpecification.None();
 		}

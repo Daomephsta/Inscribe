@@ -26,7 +26,7 @@ public class XmlAttributes
 	 */
 	public int asInt(Element xml, String attributeName)
 	{
-		Attribute attribute = xml.getAttribute(attributeName, defaultNamespace);
+		Attribute attribute = xml.getAttribute(attributeName);
 		if (attribute == null) 
 			throw noAttributeException(xml, attributeName);
 		try
@@ -50,7 +50,7 @@ public class XmlAttributes
 	 */
 	public OptionalInt asOptionalInt(Element xml, String attributeName)
 	{
-		Attribute attribute = xml.getAttribute(attributeName, defaultNamespace);
+		Attribute attribute = xml.getAttribute(attributeName);
 		if (attribute == null) 
 			return OptionalInt.empty();
 		try
@@ -74,7 +74,7 @@ public class XmlAttributes
 	 */
 	public Identifier asIdentifier(Element xml, String attributeName)
 	{
-		Attribute attribute = xml.getAttribute(attributeName, defaultNamespace);
+		Attribute attribute = xml.getAttribute(attributeName);
 		if (attribute == null) 
 			throw noAttributeException(xml, attributeName);
 		return new Identifier(attribute.getValue());
