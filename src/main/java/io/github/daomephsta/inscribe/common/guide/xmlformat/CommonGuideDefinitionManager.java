@@ -1,9 +1,10 @@
-package io.github.daomephsta.inscribe.common.guide;
+package io.github.daomephsta.inscribe.common.guide.xmlformat;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 import javax.xml.validation.Schema;
 
@@ -23,19 +24,24 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
-public class GuideDefinitionCommonLoader implements IdentifiableResourceReloadListener
+public class CommonGuideDefinitionManager implements IdentifiableResourceReloadListener
 {
-	public static final GuideDefinitionCommonLoader INSTANCE = new GuideDefinitionCommonLoader();
+	public static final CommonGuideDefinitionManager INSTANCE = new CommonGuideDefinitionManager();
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier ID = new Identifier(Inscribe.MOD_ID, "guide_loader_common");
 	private static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
 	private static final String GUIDE_DEFINITION_FILENAME = "guide_def_common.xml";
 
-	private final Collection<GuideDefinitionCommon> guideDefinitions = new ArrayList<>();
+	private Map<Identifier, CommonGuideDefinition> guideDefinitions;
 	private MinecraftServer server;
 	private boolean errored;
 	
-	private GuideDefinitionCommonLoader() {}
+	private CommonGuideDefinitionManager() {}
+	
+	public CommonGuideDefinition get(Identifier guideId)
+	{
+		return guideDefinitions.get(guideId);
+	}
 	
 	@Override
 	public CompletableFuture<Void> apply(Helper helper, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor)
@@ -46,14 +52,14 @@ public class GuideDefinitionCommonLoader implements IdentifiableResourceReloadLi
 			.thenCompose(data -> apply(data, resourceManager, applyProfiler, applyExecutor));
 	}
 	
-	public CompletableFuture<Collection<GuideDefinitionCommon>> load(ResourceManager resourceManager, Profiler profiler, Executor executor)
+	public CompletableFuture<Collection<CommonGuideDefinition>> load(ResourceManager resourceManager, Profiler profiler, Executor executor)
 	{	
 		return CompletableFuture.supplyAsync(() ->
 		{
 			SAXBuilder guideDefinitionBuilder = createBuilder(Schemas.INSTANCE.guideDefinitionCommon());
 			
 			Collection<Identifier> guideDefinitionPaths = resourceManager.findResources(FOLDER_NAME, path -> path.endsWith(GUIDE_DEFINITION_FILENAME));
-			Collection<GuideDefinitionCommon> guideDefinitions = new ArrayList<>(guideDefinitionPaths.size());
+			Collection<CommonGuideDefinition> guideDefinitions = new ArrayList<>(guideDefinitionPaths.size());
 			for (Identifier guideDefinitionPath : guideDefinitionPaths)
 			{
 				try
@@ -87,25 +93,21 @@ public class GuideDefinitionCommonLoader implements IdentifiableResourceReloadLi
 		return builder;
 	}
 
-	private GuideDefinitionCommon loadGuideDefinition(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException
+	private CommonGuideDefinition loadGuideDefinition(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException
 	{
 		Element root = builder.build(resourceManager.getResource(path).getInputStream()).getRootElement();
-		return GuideDefinitionCommon.fromXml(root);
+		return CommonGuideDefinition.fromXml(root);
 	}
 
-	public CompletableFuture<Void> apply(Collection<GuideDefinitionCommon> guideDefinitionsIn, ResourceManager resourceManager, Profiler profiler, Executor executor)
+	public CompletableFuture<Void> apply(Collection<CommonGuideDefinition> guideDefinitionsIn, ResourceManager resourceManager, Profiler profiler, Executor executor)
 	{
 		return CompletableFuture.runAsync(() -> 
 		{
-			this.guideDefinitions.clear();
-			this.guideDefinitions.addAll(guideDefinitionsIn);
+			this.guideDefinitions = guideDefinitionsIn.stream().collect(Collectors.toMap(CommonGuideDefinition::getGuideId, gdc -> gdc));
 			LOGGER.info("[Inscribe] Loaded {} common guide definitions", guideDefinitionsIn.size());
 			if (this.server != null)
 			{
-				for (GuideDefinitionCommon guideDefinition : guideDefinitionsIn)
-				{
-					server.getPlayerManager().sendToAll(Packets.SEND_GUIDE_DEFINITION.createPacket(guideDefinition));
-				}
+				server.getPlayerManager().sendToAll(Packets.SEND_GUIDE_DEFINITION.createPacket(guideDefinitionsIn));
 				LOGGER.info("[Inscribe] Sent {} common guide definitions to clients", guideDefinitionsIn.size());
 			}
 		}, executor)

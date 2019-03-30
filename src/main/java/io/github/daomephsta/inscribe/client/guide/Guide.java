@@ -1,10 +1,12 @@
 package io.github.daomephsta.inscribe.client.guide;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.GuideDefinitionClient;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
-import io.github.daomephsta.inscribe.common.guide.GuideDefinitionCommon;
+import io.github.daomephsta.inscribe.common.guide.xmlformat.CommonGuideDefinition;
+import io.github.daomephsta.inscribe.common.guide.xmlformat.ItemSpecification;
 import net.minecraft.util.Identifier;
 
 public class Guide
@@ -22,7 +24,7 @@ public class Guide
 		definition = new GuideDefinitionMerged(clientDefinition);
 	}
 	
-	public void loadCommonDefinition(GuideDefinitionCommon commonDefinition)
+	public void loadCommonDefinition(CommonGuideDefinition commonDefinition)
 	{
 		definition.loadCommonDefinition(commonDefinition);
 	}
@@ -30,5 +32,10 @@ public class Guide
 	public Identifier getIdentifier()
 	{
 		return definition.getGuideId();
+	}
+
+	public Optional<ItemSpecification> getItemSpecification()
+	{
+		return definition.getItemSpecification();
 	}
 }

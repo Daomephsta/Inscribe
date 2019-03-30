@@ -1,4 +1,4 @@
-package io.github.daomephsta.inscribe.common.guide;
+package io.github.daomephsta.inscribe.common.guide.xmlformat;
 
 import java.util.function.Function;
 
@@ -6,15 +6,15 @@ import io.github.daomephsta.util.bytebuf.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.PacketByteBuf;
 
-public interface ItemSpecification extends Function<GuideDefinitionCommon, ItemStack>
+public interface ItemSpecification extends Function<CommonGuideDefinition, ItemStack>
 {
 	@Override
-	default ItemStack apply(GuideDefinitionCommon definition)
+	default ItemStack apply(CommonGuideDefinition definition)
 	{
 		return createGuideItemStack(definition);
 	}
 	
-	public ItemStack createGuideItemStack(GuideDefinitionCommon definition);
+	public ItemStack createGuideItemStack(CommonGuideDefinition definition);
 	
 	public void registerGuideItemStack();
 	
@@ -28,10 +28,15 @@ public interface ItemSpecification extends Function<GuideDefinitionCommon, ItemS
 		}
 
 		@Override
-		public ItemStack createGuideItemStack(GuideDefinitionCommon definition) {return ItemStack.EMPTY;}
+		public ItemStack createGuideItemStack(CommonGuideDefinition definition) {return ItemStack.EMPTY;}
 
 		@Override
 		public void registerGuideItemStack() {}
+		
+		public String getItemGroupId()
+		{
+			return itemGroupId;
+		}
 
 		@Override
 		public String toString()
@@ -50,7 +55,7 @@ public interface ItemSpecification extends Function<GuideDefinitionCommon, ItemS
 		}
 
 		@Override
-		public ItemStack createGuideItemStack(GuideDefinitionCommon definition) 
+		public ItemStack createGuideItemStack(CommonGuideDefinition definition) 
 		{
 			return stack;
 		}
@@ -68,7 +73,7 @@ public interface ItemSpecification extends Function<GuideDefinitionCommon, ItemS
 	public static class None implements ItemSpecification
 	{
 		@Override
-		public ItemStack createGuideItemStack(GuideDefinitionCommon definition) 
+		public ItemStack createGuideItemStack(CommonGuideDefinition definition) 
 		{
 			return ItemStack.EMPTY;
 		}

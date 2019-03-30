@@ -13,49 +13,49 @@ public class Identifiers
 	public static final char PATH_SEPARATOR_CHAR = '/';
 	private static final Splitter PATH_SPLITTER = Splitter.on(PATH_SEPARATOR_CHAR);
 	
-	public static Identifier withNamespace(Identifier base, String domain)
+	public static Identifier withNamespace(Identifier base, String namespace)
 	{
-		return new Identifier(domain, base.getPath());
+		return builder(base).namespace(namespace).build();
 	}
 	
 	public static Identifier withPath(Identifier base, String path)
 	{
-		return new Identifier(base.getNamespace(), path);
+		return builder(base).path(path).build();
 	}
 	
 	public static Identifier prefixPath(Identifier base, String prefix)
 	{
-		return new Identifier(base.getNamespace(), prefix + base.getPath());
+		return builder(base).prefixPath(prefix).build();
 	}
 	
 	public static Identifier suffixPath(Identifier base, String suffix)
 	{
-		return new Identifier(base.getNamespace(), base.getPath() + suffix);
-	}
-	
-	public static Identifier addToPath(Identifier base, String prefix, String suffix)
-	{
-		return new Identifier(base.getNamespace(), prefix + base.getPath() + suffix);
+		return builder(base).suffixPath(suffix).build();
 	}
 	
 	public static Identifier subPath(Identifier base, int start)
 	{
-		return subPath(base, start, -1);
-	}
-	
-	public static Identifier endRelativeSubPath(Identifier base, int endRelativeIndex)
-	{
-		List<String> pathElements = PATH_SPLITTER.splitToList(base.getPath());
-		return new Identifier(base.getNamespace(), 
-			String.join(PATH_SEPARATOR, pathElements.subList(0, pathElements.size() - endRelativeIndex)));
+		return builder(base).subPath(0).build();
 	}
 	
 	public static Identifier subPath(Identifier base, int start, int end)
 	{
-		List<String> pathElements = PATH_SPLITTER.splitToList(base.getPath());
-		if (end == -1)
-			end = pathElements.size();
-		return new Identifier(base.getNamespace(), String.join(PATH_SEPARATOR, pathElements.subList(start, end)));
+		return builder(base).subPath(start, end).build();
+	}
+	
+	public static Identifier replace(Identifier base, int start, String replacement)
+	{
+		List<String> pathSegments = splitPathMutable(base.getPath());
+		checkStartBounds(start, pathSegments.size());
+		List<String> replacementSegments = splitPath(replacement);
+		pathSegments.remove(start);
+		pathSegments.addAll(start, replacementSegments);
+		return createIdentifier(base.getNamespace(), pathSegments);
+	}
+
+	public static Identifier replaceFromEnd(Identifier base, int start, String replacement)
+	{
+		return builder(base).replaceFromEnd(start, replacement).build();
 	}
 	
 	public static Builder builder(Identifier base)
@@ -70,7 +70,7 @@ public class Identifiers
 
 		private Builder(Identifier base)
 		{
-			this.pathSegments = Lists.newArrayList(PATH_SPLITTER.split(base.getPath()));
+			this.namespace(base.getNamespace()).path(base.getPath());
 		}
 		
 		public Builder namespace(String namespace)
@@ -81,52 +81,90 @@ public class Identifiers
 		
 		public Builder path(String path)
 		{
-			this.pathSegments = Lists.newArrayList(PATH_SPLITTER.split(path));
+			this.pathSegments = splitPathMutable(path);
 			return this;
 		}
 		
 		public Builder prefixPath(String prefix)
 		{
-			this.pathSegments.addAll(0, PATH_SPLITTER.splitToList(prefix));
+			this.pathSegments.addAll(0, splitPath(prefix));
 			return this;
 		}
 		
 		public Builder suffixPath(String suffix)
 		{
-			this.pathSegments.addAll(PATH_SPLITTER.splitToList(suffix));
-			return this;
-		}
-		
-		public Builder addToPath(String prefix, String suffix)
-		{
-			prefixPath(prefix);
-			suffixPath(suffix);
+			this.pathSegments.addAll(splitPath(suffix));
 			return this;
 		}
 		
 		public Builder subPath(int start)
 		{
+			checkStartBounds(start, pathSegments.size());
 			subPath(start, -1);
-			return this;
-		}
-		
-		public Builder endRelativeSubPath(int endRelativeIndex)
-		{
-			this.pathSegments = pathSegments.subList(0, pathSegments.size() - endRelativeIndex);
 			return this;
 		}
 		
 		public Builder subPath(int start, int end)
 		{
+			checkStartBounds(start, pathSegments.size());
 			if (end == -1)
 				end = pathSegments.size();
+			checkEndBounds(end, pathSegments.size());
 			this.pathSegments = pathSegments.subList(start, end);
+			return this;
+		}
+		
+		public Builder replace(int start, String replacement)
+		{
+			checkStartBounds(start, pathSegments.size());
+			List<String> replacementSegments = splitPath(replacement);
+			pathSegments.remove(start);
+			pathSegments.addAll(start, replacementSegments);
+			return this;
+		}
+
+		public Builder replaceFromEnd(int start, String replacement)
+		{
+			checkStartBounds(start, pathSegments.size());
+			List<String> replacementSegments = splitPath(replacement);
+			int absoluteStart = pathSegments.size() - 1 - start;
+			pathSegments.remove(absoluteStart);
+			pathSegments.addAll(absoluteStart, replacementSegments);
 			return this;
 		}
 		
 		public Identifier build()
 		{
-			return new Identifier(namespace, String.join(PATH_SEPARATOR, pathSegments));
+			return createIdentifier(namespace, pathSegments); 
 		}
+	}
+
+	private static List<String> splitPath(String path)
+	{
+		return PATH_SPLITTER.splitToList(path);
+	}
+
+	private static ArrayList<String> splitPathMutable(String path)
+	{
+		return Lists.newArrayList(PATH_SPLITTER.split(path));
+	}
+
+	private static Identifier createIdentifier(String namespace, List<String> pathSegments)
+	{
+		return new Identifier(namespace, String.join(PATH_SEPARATOR, pathSegments));
+	}
+	
+	private static void checkStartBounds(int index, int segmentCount)
+	{
+		if (index < 0 || index >= segmentCount)
+			throw new IllegalArgumentException(String.format("Start index value %d is outside of the range [0, %d)", 
+				index, segmentCount));
+	}
+	
+	private static void checkEndBounds(int index, int segmentCount)
+	{
+		if (index < 0 || index > segmentCount)
+			throw new IllegalArgumentException(String.format("End index value %d is outside of the range [0, %d]", 
+				index, segmentCount));
 	}
 }

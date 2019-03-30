@@ -33,6 +33,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	private static final String GUIDE_DEFINITION_FILENAME = "guide_def_client.xml";
 	
 	private final Map<Identifier, Guide> guides = new HashMap<>();
+	private final Collection<Guide> guidesImmutable = Collections.unmodifiableCollection(guides.values());
 	private boolean errored;
 	
 	private GuideManager() {}
@@ -40,6 +41,11 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	public Guide getGuide(Identifier guideId)
 	{
 		return guides.get(guideId);
+	}
+	
+	public Collection<Guide> getGuides()
+	{
+		return guidesImmutable;
 	}
 	
 	@Override
@@ -65,7 +71,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 				try
 				{
 					GuideDefinitionClient guideDefinition = loadGuideDefinition(guideDefinitionBuilder, resourceManager, guideDefPath);
-					String rootPath = Identifiers.builder(guideDefPath).endRelativeSubPath(1).suffixPath("entries").build().getPath();
+					String rootPath = Identifiers.replaceFromEnd(guideDefPath, 1, "entries").getPath();
 					Collection<XmlEntry> entries = loadEntries(entryBuilder, resourceManager, rootPath);
 					Guide guide = new Guide(entries);
 					guide.loadClientDefinition(guideDefinition);

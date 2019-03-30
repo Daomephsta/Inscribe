@@ -1,4 +1,4 @@
-package io.github.daomephsta.inscribe.common.guide;
+package io.github.daomephsta.inscribe.common.guide.xmlformat;
 
 import org.jdom2.Element;
 
@@ -10,22 +10,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
-public class GuideDefinitionCommon
+public class CommonGuideDefinition
 {
 	private final Identifier id;
 	private final ItemSpecification itemSpecification;
 
-	public GuideDefinitionCommon(Identifier id, ItemSpecification itemSpecification)
+	public CommonGuideDefinition(Identifier id, ItemSpecification itemSpecification)
 	{
 		this.id = id;
 		this.itemSpecification = itemSpecification;
 	}
 
-	public static GuideDefinitionCommon fromXml(Element xml)
+	public static CommonGuideDefinition fromXml(Element xml)
 	{
 		Identifier guideId = Inscribe.ELEMENT_HELPER.asIdentifier(xml, "id");
 		ItemSpecification itemSpecification = getItemSpecification(xml.getChild("item", Inscribe.XML_NAMESPACE));
-		GuideDefinitionCommon guideDefinitionCommon = new GuideDefinitionCommon(guideId, itemSpecification);
+		CommonGuideDefinition guideDefinitionCommon = new CommonGuideDefinition(guideId, itemSpecification);
 		return guideDefinitionCommon;
 	}
 	
@@ -54,7 +54,7 @@ public class GuideDefinitionCommon
 		return id;
 	}
 
-	public ItemSpecification getItemSpecifier()
+	public ItemSpecification getItemSpecification()
 	{
 		return itemSpecification;
 	}
@@ -65,18 +65,18 @@ public class GuideDefinitionCommon
 		return String.format("GuideDefinitionCommon [id=%s, itemSpecifier=%s]", id, itemSpecification);
 	}
 	
-	public static class Converter implements ByteBufConverter<GuideDefinitionCommon>
+	public static class Converter implements ByteBufConverter<CommonGuideDefinition>
 	{
 		@Override
-		public GuideDefinitionCommon read(PacketByteBuf buffer, Class<GuideDefinitionCommon> target, ByteBufToObjectConverter converter)
+		public CommonGuideDefinition read(PacketByteBuf buffer, Class<CommonGuideDefinition> target, ByteBufToObjectConverter converter)
 		{
 			Identifier id = buffer.readIdentifier();
 			ItemSpecification itemSpecification = converter.readFromByteBuffer(buffer, ItemSpecification.class);
-			return new GuideDefinitionCommon(id, itemSpecification);
+			return new CommonGuideDefinition(id, itemSpecification);
 		}
 
 		@Override
-		public void write(PacketByteBuf buffer, GuideDefinitionCommon definition, ObjectToByteBufConverter converter)
+		public void write(PacketByteBuf buffer, CommonGuideDefinition definition, ObjectToByteBufConverter converter)
 		{
 			buffer.writeIdentifier(definition.getGuideId());
 			converter.writeToByteBuffer(buffer, definition.itemSpecification, ItemSpecification.class);
