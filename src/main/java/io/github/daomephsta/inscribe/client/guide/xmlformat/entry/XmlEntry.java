@@ -14,7 +14,20 @@ import net.minecraft.util.Identifier;
 
 public class XmlEntry extends XmlMixedContent
 {
-	public static final DeserialisationManager DESERIALISATION_MANAGER = new DeserialisationManager(XmlParagraph.XML_TYPE, XmlItalics.XML_TYPE, XmlEmphasis.XML_TYPE, XmlBold.XML_TYPE, XmlStrong.XML_TYPE, XmlDel.XML_TYPE, XmlLineBreak.XML_TYPE, XmlWebLink.XML_TYPE, XmlEntryLink.XML_TYPE, XmlAnchor.XML_TYPE, XmlImage.XML_TYPE);
+	public static final DeserialisationManager DESERIALISATION_MANAGER = new DeserialisationManager
+	(
+		XmlParagraph.XML_TYPE, 
+		XmlItalics.XML_TYPE,
+		XmlEmphasis.XML_TYPE,
+		XmlBold.XML_TYPE,
+		XmlStrong.XML_TYPE,
+		XmlDel.XML_TYPE,
+		XmlLineBreak.XML_TYPE,
+		XmlWebLink.XML_TYPE,
+		XmlEntryLink.XML_TYPE,
+		XmlAnchor.XML_TYPE,
+		XmlImage.XML_TYPE
+	);
 	
 	private final String title;
     private final Identifier icon,
