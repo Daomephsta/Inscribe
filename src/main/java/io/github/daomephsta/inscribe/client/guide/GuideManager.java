@@ -14,8 +14,9 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaderSchemaFactory;
 
-import io.github.daomephsta.inscribe.client.guide.xmlformat.GuideDefinitionClient;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeXmlParseException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.Schemas;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.util.Identifiers;
@@ -30,7 +31,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	private static final Logger GUIDE_LOGGER = LogManager.getLogger(Inscribe.MOD_ID + ":guide_logger");
 	private static final Identifier ID = new Identifier(Inscribe.MOD_ID, "guide_manager");
 	private static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
-	private static final String GUIDE_DEFINITION_FILENAME = "guide_def_client.xml";
+	private static final String GUIDE_DEFINITION_FILENAME = "guide_definition.xml";
 	
 	private final Map<Identifier, Guide> guides = new HashMap<>();
 	private final Collection<Guide> guidesImmutable = Collections.unmodifiableCollection(guides.values());
@@ -61,7 +62,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	{	
 		return CompletableFuture.supplyAsync(() ->
 		{
-			SAXBuilder guideDefinitionBuilder = createBuilder(Schemas.INSTANCE.guideDefinitionClient());
+			SAXBuilder guideDefinitionBuilder = createBuilder(Schemas.INSTANCE.guideDefinition());
 			SAXBuilder entryBuilder = createBuilder(Schemas.INSTANCE.entry());
 			
 			Collection<Identifier> guideDefinitions = resourceManager.findResources(FOLDER_NAME, path -> path.endsWith(GUIDE_DEFINITION_FILENAME));
@@ -70,17 +71,16 @@ public class GuideManager implements IdentifiableResourceReloadListener
 			{
 				try
 				{
-					GuideDefinitionClient guideDefinition = loadGuideDefinition(guideDefinitionBuilder, resourceManager, guideDefPath);
+					GuideDefinition guideDefinition = loadGuideDefinition(guideDefinitionBuilder, resourceManager, guideDefPath);
 					String rootPath = Identifiers.replaceFromEnd(guideDefPath, 1, "entries").getPath();
 					Collection<XmlEntry> entries = loadEntries(entryBuilder, resourceManager, rootPath);
-					Guide guide = new Guide(entries);
-					guide.loadClientDefinition(guideDefinition);
-					guides.add(guide);
+					guides.add(new Guide(guideDefinition, entries));
 				}
-				catch (JDOMException e) 
+				catch (JDOMException | InscribeXmlParseException e) 
 				{
 					GUIDE_LOGGER.error("[Inscribe] {} failed to load correctly:\n{}", guideDefPath, e.getMessage());
 					errored = true;
+					continue;
 				}
 				catch (IOException e)
 				{
@@ -105,10 +105,10 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		return builder;
 	}
 
-	private GuideDefinitionClient loadGuideDefinition(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException
+	private GuideDefinition loadGuideDefinition(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException
 	{
 		Element root = builder.build(resourceManager.getResource(path).getInputStream()).getRootElement();
-		return GuideDefinitionClient.fromXml(root);
+		return GuideDefinition.fromXml(root);
 	}
 	
 	private Collection<XmlEntry> loadEntries(SAXBuilder builder, ResourceManager resourceManager, String rootPath)
@@ -120,10 +120,11 @@ public class GuideManager implements IdentifiableResourceReloadListener
 			{
 				entries.add(loadEntry(builder, resourceManager, entryPath));
 			}
-			catch (JDOMException e)
+			catch (JDOMException | InscribeXmlParseException e)
 			{
 				GUIDE_LOGGER.error("[Inscribe] {} failed to load correctly:\n{}", entryPath, e.getMessage());
 				errored = true;
+				continue;
 			}
 			catch (IOException e)
 			{

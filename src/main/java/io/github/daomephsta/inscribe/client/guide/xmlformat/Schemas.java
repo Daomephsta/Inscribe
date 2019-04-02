@@ -18,8 +18,7 @@ import net.minecraft.util.profiler.Profiler;
 
 enum SchemaId
 {
-	GUIDE_DEFINITION_COMMON("schemas/guide_definition/common/schema.xsd"),
-	GUIDE_DEFINITION_CLIENT("schemas/guide_definition/client/schema.xsd"),
+	GUIDE_DEFINITION("schemas/guide_definition/schema.xsd"),
 	THEME("schemas/theme/schema.xsd"),
 	ENTRY("schemas/entry/schema.xsd");
 
@@ -43,8 +42,7 @@ public class Schemas
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-	private Schema guideDefinitionCommonSchema;
-	private Schema guideDefinitionClientSchema;
+	private Schema guideDefinitionSchema;
 	private Schema entrySchema;
 	private Schema themeSchema;
 	private boolean loaded = false;
@@ -79,8 +77,7 @@ public class Schemas
 		}, loadExecutor)
 		.thenAccept(schemas -> 
 		{
-			this.guideDefinitionCommonSchema = schemas.get(SchemaId.GUIDE_DEFINITION_COMMON);
-			this.guideDefinitionClientSchema = schemas.get(SchemaId.GUIDE_DEFINITION_CLIENT);
+			this.guideDefinitionSchema = schemas.get(SchemaId.GUIDE_DEFINITION);
 			this.entrySchema = schemas.get(SchemaId.ENTRY);
 			this.themeSchema = schemas.get(SchemaId.THEME);
 			LOGGER.info("[Inscribe] Loaded schemas");
@@ -92,14 +89,9 @@ public class Schemas
 		});
 	}
 
-	public Schema guideDefinitionCommon()
+	public Schema guideDefinition()
 	{
-		return guideDefinitionCommonSchema;
-	}
-
-	public Schema guideDefinitionClient()
-	{
-		return guideDefinitionClientSchema;
+		return guideDefinitionSchema;
 	}
 
 	public Schema entry()

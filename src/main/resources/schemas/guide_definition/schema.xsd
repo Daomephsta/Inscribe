@@ -5,7 +5,8 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" 
     xmlns="https://github.com/Daomephsta/inscribe"  
     targetNamespace="https://github.com/Daomephsta/inscribe" elementFormDefault="qualified" jxb:version="1.0">
-    <xs:include schemaLocation="../../util/identifier.xsd"/>
+    <xs:include schemaLocation="../util/identifier.xsd"/>
+    <xs:include schemaLocation="../util/stack.xsd"/>
 
     <xs:element name="guide">
         <xs:complexType>
@@ -30,6 +31,26 @@
                     	</xs:complexType>
                     </xs:element>
                 </xs:choice>
+                <xs:element name="access_method">
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="guide_item">
+                                <xs:complexType>
+                                    <xs:attribute name="item_group" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="custom_item" type="stack"/>
+                            <xs:element name="keybinding">
+                                <xs:complexType>
+                                    <xs:attribute name="default" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="none">
+                                <xs:complexType/>
+                            </xs:element>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

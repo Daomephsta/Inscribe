@@ -1,10 +1,9 @@
 package io.github.daomephsta.inscribe.common.guide.item;
 
-import java.util.Arrays;
-
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
-import io.github.daomephsta.inscribe.common.guide.xmlformat.ItemSpecification;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.DefaultedList;
@@ -31,27 +30,29 @@ public class GuideItem extends Item
 		{
 			for (Guide guide : GuideManager.INSTANCE.getGuides())
 			{
-				if (itemGroup == getGuideItemGroup(guide))
+				GuideAccessMethod accessMethod = guide.getDefinition().getGuideAccess();
+				if (accessMethod instanceof GuideItemAccessMethod
+					&& ((GuideItemAccessMethod) accessMethod).getItemGroup() == itemGroup)
+				{
 					items.add(this.forGuide(guide));
+				}
 			}
 		}
 	}
-
-	private ItemGroup getGuideItemGroup(Guide guide)
+	
+	@Override
+	public String getTranslationKey(ItemStack itemStack)
 	{
-		return guide.getItemSpecification()
-			.filter(ItemSpecification.Standard.class::isInstance)
-			.map(spec -> 
-			{
-				String itemGroupId = ((ItemSpecification.Standard) spec).getItemGroupId();
-				return Arrays.stream(ItemGroup.GROUPS)
-					.filter(group -> group.getId().equals(itemGroupId))
-					.findFirst().get();
-			})
-			.orElse(null);
+		Identifier guideId = getGuideId(itemStack);
+		return guideId.getNamespace() + ".guide." + guideId.getPath() + ".name";
 	}
 	
-	public Identifier getGuideIdentifier(ItemStack guideStack)
+	private Guide getGuide(ItemStack guideStack)
+	{
+		return GuideManager.INSTANCE.getGuide(getGuideId(guideStack));
+	}
+
+	public Identifier getGuideId(ItemStack guideStack)
 	{
 		return new Identifier(guideStack.getTag().getString("guide_id"));
 	}

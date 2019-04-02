@@ -38,8 +38,7 @@ public class DeserialisationManager
 				XmlElementType<?> deserialiser = deserialisers.get(element.getName());
 				if (deserialiser == null)
 				{
-					Object[] args = {content};
-					LOGGER.debug("[Inscribe] Ignored unknown element {}", args);
+					LOGGER.debug("[Inscribe] Ignored unknown element {}", element);
 					continue;
 				}
 				else
@@ -55,6 +54,29 @@ public class DeserialisationManager
 			}
 		}
 		return result;
+	}
+	
+	public <T> T deserialise(Element element, Class<T> expectedType, boolean allowUnknowns)
+	{
+		XmlElementType<?> deserialiser = deserialisers.get(element.getName());
+		if (deserialiser == null)
+		{
+			if (allowUnknowns)
+			{
+				LOGGER.debug("[Inscribe] Ignored unknown element {}", element);
+				return null;
+			}
+			else 
+				throw new InscribeXmlParseException("Unknown element " + element);
+		}
+		else
+		{
+			Object object = deserialiser.fromXml(element, this);
+			if (expectedType.isInstance(object))
+				return expectedType.cast(object);
+			else
+				throw new InscribeXmlParseException(String.format("Cannot parse %s as an instance of %s", element, expectedType.getName()));
+		}
 	}
 	
 	private boolean isMetadata(Content content)
