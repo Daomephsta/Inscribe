@@ -44,7 +44,6 @@ public class Schemas
 	private final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 	private Schema guideDefinitionSchema;
 	private Schema entrySchema;
-	private Schema themeSchema;
 	private boolean loaded = false;
 
 	private Schemas() {}
@@ -79,7 +78,6 @@ public class Schemas
 		{
 			this.guideDefinitionSchema = schemas.get(SchemaId.GUIDE_DEFINITION);
 			this.entrySchema = schemas.get(SchemaId.ENTRY);
-			this.themeSchema = schemas.get(SchemaId.THEME);
 			LOGGER.info("[Inscribe] Loaded schemas");
 			loaded = true;
 		}).exceptionally(thrw -> 
@@ -97,10 +95,5 @@ public class Schemas
 	public Schema entry()
 	{
 		return entrySchema;
-	}
-
-	public Schema theme()
-	{
-		return themeSchema;
 	}
 }

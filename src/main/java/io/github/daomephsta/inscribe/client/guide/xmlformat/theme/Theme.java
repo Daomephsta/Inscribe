@@ -7,22 +7,24 @@ import net.minecraft.util.Identifier;
 
 public class Theme
 {
-	private final Identifier id;
+	private static final Identifier DEFAULT_GUI_TEXTURE = new Identifier("minecraft:textures/gui/book.png");
+	public static final Theme DEFAULT = new Theme(DEFAULT_GUI_TEXTURE);
+	
+	private final Identifier guiTexture;
 
-	private Theme(Identifier id)
+	private Theme(Identifier guiTexture)
 	{
-		this.id = id;
+		this.guiTexture = guiTexture;
 	}
 
 	public static Theme fromXml(Element xml)
 	{
-		Identifier id = new Identifier(xml.getChildText("id", Inscribe.XML_NAMESPACE));
-		//TODO: FINISH THEMES
-		return new Theme(id);
+		Identifier pageTexture = Inscribe.ELEMENT_HELPER.asIdentifier(xml, "gui_texture", DEFAULT_GUI_TEXTURE);
+		return new Theme(pageTexture);
 	}
-
-	public Identifier getIdentifier()
+	
+	public Identifier getGuiTexture()
 	{
-		return id;
+		return guiTexture;
 	}
 }

@@ -24,8 +24,8 @@ public class GuideDefinition
 		Identifier guideId = Inscribe.ELEMENT_HELPER.asIdentifier(xml, "id");
 		//Safe to assume the list has exactly one element thanks to schemas
 		GuideAccessMethod guideAccess = GuideAccessMethod.deserialiseGuideAccess(Inscribe.ELEMENT_HELPER.getChild(xml, "access_method").getChildren().get(0));
-		Theme theme = null;
-		
+		Element themeXml = xml.getChild("theme", Inscribe.XML_NAMESPACE);
+		Theme theme = themeXml != null ? Theme.fromXml(themeXml) : Theme.DEFAULT;
 		return new GuideDefinition(guideId, guideAccess, theme);
 	}
 

@@ -48,6 +48,12 @@ public class XmlElements
 		return toStringList(getChild(xml, childName).getText());
 	}
 
+	public Identifier asIdentifier(Element xml, String childName, Identifier fallback)
+	{
+		Element child = xml.getChild(childName, defaultNamespace);
+		return child != null ? new Identifier(child.getText()) : fallback;
+	}
+	
 	/**
 	 * Gets an xml element as an Identifier
 	 * @param xml the parent element

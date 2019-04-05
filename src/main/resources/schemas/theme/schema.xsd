@@ -10,25 +10,7 @@
     <xs:element name="theme">
         <xs:complexType>
             <xs:all>
-                <xs:element name="id" minOccurs="1">
-                	<xs:complexType>
-                		<xs:simpleContent>
-                			<xs:extension base="identifier">
-                				<xs:attribute name="metadata" type="xs:boolean" fixed="true"/>
-                			</xs:extension>
-                		</xs:simpleContent>
-                	</xs:complexType>
-                </xs:element>
-                <xs:element name="model" minOccurs="0">
-                	<xs:complexType>
-                		<xs:simpleContent>
-                			<xs:extension base="model_identifier">
-                				<xs:attribute name="metadata" type="xs:boolean" fixed="true"/>
-                			</xs:extension>
-                		</xs:simpleContent>
-                	</xs:complexType>
-                </xs:element>
-                <xs:element name="page_texture" minOccurs="0">
+                <xs:element name="gui_texture" minOccurs="0">
                 	<xs:complexType>
                 		<xs:simpleContent>
                 			<xs:extension base="identifier">

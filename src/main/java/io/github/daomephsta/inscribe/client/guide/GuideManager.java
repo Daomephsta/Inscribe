@@ -28,7 +28,7 @@ import net.minecraft.util.profiler.Profiler;
 public class GuideManager implements IdentifiableResourceReloadListener
 {
 	public static final GuideManager INSTANCE = new GuideManager();
-	private static final Logger GUIDE_LOGGER = LogManager.getLogger(Inscribe.MOD_ID + ":guide_logger");
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier ID = new Identifier(Inscribe.MOD_ID, "guide_manager");
 	private static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
 	private static final String GUIDE_DEFINITION_FILENAME = "guide_definition.xml";
@@ -53,9 +53,9 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	public CompletableFuture<Void> apply(Helper helper, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor)
 	{
 		return Schemas.INSTANCE.load(loadProfiler, applyProfiler, loadExecutor, applyExecutor)
-			.thenCompose(v -> GuideThemeLoader.INSTANCE.apply(helper, resourceManager, loadProfiler, applyProfiler, loadExecutor, applyExecutor))
+			.thenCompose(helper::waitForAll)
 			.thenCompose(v -> load(resourceManager, loadProfiler, loadExecutor))
-			.thenCompose(data -> apply(data, resourceManager, applyProfiler, applyExecutor));
+			.thenAccept(data -> apply(data, resourceManager, applyProfiler, applyExecutor));
 	}
 	
 	public CompletableFuture<Collection<Guide>> load(ResourceManager resourceManager, Profiler profiler, Executor executor)
@@ -78,7 +78,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 				}
 				catch (JDOMException | InscribeXmlParseException e) 
 				{
-					GUIDE_LOGGER.error("[Inscribe] {} failed to load correctly:\n{}", guideDefPath, e.getMessage());
+					LOGGER.error("[Inscribe] {} failed to load correctly:\n{}", guideDefPath, e.getMessage());
 					errored = true;
 					continue;
 				}
@@ -92,7 +92,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		}, executor)
 		.exceptionally(thrw -> 
 		{
-			GUIDE_LOGGER.error("An unexpected error occured during the LOAD stage of guide loading", thrw);
+			LOGGER.error("An unexpected error occured during the LOAD stage of guide loading", thrw);
 			return null;
 		});
 	}
@@ -122,7 +122,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 			}
 			catch (JDOMException | InscribeXmlParseException e)
 			{
-				GUIDE_LOGGER.error("[Inscribe] {} failed to load correctly:\n{}", entryPath, e.getMessage());
+				LOGGER.error("[Inscribe] {} failed to load correctly:\n{}", entryPath, e.getMessage());
 				errored = true;
 				continue;
 			}
@@ -140,22 +140,14 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		return XmlEntry.fromXml(root);
 	}
 
-	public CompletableFuture<Void> apply(Collection<Guide> guidesIn, ResourceManager resourceManager, Profiler profiler, Executor executor)
+	public void apply(Collection<Guide> guidesIn, ResourceManager resourceManager, Profiler profiler, Executor executor)
 	{
-		return CompletableFuture.runAsync(() ->
+		this.guides.clear();
+		for (Guide guide : guidesIn)
 		{
-			this.guides.clear();
-			for (Guide guide : guidesIn)
-			{
-				this.guides.put(guide.getIdentifier(), guide);
-			}
-			GUIDE_LOGGER.info("[Inscribe] Loaded {} guides", guidesIn.size());
-		}, executor)
-		.exceptionally(thrw -> 
-		{
-			GUIDE_LOGGER.error("An unexpected error occured during the APPLY stage of guide loading", thrw);
-			return null;
-		});
+			this.guides.put(guide.getIdentifier(), guide);
+		}
+		LOGGER.info("[Inscribe] Loaded {} guides", guidesIn.size());
 	}
 
 	public boolean getErrored()
