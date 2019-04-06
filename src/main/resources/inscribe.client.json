@@ -6,7 +6,8 @@
   "mixins": 
   [
     "MixinMinecraftClient",
-    "MixinClientPlayNetworkHandler"
+    "MixinClientPlayNetworkHandler",
+    "MixinReloadableResourceManagerImpl"
   ],
   "injectors": {
     "defaultRequire": 1

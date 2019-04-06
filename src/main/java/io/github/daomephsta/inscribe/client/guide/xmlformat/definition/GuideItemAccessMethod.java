@@ -8,22 +8,31 @@ import org.jdom2.Element;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.*;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentation;
+import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Lazy;
 
 public class GuideItemAccessMethod extends GuideAccessMethod implements IXmlRepresentation
 {
 	public static final XmlElementType<GuideItemAccessMethod> XML_TYPE = new XmlType();
 	private final ItemGroup itemGroup;
+	private final Identifier modelId;
 	
-	private GuideItemAccessMethod(ItemGroup itemGroup)
+	private GuideItemAccessMethod(ItemGroup itemGroup, Identifier modelId)
 	{
 		this.itemGroup = itemGroup;
+		this.modelId = modelId;
 	}
-	
+
 	public ItemGroup getItemGroup()
 	{
 		return itemGroup;
+	}
+	
+	public Identifier getModelId()
+	{
+		return modelId;
 	}
 
 	private static class XmlType extends XmlElementType<GuideItemAccessMethod>
@@ -43,8 +52,9 @@ public class GuideItemAccessMethod extends GuideAccessMethod implements IXmlRepr
 			ItemGroup itemGroup = ID_TO_GROUP.get().get(itemGroupId);
 			if (itemGroup == null)
 				throw new XmlSyntaxException(itemGroupId + " is not a valid item group id");
-			
-			return new GuideItemAccessMethod(itemGroup);
+			String modelIdString = xml.getAttributeValue("model");
+			Identifier modelId = modelIdString.contains("#") ? new ModelIdentifier(modelIdString) : new Identifier(modelIdString);
+			return new GuideItemAccessMethod(itemGroup, modelId);
 		}
 	}
 }

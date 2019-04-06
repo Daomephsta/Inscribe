@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.validation.Schema;
 
@@ -16,7 +18,7 @@ import org.jdom2.input.sax.XMLReaderSchemaFactory;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeXmlParseException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.Schemas;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.*;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.util.Identifiers;
@@ -48,14 +50,27 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	{
 		return guidesImmutable;
 	}
+
+	public Stream<Identifier> streamGuideModelIds()
+	{
+		return getGuides().stream()
+			.filter(guide -> guide.getDefinition().getAccessMethod() instanceof GuideItemAccessMethod)
+			.map(guide -> ((GuideItemAccessMethod) guide.getDefinition().getAccessMethod()).getModelId());
+	}
+
+	public Collection<Identifier> getGuideModelIds()
+	{
+		return streamGuideModelIds()
+			.collect(Collectors.toSet());
+	}
 	
 	@Override
 	public CompletableFuture<Void> apply(Helper helper, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor)
 	{
 		return Schemas.INSTANCE.load(loadProfiler, applyProfiler, loadExecutor, applyExecutor)
-			.thenCompose(helper::waitForAll)
 			.thenCompose(v -> load(resourceManager, loadProfiler, loadExecutor))
-			.thenAccept(data -> apply(data, resourceManager, applyProfiler, applyExecutor));
+			.thenAccept(data -> apply(data, resourceManager, applyProfiler, applyExecutor))
+			.thenCompose(helper::waitForAll);
 	}
 	
 	public CompletableFuture<Collection<Guide>> load(ResourceManager resourceManager, Profiler profiler, Executor executor)

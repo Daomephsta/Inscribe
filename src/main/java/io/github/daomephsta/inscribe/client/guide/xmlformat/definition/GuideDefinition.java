@@ -34,7 +34,7 @@ public class GuideDefinition
 		return guideId;
 	}
 	
-	public GuideAccessMethod getGuideAccess()
+	public GuideAccessMethod getAccessMethod()
 	{
 		return guideAccess;
 	}

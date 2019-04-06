@@ -2,18 +2,40 @@ package io.github.daomephsta.inscribe.common.guide.item;
 
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
+import io.github.daomephsta.inscribe.client.guide.gui.GuideScreen;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
+import io.github.daomephsta.inscribe.common.Inscribe;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.DefaultedList;
-import net.minecraft.util.Identifier;
+import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.*;
+import net.minecraft.world.World;
 
 public class GuideItem extends Item
 {
+	private static final Identifier INVALID_GUIDE = new Identifier(Inscribe.MOD_ID, "invalid");
+
 	public GuideItem()
 	{
 		super(new Settings().stackSize(1));
+	}
+	
+	@Override
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand)
+	{
+		ItemStack stack = playerEntity.getStackInHand(hand);
+		if (world.isClient)
+		{
+			Guide guide = getGuide(stack);
+			if (guide != null)
+				MinecraftClient.getInstance().openScreen(new GuideScreen(guide));
+			else 
+				playerEntity.addChatMessage(new TranslatableTextComponent(Inscribe.MOD_ID + ".chat_message.invalid_guide"), false);
+		}
+		return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, stack );
 	}
 
 	@Override
@@ -30,7 +52,7 @@ public class GuideItem extends Item
 		{
 			for (Guide guide : GuideManager.INSTANCE.getGuides())
 			{
-				GuideAccessMethod accessMethod = guide.getDefinition().getGuideAccess();
+				GuideAccessMethod accessMethod = guide.getDefinition().getAccessMethod();
 				if (accessMethod instanceof GuideItemAccessMethod
 					&& ((GuideItemAccessMethod) accessMethod).getItemGroup() == itemGroup)
 				{
@@ -47,13 +69,15 @@ public class GuideItem extends Item
 		return guideId.getNamespace() + ".guide." + guideId.getPath() + ".name";
 	}
 	
-	private Guide getGuide(ItemStack guideStack)
+	public Guide getGuide(ItemStack guideStack)
 	{
 		return GuideManager.INSTANCE.getGuide(getGuideId(guideStack));
 	}
 
-	public Identifier getGuideId(ItemStack guideStack)
+	private Identifier getGuideId(ItemStack guideStack)
 	{
+		if (!guideStack.hasTag())
+			return INVALID_GUIDE;
 		return new Identifier(guideStack.getTag().getString("guide_id"));
 	}
 	
