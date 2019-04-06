@@ -25,6 +25,7 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modCompile "net.fabricmc:fabric:${project.fabric_version}"
 	
+	//Shade JDOM, for a nice XML parser 
 	implementation "org.jdom:jdom2:${project.jdom_version}"
     shadow "org.jdom:jdom2:${project.jdom_version}"
 }
