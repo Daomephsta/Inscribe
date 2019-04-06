@@ -2,7 +2,7 @@
   "id": "inscribe",
   "name": "Inscribe",
   "description": "Data-driven ingame manuals for Fabric",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "side": "universal",
   "initializers": 
   [
