@@ -35,11 +35,10 @@ public abstract class MixinReloadableResourceManagerImpl implements ReloadableRe
 
 	public void injectGuideManagerAsListener()
 	{
-		if (injectListenerBefore(listeners, GuideManager.INSTANCE, BakedModelManager.class) 
-			|| injectListenerBefore(initialListeners, GuideManager.INSTANCE, BakedModelManager.class))
-		{
+		boolean successInitialListeners = injectListenerBefore(initialListeners, GuideManager.INSTANCE, BakedModelManager.class);
+		boolean successListeners = injectListenerBefore(listeners, GuideManager.INSTANCE, BakedModelManager.class);
+		if (successInitialListeners || successListeners)
 			INSCRIBE_LOGGER.info("[Inscribe] Registered Guide Manager as a resource reload listener");
-		}
 	}
 	
 	private boolean injectListenerBefore(List<ResourceReloadListener> listeners, ResourceReloadListener listener, Class<? extends ResourceReloadListener> targetClass)
