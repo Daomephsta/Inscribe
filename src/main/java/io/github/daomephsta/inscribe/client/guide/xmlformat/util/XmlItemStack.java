@@ -5,8 +5,8 @@ import java.util.Collections;
 
 import org.jdom2.Element;
 
-import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlSyntaxException;
-import io.github.daomephsta.inscribe.common.Inscribe;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -23,10 +23,10 @@ public class XmlItemStack implements StackSetProvider
 	
 	public static XmlItemStack fromXml(Element xml)
 	{
-		Identifier itemId = Inscribe.ATTRIBUTE_HELPER.asIdentifier(xml, "id");
+		Identifier itemId = XmlAttributes.asIdentifier(xml, "id");
 		Item item = Registry.ITEM.getOrEmpty(itemId)
-			.orElseThrow(() -> new XmlSyntaxException("Invalid item id " + itemId));
-		int count = Inscribe.ATTRIBUTE_HELPER.asInt(xml, "count");
+			.orElseThrow(() -> new InscribeSyntaxException("Invalid item id " + itemId));
+		int count = XmlAttributes.asInt(xml, "count");
 		ItemStack stack = new ItemStack(item, count);
 		return new XmlItemStack(stack);
 	}

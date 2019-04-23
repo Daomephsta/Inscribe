@@ -35,7 +35,6 @@ enum SchemaId
 	}
 }
 
-
 public class Schemas
 {
 	public static final Schemas INSTANCE = new Schemas();

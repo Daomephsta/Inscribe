@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.fabricmc.fabric.api.client.model.*;
@@ -66,18 +67,27 @@ public class GuideModel
 	private static class Overrides extends ModelItemPropertyOverrideList
 	{
 		private final Map<Identifier, BakedModel> modelMap;
+		private final BakedModel missingModel;
 
 		public Overrides(ModelLoader modelLoader, Map<Identifier, BakedModel> modelMap)
 		{
 			super(modelLoader, null, id -> null, Collections.emptyList());
 			this.modelMap = modelMap;
+			this.missingModel = modelLoader.bake(ModelLoader.MISSING, ModelRotation.X0_Y0);
 		}
 
 		@Override
 		public BakedModel apply(BakedModel baseModel, ItemStack itemStack, World world, LivingEntity livingEntity)
 		{
-			Identifier modelId = ((GuideItemAccessMethod) Inscribe.GUIDE_ITEM.getGuide(itemStack).getDefinition().getAccessMethod()).getModelId();
-			return modelMap.get(modelId);
+			Guide guide = Inscribe.GUIDE_ITEM.getGuide(itemStack);
+			if (guide == null)
+				return missingModel;
+			
+			GuideAccessMethod accessMethod = guide.getDefinition().getAccessMethod();
+			if (accessMethod instanceof GuideItemAccessMethod)
+				return modelMap.get(((GuideItemAccessMethod) accessMethod).getModelId());
+			else 
+				return missingModel;
 		}
 	}
 	

@@ -1,0 +1,48 @@
+package io.github.daomephsta.inscribe.client.guide.parser.v100;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.jdom2.Element;
+
+import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser.Impl;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeXmlParseException;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlWebLink;
+import net.minecraft.util.Lazy;
+
+class XmlWebLinkElementType extends XmlElementType<XmlWebLink>
+{
+	private final Lazy<ContentDeserialiser> contentDeserialiser;
+	
+	XmlWebLinkElementType()
+	{
+		super("web_link", XmlWebLink.class);
+		this.contentDeserialiser = new Lazy<>
+		(() -> 
+			new Impl()
+				.registerDeserialiser(V100ElementTypes.BOLD)
+				.registerDeserialiser(V100ElementTypes.STRONG)
+				.registerDeserialiser(V100ElementTypes.EMPHASIS)
+				.registerDeserialiser(V100ElementTypes.ITALICS)
+				.registerDeserialiser(V100ElementTypes.DEL)
+				.registerDeserialiser(V100ElementTypes.IMAGE)
+		);
+	}
+	
+	@Override
+	public XmlWebLink fromXml(Element xml)
+	{
+		String url = xml.getAttributeValue("target");
+		try
+		{
+			URL targetUrl = new URL(url);
+			return new XmlWebLink(contentDeserialiser.get().deserialise(xml.getContent()), targetUrl);
+		}
+		catch (MalformedURLException e)
+		{
+			throw new InscribeXmlParseException("Could not parse URL " + url, e);
+		}
+	}
+}

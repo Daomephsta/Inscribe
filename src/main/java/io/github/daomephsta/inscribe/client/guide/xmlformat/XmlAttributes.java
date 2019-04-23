@@ -8,13 +8,6 @@ import net.minecraft.util.Identifier;
 
 public class XmlAttributes
 {
-	private final Namespace defaultNamespace;
-	
-	public XmlAttributes(Namespace defaultNamespace)
-	{
-		this.defaultNamespace = defaultNamespace;
-	}
-
 	/**
 	 * Gets an xml attribute as an integer
 	 * @param xml the element with the attribute
@@ -24,7 +17,7 @@ public class XmlAttributes
 	 * or its value cannot be parsed as an integer
 	 * @return the value of the attribute as an integer
 	 */
-	public int asInt(Element xml, String attributeName)
+	public static int asInt(Element xml, String attributeName)
 	{
 		Attribute attribute = xml.getAttribute(attributeName);
 		if (attribute == null) 
@@ -48,7 +41,7 @@ public class XmlAttributes
 	 * @return the value of the attribute as an OptionalInt, or {@link OptionalInt#empty()}
 	 * if the attribute does not exist.
 	 */
-	public OptionalInt asOptionalInt(Element xml, String attributeName)
+	public static OptionalInt asOptionalInt(Element xml, String attributeName)
 	{
 		Attribute attribute = xml.getAttribute(attributeName);
 		if (attribute == null) 
@@ -72,7 +65,7 @@ public class XmlAttributes
 	 * or its value cannot be parsed as an Identifier
 	 * @return the value of the attribute as an Identifier
 	 */
-	public Identifier asIdentifier(Element xml, String attributeName)
+	public static Identifier asIdentifier(Element xml, String attributeName)
 	{
 		Attribute attribute = xml.getAttribute(attributeName);
 		if (attribute == null) 
@@ -80,13 +73,13 @@ public class XmlAttributes
 		return new Identifier(attribute.getValue());
 	}
 
-	private XmlSyntaxException noAttributeException(Element xml, String attributeName)
+	private static RuntimeException noAttributeException(Element xml, String attributeName)
 	{
-		return new XmlSyntaxException(String.format("No attribute named '%s' found in element of type %s", attributeName, xml.getQualifiedName()));
+		return new InscribeSyntaxException(String.format("No attribute named '%s' found in element of type %s", attributeName, xml.getQualifiedName()));
 	}
 
-	private XmlSyntaxException wrappedDataConversionException(String attributeName, DataConversionException e)
+	private static RuntimeException wrappedDataConversionException(String attributeName, DataConversionException e)
 	{
-		return new XmlSyntaxException(String.format("Could not parse value of attribute '%s' as an integer", attributeName), e);
+		return new InscribeSyntaxException(String.format("Could not parse value of attribute '%s' as an integer", attributeName), e);
 	}
 }

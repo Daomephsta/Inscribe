@@ -1,4 +1,4 @@
-package io.github.daomephsta.inscribe.client.guide.xmlformat;
+package io.github.daomephsta.inscribe.client.guide.parser;
 
 import org.jdom2.Element;
 
@@ -15,7 +15,7 @@ public abstract class XmlElementType<T extends IXmlRepresentation>
 		this.clazz = clazz;
 	}
 	
-	public abstract T fromXml(Element xml, DeserialisationManager manager);
+	public abstract T fromXml(Element xml);
 
 	public String getElementName()
 	{

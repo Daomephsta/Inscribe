@@ -2,13 +2,12 @@ package io.github.daomephsta.inscribe.client.guide.xmlformat.theme;
 
 import org.jdom2.Element;
 
-import io.github.daomephsta.inscribe.common.Inscribe;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlElements;
 import net.minecraft.util.Identifier;
 
 public class Theme
 {
-	private static final Identifier DEFAULT_GUI_TEXTURE = new Identifier("minecraft:textures/gui/book.png");
-	public static final Theme DEFAULT = new Theme(DEFAULT_GUI_TEXTURE);
+	public static final Theme DEFAULT = new Theme(new Identifier("minecraft:textures/gui/book.png"));
 	
 	private final Identifier guiTexture;
 
@@ -19,7 +18,7 @@ public class Theme
 
 	public static Theme fromXml(Element xml)
 	{
-		Identifier pageTexture = Inscribe.ELEMENT_HELPER.asIdentifier(xml, "gui_texture", DEFAULT_GUI_TEXTURE);
+		Identifier pageTexture = XmlElements.asIdentifier(xml, "gui_texture", DEFAULT.getGuiTexture());
 		return new Theme(pageTexture);
 	}
 	
