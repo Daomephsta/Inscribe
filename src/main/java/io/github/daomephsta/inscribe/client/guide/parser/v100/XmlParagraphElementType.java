@@ -4,7 +4,7 @@ import org.jdom2.Element;
 
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser.Impl;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent.XmlParagraph;
 import net.minecraft.util.Lazy;
 
@@ -17,7 +17,7 @@ class XmlParagraphElementType extends XmlElementType<XmlParagraph>
 		super("p", XmlParagraph.class);
 		this.contentDeserialiser = new Lazy<>
 		(() ->
-			new Impl()
+			new ContentDeserialiser.Impl()
 				.registerDeserialiser(V100ElementTypes.BOLD)
 				.registerDeserialiser(V100ElementTypes.STRONG)
 				.registerDeserialiser(V100ElementTypes.EMPHASIS)
@@ -31,7 +31,7 @@ class XmlParagraphElementType extends XmlElementType<XmlParagraph>
 	}
 
 	@Override
-	public XmlParagraph fromXml(Element xml)
+	protected XmlParagraph translate(Element xml) throws InscribeSyntaxException
 	{
 		return new XmlParagraph(contentDeserialiser.get().deserialise(xml.getContent()));
 	}

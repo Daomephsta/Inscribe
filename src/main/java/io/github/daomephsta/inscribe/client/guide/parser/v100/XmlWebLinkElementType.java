@@ -6,9 +6,7 @@ import java.net.URL;
 import org.jdom2.Element;
 
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser.Impl;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeXmlParseException;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.*;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlWebLink;
 import net.minecraft.util.Lazy;
 
@@ -21,7 +19,7 @@ class XmlWebLinkElementType extends XmlElementType<XmlWebLink>
 		super("web_link", XmlWebLink.class);
 		this.contentDeserialiser = new Lazy<>
 		(() -> 
-			new Impl()
+			new ContentDeserialiser.Impl()
 				.registerDeserialiser(V100ElementTypes.BOLD)
 				.registerDeserialiser(V100ElementTypes.STRONG)
 				.registerDeserialiser(V100ElementTypes.EMPHASIS)
@@ -32,9 +30,9 @@ class XmlWebLinkElementType extends XmlElementType<XmlWebLink>
 	}
 	
 	@Override
-	public XmlWebLink fromXml(Element xml)
+	protected XmlWebLink translate(Element xml) throws InscribeSyntaxException
 	{
-		String url = xml.getAttributeValue("target");
+		String url = XmlAttributes.getValue(xml, "target");
 		try
 		{
 			URL targetUrl = new URL(url);

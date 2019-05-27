@@ -112,7 +112,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		});
 	}
 	
-	private GuideDefinition loadGuideDefinition(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException
+	private GuideDefinition loadGuideDefinition(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException, InscribeSyntaxException
 	{
 		Element root = builder.build(resourceManager.getResource(path).getInputStream()).getRootElement();
 		return Parsers.loadGuideDefinition(root);
@@ -127,7 +127,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 			{
 				entries.add(loadEntry(builder, resourceManager, entryPath));
 			}
-			catch (JDOMException | InscribeXmlParseException e)
+			catch (JDOMException | InscribeSyntaxException e)
 			{
 				LOGGER.error("[Inscribe] {} failed to load correctly:\n{}", entryPath, e.getMessage());
 				errored = true;
@@ -141,7 +141,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		return entries;
 	}
 	
-	private XmlEntry loadEntry(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException
+	private XmlEntry loadEntry(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException, InscribeSyntaxException
 	{
 		Element root = builder.build(resourceManager.getResource(path).getInputStream()).getRootElement();
 		return Parsers.loadEntry(root);

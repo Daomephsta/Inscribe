@@ -7,7 +7,7 @@ import org.jdom2.Element;
 
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser.Impl;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent;
 import net.minecraft.util.Lazy;
 
@@ -22,7 +22,7 @@ public class TextFormattingXmlElementType<T extends XmlMixedContent> extends Xml
 		this.constructorHandle = constructorHandle;
 		this.contentDeserialiser = new Lazy<>
 		(() ->
-			new Impl()
+			new ContentDeserialiser.Impl()
 				.registerDeserialiser(V100ElementTypes.BOLD)
 				.registerDeserialiser(V100ElementTypes.STRONG)
 				.registerDeserialiser(V100ElementTypes.EMPHASIS)
@@ -32,7 +32,7 @@ public class TextFormattingXmlElementType<T extends XmlMixedContent> extends Xml
 	}
 	
 	@Override
-	public T fromXml(Element xml)
+	protected T translate(Element xml) throws InscribeSyntaxException
 	{
 		return constructorHandle.apply(contentDeserialiser.get().deserialise(xml.getContent()));
 	}

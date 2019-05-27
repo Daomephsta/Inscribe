@@ -33,10 +33,10 @@ public class XmlElements
 	 * @param xml the parent element
 	 * @param childName the name of the child element
 	 * @throws 
-	 * XmlSyntaxException if the child element does not exist
+	 * InscribeSyntaxException if the child element does not exist
 	 * @return the value of the element as a String array
 	 */
-	public static List<String> asStringList(Element xml, String childName)
+	public static List<String> asStringList(Element xml, String childName) throws InscribeSyntaxException
 	{
 		return toStringList(getChild(xml, childName).getText());
 	}
@@ -52,10 +52,10 @@ public class XmlElements
 	 * @param xml the parent element
 	 * @param childName the name of the child element
 	 * @throws 
-	 * XmlSyntaxException if the child element does not exist
+	 * InscribeSyntaxException if the child element does not exist
 	 * @return the value of the element as an Identifier
 	 */
-	public static Identifier asIdentifier(Element xml, String childName)
+	public static Identifier asIdentifier(Element xml, String childName) throws InscribeSyntaxException
 	{
 		return new Identifier(getChild(xml, childName).getText());
 	}
@@ -65,20 +65,25 @@ public class XmlElements
 	 * @param xml the parent element
 	 * @param childName the name of the child element
 	 * @throws 
-	 * XmlSyntaxException if the child element does not exist
+	 * InscribeSyntaxException if the child element does not exist
 	 * @return the value of the element as a String
 	 */
-	public static String asString(Element xml, String childName)
+	public static String asString(Element xml, String childName) throws InscribeSyntaxException
 	{
 		return getChild(xml, childName).getText();
 	}
-
-	private static List<String> toStringList(String s)
-	{
-		return XmlElements.ON_COMMA.splitToList(s);
-	}
 	
-	private static Element getChild(Element xml, String childName)
+	/**
+	 * @throws InscribeSyntaxException 
+	 * Gets a child element named {@code childName}.
+	 * @param xml the parent element
+	 * @param childName the name of the child element
+	 * @throws 
+	 * InscribeSyntaxException if the child element does not exist
+	 * @return the child element
+	 * @throws  
+	 */
+	public static Element getChild(Element xml, String childName) throws InscribeSyntaxException
 	{
 		Element child = xml.getChild(childName);
 		if (child == null) 
@@ -86,7 +91,12 @@ public class XmlElements
 		return child;
 	}
 
-	private static RuntimeException noElementException(Element xml, String childName)
+	private static List<String> toStringList(String s)
+	{
+		return XmlElements.ON_COMMA.splitToList(s);
+	}
+
+	private static InscribeSyntaxException noElementException(Element xml, String childName)
 	{
 		return new InscribeSyntaxException(String.format(
 				"No element named '%s' found for parent element of type %s", childName, xml.getQualifiedName()));

@@ -1,9 +1,13 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat;
 
-public class InscribeSyntaxException extends RuntimeException
+/**
+ * Thrown when XML is valid as XML, but invalid as the Inscribe XML DSL.
+ * Non-fatal. Should always be caught and the message logged. 
+ * 
+ * @author Daomephsta
+ */
+public class InscribeSyntaxException extends Exception
 {
-	private static final long serialVersionUID = 2979560630003595871L;
-
 	public InscribeSyntaxException(String message)
 	{
 		super(message);

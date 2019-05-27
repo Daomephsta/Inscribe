@@ -25,17 +25,17 @@ public class Parsers
 	private static final ThreadLocal<String> lastVersion = ThreadLocal.withInitial(() -> "");
 	private static final ThreadLocal<Parser> lastParser = new ThreadLocal<>();
 
-	public static GuideDefinition loadGuideDefinition(Element root)
+	public static GuideDefinition loadGuideDefinition(Element root) throws InscribeSyntaxException
 	{
 		return getParser(root).loadGuideDefinition(root);
 	}
 	
-	public static XmlEntry loadEntry(Element root)
+	public static XmlEntry loadEntry(Element root) throws InscribeSyntaxException
 	{
 		return getParser(root).loadEntry(root);
 	}
 
-	private static Parser getParser(Element root)
+	private static Parser getParser(Element root) throws InscribeSyntaxException
 	{
 		Attribute versionAttribute = root.getAttribute("parser_version");
 		if (versionAttribute == null)

@@ -11,7 +11,7 @@ import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 
 public interface ContentDeserialiser
 {	
-	public List<Object> deserialise(List<Content> list);
+	public List<Object> deserialise(List<Content> list) throws InscribeSyntaxException;
 
 	public static class Impl implements ContentDeserialiser
 	{
@@ -25,7 +25,7 @@ public interface ContentDeserialiser
 		}
 		
 		@Override
-		public List<Object> deserialise(List<Content> list)
+		public List<Object> deserialise(List<Content> list) throws InscribeSyntaxException
 		{
 			List<Object> result = new ArrayList<>();
 			for (Content content : list)

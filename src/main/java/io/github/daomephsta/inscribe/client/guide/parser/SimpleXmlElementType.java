@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import org.jdom2.Element;
 
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentation;
 
 public class SimpleXmlElementType<T extends IXmlRepresentation> extends XmlElementType<T>
@@ -17,7 +18,7 @@ public class SimpleXmlElementType<T extends IXmlRepresentation> extends XmlEleme
 	}
 
 	@Override
-	public T fromXml(Element xml)
+	protected T translate(Element xml) throws InscribeSyntaxException
 	{
 		return constructorHandle.get();
 	}

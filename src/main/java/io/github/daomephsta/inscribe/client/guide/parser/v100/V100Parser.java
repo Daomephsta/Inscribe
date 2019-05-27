@@ -36,7 +36,7 @@ public class V100Parser implements Parser
 	private V100Parser() {}
 	
 	@Override
-	public GuideDefinition loadGuideDefinition(Element xml)
+	public GuideDefinition loadGuideDefinition(Element xml) throws InscribeSyntaxException
 	{
 		Identifier guideId = XmlElements.asIdentifier(xml, "id");
 		GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(xml.getChild("access_method"));
@@ -46,7 +46,7 @@ public class V100Parser implements Parser
 	}
 
 	@Override
-	public XmlEntry loadEntry(Element root)
+	public XmlEntry loadEntry(Element root) throws InscribeSyntaxException
 	{
 		String title = root.getChildText("title");
 	    Identifier icon = new Identifier(root.getChildText("icon")),

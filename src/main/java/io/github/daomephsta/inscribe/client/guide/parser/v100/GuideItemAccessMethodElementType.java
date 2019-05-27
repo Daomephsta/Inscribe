@@ -8,14 +8,18 @@ import org.jdom2.Element;
 
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes.Preconditions;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
-import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Lazy;
 
 final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAccessMethod>
 {
+	private static final String ITEM_GROUP = "item_group",
+								MODEL = "model";
+
 	GuideItemAccessMethodElementType()
 	{
 		super("guide_item", GuideItemAccessMethod.class);
@@ -25,14 +29,21 @@ final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAcc
 			new Lazy<>(() -> Arrays.stream(ItemGroup.GROUPS).collect(Collectors.toMap(ItemGroup::getId, ig -> ig)));
 	
 	@Override
-	public GuideItemAccessMethod fromXml(Element xml)
+	protected void configurePreconditions(Preconditions attributePreconditions)
 	{
-		String itemGroupId = xml.getAttributeValue("item_group");
+		attributePreconditions.required(ITEM_GROUP, MODEL);
+	}
+	
+	@Override
+	protected GuideItemAccessMethod translate(Element xml) throws InscribeSyntaxException
+	{
+		String itemGroupId = xml.getAttributeValue(ITEM_GROUP);
 		ItemGroup itemGroup = ID_TO_GROUP.get().get(itemGroupId);
 		if (itemGroup == null)
 			throw new InscribeSyntaxException(itemGroupId + " is not a valid item group id");
-		String modelIdString = xml.getAttributeValue("model");
-		Identifier modelId = modelIdString.contains("#") ? new ModelIdentifier(modelIdString) : new Identifier(modelIdString);
+		Identifier modelId = xml.getAttributeValue(MODEL).contains("#")
+				? XmlAttributes.asModelIdentifier(xml, MODEL)
+				: XmlAttributes.asIdentifier(xml, MODEL);
 		return new GuideItemAccessMethod(itemGroup, modelId);
 	}
 }

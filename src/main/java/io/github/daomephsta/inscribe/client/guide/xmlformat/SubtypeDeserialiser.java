@@ -14,7 +14,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentat
 
 public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 {
-	public T deserialise(Element root);
+	public T deserialise(Element root) throws InscribeSyntaxException;
 	
 	public class Impl<T extends IXmlRepresentation> implements SubtypeDeserialiser<T>
 	{	
@@ -34,7 +34,7 @@ public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 		}
 
 		@Override
-		public T deserialise(Element root)
+		public T deserialise(Element root) throws InscribeSyntaxException
 		{
 			Object subtype = null;
 			for (Entry<String, XmlElementType<? extends T>> deserialiser : deserialisers.entrySet())
