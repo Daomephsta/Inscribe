@@ -2,6 +2,7 @@ package io.github.daomephsta.inscribe.client.guide.xmlformat.theme;
 
 import org.jdom2.Element;
 
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlElements;
 import net.minecraft.util.Identifier;
 
@@ -16,7 +17,7 @@ public class Theme
 		this.guiTexture = guiTexture;
 	}
 
-	public static Theme fromXml(Element xml)
+	public static Theme fromXml(Element xml) throws InscribeSyntaxException
 	{
 		Identifier pageTexture = XmlElements.asIdentifier(xml, "gui_texture", DEFAULT.getGuiTexture());
 		return new Theme(pageTexture);

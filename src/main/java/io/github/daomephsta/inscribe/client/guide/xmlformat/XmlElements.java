@@ -8,6 +8,7 @@ import org.jdom2.Element;
 import com.google.common.base.Splitter;
 
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 
 public class XmlElements
 {
@@ -41,10 +42,17 @@ public class XmlElements
 		return toStringList(getChild(xml, childName).getText());
 	}
 
-	public static Identifier asIdentifier(Element xml, String childName, Identifier fallback)
+	public static Identifier asIdentifier(Element xml, String childName, Identifier fallback) throws InscribeSyntaxException
 	{
-		Element child = xml.getChild(childName);
-		return child != null ? new Identifier(child.getText()) : fallback;
+		try
+		{
+			Element child = xml.getChild(childName);
+			return child != null ? new Identifier(child.getText()) : fallback;
+		}
+		catch (InvalidIdentifierException e)
+		{
+			throw new InscribeSyntaxException(e.getMessage());
+		}
 	}
 	
 	/**
@@ -57,7 +65,14 @@ public class XmlElements
 	 */
 	public static Identifier asIdentifier(Element xml, String childName) throws InscribeSyntaxException
 	{
-		return new Identifier(getChild(xml, childName).getText());
+		try
+		{
+			return new Identifier(getChild(xml, childName).getText());
+		}
+		catch (InvalidIdentifierException e)
+		{
+			throw new InscribeSyntaxException(e.getMessage());
+		}
 	}
 	
 	/**
