@@ -6,12 +6,14 @@ import net.minecraft.util.Identifier;
 public class GuideDefinition
 {
 	private final Identifier guideId;
+	private final String translationKey;
 	private final GuideAccessMethod guideAccess;
 	private final Theme theme;
 
 	public GuideDefinition(Identifier guideId, GuideAccessMethod guideAccess, Theme theme)
 	{
 		this.guideId = guideId;
+		this.translationKey = guideId.getNamespace() + ".guide." + guideId.getPath() + ".name";
 		this.guideAccess = guideAccess;
 		this.theme = theme;
 	}
@@ -19,6 +21,11 @@ public class GuideDefinition
 	public Identifier getGuideId()
 	{
 		return guideId;
+	}
+	
+	public String getTranslationKey()
+	{
+		return translationKey;
 	}
 	
 	public GuideAccessMethod getAccessMethod()
