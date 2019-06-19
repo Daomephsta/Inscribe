@@ -80,7 +80,7 @@ public class GuideModel
 		public BakedModel apply(BakedModel baseModel, ItemStack itemStack, World world, LivingEntity livingEntity)
 		{
 			Guide guide = Inscribe.GUIDE_ITEM.getGuide(itemStack);
-			if (guide == null)
+			if (!guide.isValid())
 				return missingModel;
 			
 			GuideAccessMethod accessMethod = guide.getDefinition().getAccessMethod();

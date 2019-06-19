@@ -1,5 +1,5 @@
 {
-    "inscribe.guide.foo.name": "Invalid Guide",
+    "inscribe.guide.invalid.name": "Invalid Guide",
     "inscribe.chat_message.invalid_guide": "[Inscribe] This guide is invalid",
     "inscribe.chat_message.load_failure": "[Inscribe] One or more guides failed to load properly. Check the log for details."
 }

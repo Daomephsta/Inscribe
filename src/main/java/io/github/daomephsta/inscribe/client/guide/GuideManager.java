@@ -47,7 +47,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	
 	public Guide getGuide(Identifier guideId)
 	{
-		return guides.get(guideId);
+		return guides.getOrDefault(guideId, guides.get(Guide.INVALID_GUIDE_ID));
 	}
 	
 	public Collection<Guide> getGuides()
