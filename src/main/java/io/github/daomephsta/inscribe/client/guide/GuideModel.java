@@ -1,11 +1,10 @@
 package io.github.daomephsta.inscribe.client.guide;
 
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
@@ -23,9 +22,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class GuideModel
-{
-	public static final Logger LOGGER = LogManager.getLogger();
-	
+{	
 	public static class Provider implements ModelResourceProvider
 	{
 		private static final Identifier GUIDE_MODEL_ID = new Identifier(Inscribe.MOD_ID, "item/guide");
@@ -38,7 +35,7 @@ public class GuideModel
 		}
 	}
 	
-	public static class Unbaked implements UnbakedModel
+	private static class Unbaked implements UnbakedModel
 	{
 		@Override
 		public Collection<Identifier> getModelDependencies()
@@ -51,14 +48,14 @@ public class GuideModel
 		{
 			return GuideManager.INSTANCE.streamGuideModelIds()
 				.flatMap(model -> modelGetter.apply(model).getTextureDependencies(modelGetter, errors).stream())
-				.collect(Collectors.toSet());
+				.collect(toSet());
 		}
 
 		@Override
 		public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> spriteGetter, ModelRotationContainer rotationContainer)
 		{
 			Map<Identifier, BakedModel> modelMap = GuideManager.INSTANCE.streamGuideModelIds()
-				.collect(Collectors.toMap(id -> id, id -> modelLoader.bake(id, rotationContainer)));
+				.collect(toMap(id -> id, id -> modelLoader.bake(id, rotationContainer)));
 			ModelItemPropertyOverrideList overrides = new Overrides(modelLoader, modelMap);
 			return new Baked(overrides);
 		}
