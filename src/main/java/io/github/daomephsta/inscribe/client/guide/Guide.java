@@ -36,11 +36,6 @@ public class Guide
 		return definition.getTranslationKey();
 	}
 
-	public TableOfContents getMainTableOfContents()
-	{
-		return definition.getMainTableOfContents();
-	}
-
 	public GuideAccessMethod getAccessMethod()
 	{
 		return definition.getAccessMethod();
