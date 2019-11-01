@@ -15,18 +15,18 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentat
 public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 {
 	public T deserialise(Element root) throws InscribeSyntaxException;
-	
+
 	public class Impl<T extends IXmlRepresentation> implements SubtypeDeserialiser<T>
-	{	
+	{
 		private final Class<T> parentType;
 		private final Map<String, XmlElementType<? extends T>> deserialisers = new HashMap<>();
 		private static final Logger LOGGER = LogManager.getLogger();
-		
+
 		public Impl(Class<T> parentType)
 		{
 			this.parentType = parentType;
 		}
-		
+
 		public Impl<T> registerDeserialiser(XmlElementType<? extends T> elementType)
 		{
 			deserialisers.put(elementType.getElementName(), elementType);
@@ -53,8 +53,8 @@ public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 			}
 			if (subtype == null)
 			{
-				throw new InscribeSyntaxException(String.format("Expected %s to have a child element %s", 
-								root, 
+				throw new InscribeSyntaxException(String.format("Expected %s to have a child element %s",
+								root,
 								deserialisers.keySet().stream()
 									.map(s -> "'" + s + "'")
 									.collect(Collectors.joining(" or "))));

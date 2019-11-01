@@ -9,12 +9,12 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent
 import net.minecraft.util.Identifier;
 
 public class XmlEntry extends XmlMixedContent
-{	
+{
 	private final String title;
     private final Identifier icon,
     						 category;
     private final Set<String> tags;
-    
+
 	public XmlEntry(String title, Identifier icon, Identifier category, Iterable<String> tags, List<Object> content)
 	{
 		super(content);
@@ -44,7 +44,7 @@ public class XmlEntry extends XmlMixedContent
 	{
 		return category;
 	}
-	
+
 	public Set<String> getTags()
 	{
 		return tags;

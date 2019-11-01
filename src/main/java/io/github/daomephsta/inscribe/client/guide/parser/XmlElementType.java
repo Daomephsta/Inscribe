@@ -11,14 +11,14 @@ public abstract class XmlElementType<T extends IXmlRepresentation>
 	private final String elementName;
 	private final Class<T> clazz;
 	private final XmlAttributes.Preconditions attributePreconditions = XmlAttributes.preconditions();
-	
+
 	protected XmlElementType(String elementName, Class<T> clazz)
 	{
 		this.elementName = elementName;
 		this.clazz = clazz;
 		configurePreconditions(attributePreconditions);
 	}
-	
+
 	protected void configurePreconditions(XmlAttributes.Preconditions attributePreconditions) {}
 
 	public final T fromXml(Element xml) throws InscribeSyntaxException
@@ -26,7 +26,7 @@ public abstract class XmlElementType<T extends IXmlRepresentation>
 		attributePreconditions.validate(xml);
 		return translate(xml);
 	}
-	
+
 	protected abstract T translate(Element xml) throws InscribeSyntaxException;
 
 	public String getElementName()

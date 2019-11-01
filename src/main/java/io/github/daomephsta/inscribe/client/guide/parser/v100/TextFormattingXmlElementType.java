@@ -15,7 +15,7 @@ public class TextFormattingXmlElementType<T extends XmlMixedContent> extends Xml
 {
 	private final Function<List<Object>, T> constructorHandle;
 	private final Lazy<ContentDeserialiser> contentDeserialiser;
-	
+
 	public TextFormattingXmlElementType(String elementName, Class<T> clazz, Function<List<Object>, T> constructorHandle)
 	{
 		super(elementName, clazz);
@@ -30,7 +30,7 @@ public class TextFormattingXmlElementType<T extends XmlMixedContent> extends Xml
 				.registerDeserialiser(V100ElementTypes.DEL)
 		);
 	}
-	
+
 	@Override
 	protected T translate(Element xml) throws InscribeSyntaxException
 	{

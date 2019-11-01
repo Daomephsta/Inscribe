@@ -11,7 +11,7 @@ public class XmlImage implements IXmlRepresentation
     private final String altText;
     private final OptionalInt width,
     				  		  height;
-    
+
 	public XmlImage(Identifier src, String altText, OptionalInt width, OptionalInt height)
 	{
 		this.src = src;

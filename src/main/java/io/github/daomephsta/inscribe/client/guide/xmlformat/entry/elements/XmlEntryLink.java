@@ -9,7 +9,7 @@ public class XmlEntryLink extends XmlMixedContent
 {
 	private final Identifier entryId;
 	private final String anchor;
-	
+
 	public XmlEntryLink(List<Object> content, Identifier entryId, String anchor)
 	{
 		super(content);

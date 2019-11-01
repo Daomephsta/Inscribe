@@ -32,9 +32,9 @@ public class V100Parser implements Parser
 			.registerDeserialiser(V100ElementTypes.ENTRY_LINK)
 			.registerDeserialiser(V100ElementTypes.ANCHOR)
 			.registerDeserialiser(V100ElementTypes.IMAGE);
-	
+
 	private V100Parser() {}
-	
+
 	@Override
 	public GuideDefinition loadGuideDefinition(Element xml) throws InscribeSyntaxException
 	{
@@ -53,7 +53,7 @@ public class V100Parser implements Parser
 	    		   category = new Identifier(root.getChildText("category"));
 		List<Object> content = ENTRY_DESERIALISER.deserialise(root.getContent());
 		List<String> tags = XmlElements.asStringList(root, "tags", () -> Collections.emptyList());
-		
+
 		return new XmlEntry(title, icon, category, tags, content);
 	}
 }

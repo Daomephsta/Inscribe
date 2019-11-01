@@ -13,12 +13,12 @@ import net.minecraft.util.Lazy;
 class XmlWebLinkElementType extends XmlElementType<XmlWebLink>
 {
 	private final Lazy<ContentDeserialiser> contentDeserialiser;
-	
+
 	XmlWebLinkElementType()
 	{
 		super("web_link", XmlWebLink.class);
 		this.contentDeserialiser = new Lazy<>
-		(() -> 
+		(() ->
 			new ContentDeserialiser.Impl()
 				.registerDeserialiser(V100ElementTypes.BOLD)
 				.registerDeserialiser(V100ElementTypes.STRONG)
@@ -28,7 +28,7 @@ class XmlWebLinkElementType extends XmlElementType<XmlWebLink>
 				.registerDeserialiser(V100ElementTypes.IMAGE)
 		);
 	}
-	
+
 	@Override
 	protected XmlWebLink translate(Element xml) throws InscribeSyntaxException
 	{

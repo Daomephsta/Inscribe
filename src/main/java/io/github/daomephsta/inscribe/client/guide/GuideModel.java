@@ -22,7 +22,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class GuideModel
-{	
+{
 	public static class Provider implements ModelResourceProvider
 	{
 		private static final Identifier GUIDE_MODEL_ID = new Identifier(Inscribe.MOD_ID, "item/guide");
@@ -34,7 +34,7 @@ public class GuideModel
 			return resourceId.equals(GUIDE_MODEL_ID) ? new GuideModel.Unbaked() : null;
 		}
 	}
-	
+
 	private static class Unbaked implements UnbakedModel
 	{
 		@Override
@@ -60,7 +60,7 @@ public class GuideModel
 			return new Baked(overrides);
 		}
 	}
-	
+
 	private static class Overrides extends ModelItemPropertyOverrideList
 	{
 		private final Map<Identifier, BakedModel> modelMap;
@@ -79,19 +79,19 @@ public class GuideModel
 			Guide guide = Inscribe.GUIDE_ITEM.getGuide(itemStack);
 			if (!guide.isValid())
 				return missingModel;
-			
+
 			GuideAccessMethod accessMethod = guide.getDefinition().getAccessMethod();
 			if (accessMethod instanceof GuideItemAccessMethod)
 				return modelMap.get(((GuideItemAccessMethod) accessMethod).getModelId());
-			else 
+			else
 				return missingModel;
 		}
 	}
-	
+
 	public static class Baked implements BakedModel
 	{
 		private final ModelItemPropertyOverrideList overrides;
-		
+
 		public Baked(ModelItemPropertyOverrideList overrides)
 		{
 			this.overrides = overrides;
@@ -103,7 +103,7 @@ public class GuideModel
 		{
 			return overrides;
 		}
-		
+
 		@Override
 		public List<BakedQuad> getQuads(BlockState var1, Direction var2, Random var3)
 		{

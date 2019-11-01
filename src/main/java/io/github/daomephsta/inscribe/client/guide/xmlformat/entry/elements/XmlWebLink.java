@@ -14,7 +14,7 @@ public class XmlWebLink extends XmlMixedContent
 		super(content);
 		this.target = target;
 	}
-	
+
 	public URL getTarget()
 	{
 		return target;

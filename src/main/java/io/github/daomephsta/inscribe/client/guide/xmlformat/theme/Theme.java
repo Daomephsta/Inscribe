@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 public class Theme
 {
 	public static final Theme DEFAULT = new Theme(new Identifier("minecraft:textures/gui/book.png"));
-	
+
 	private final Identifier guiTexture;
 
 	private Theme(Identifier guiTexture)
@@ -22,7 +22,7 @@ public class Theme
 		Identifier pageTexture = XmlElements.asIdentifier(xml, "gui_texture", DEFAULT.getGuiTexture());
 		return new Theme(pageTexture);
 	}
-	
+
 	public Identifier getGuiTexture()
 	{
 		return guiTexture;

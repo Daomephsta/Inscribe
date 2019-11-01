@@ -17,8 +17,8 @@ public class XmlAttributes
 	 * Gets an xml attribute as an integer
 	 * @param xml the element with the attribute
 	 * @param attributeName the name of the attribute
-	 * @throws 
-	 * InscribeSyntaxException if the attribute does not exist 
+	 * @throws
+	 * InscribeSyntaxException if the attribute does not exist
 	 * or its value cannot be parsed as an integer
 	 * @return the value of the attribute as an integer
 	 */
@@ -29,17 +29,17 @@ public class XmlAttributes
 		{
 			return attribute.getIntValue();
 		}
-		catch (DataConversionException e) 
+		catch (DataConversionException e)
 		{
 			throw wrappedDataConversionException(attributeName, e);
 		}
 	}
-	
+
 	/**
 	 * Gets an xml attribute as an OptionalInt
 	 * @param xml the element with the attribute
 	 * @param attributeName the name of the attribute
-	 * @throws 
+	 * @throws
 	 * InscribeSyntaxException if the attribute's value cannot be parsed as an integer
 	 * @return the value of the attribute as an OptionalInt, or {@link OptionalInt#empty()}
 	 * if the attribute does not exist.
@@ -47,24 +47,24 @@ public class XmlAttributes
 	public static OptionalInt asOptionalInt(Element xml, String attributeName)
 	{
 		Attribute attribute = xml.getAttribute(attributeName);
-		if (attribute == null) 
+		if (attribute == null)
 			return OptionalInt.empty();
 		try
 		{
 			return OptionalInt.of(attribute.getIntValue());
 		}
-		catch (DataConversionException e) 
+		catch (DataConversionException e)
 		{
 			throw wrappedDataConversionException(attributeName, e);
 		}
 	}
-	
+
 	/**
 	 * Gets an xml attribute as a ModelIdentifier
 	 * @param xml the element with the attribute
 	 * @param attributeName the name of the attribute
-	 * @throws 
-	 * InscribeSyntaxException if the attribute does not exist 
+	 * @throws
+	 * InscribeSyntaxException if the attribute does not exist
 	 * or its value cannot be parsed as a ModelIdentifier
 	 * @return the value of the attribute as a ModelIdentifier
 	 */
@@ -80,13 +80,13 @@ public class XmlAttributes
 			throw new InscribeSyntaxException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Gets an xml attribute as an Identifier
 	 * @param xml the element with the attribute
 	 * @param attributeName the name of the attribute
-	 * @throws 
-	 * InscribeSyntaxException if the attribute does not exist 
+	 * @throws
+	 * InscribeSyntaxException if the attribute does not exist
 	 * or its value cannot be parsed as an Identifier
 	 * @return the value of the attribute as an Identifier
 	 */
@@ -107,23 +107,23 @@ public class XmlAttributes
 	 * Gets the attribute named {@code attributeName}.
 	 * @param xml the parent element
 	 * @param attributeName the name of the child element
-	 * @throws 
+	 * @throws
 	 * InscribeSyntaxException if the attribute does not exist
 	 * @return the attribute
 	 */
 	public static Attribute get(Element xml, String attributeName) throws InscribeSyntaxException
 	{
 		Attribute attribute = xml.getAttribute(attributeName);
-		if (attribute == null) 
+		if (attribute == null)
 			throw noAttributeException(xml, attributeName);
 		return attribute;
 	}
-	
+
 	/**
 	 * Gets the value of the attribute named {@code attributeName}.
 	 * @param xml the parent element
 	 * @param attributeName the name of the child element
-	 * @throws 
+	 * @throws
 	 * InscribeSyntaxException if the attribute does not exist
 	 * @return the value of the attribute
 	 */
@@ -131,12 +131,12 @@ public class XmlAttributes
 	{
 		return get(xml, attributeName).getValue();
 	}
-	
+
 	public static Preconditions preconditions()
 	{
 		return new Preconditions();
 	}
-	
+
 	private static InscribeSyntaxException noAttributeException(Element xml, String attributeName)
 	{
 		return new InscribeSyntaxException(String.format("No attribute named '%s' found in element of type %s", attributeName, xml.getQualifiedName()));
@@ -151,21 +151,21 @@ public class XmlAttributes
 	{
 		private Collection<String> requiredAttributes = Collections.emptySet(),
 								   optionalAttributes = Collections.emptySet();
-		
+
 		private Preconditions() {}
-		
+
 		public Preconditions required(String... required)
 		{
 			this.requiredAttributes = Sets.newHashSet(required);
-			return this; 
+			return this;
 		}
-		
+
 		public Preconditions optional(String... optional)
 		{
 			this.optionalAttributes = Sets.newHashSet(optional);
-			return this; 
+			return this;
 		}
-		
+
 		public void validate(Element xml) throws InscribeSyntaxException
 		{
 			String unknown = xml.getAttributes().stream()
@@ -174,7 +174,7 @@ public class XmlAttributes
 								.collect(Collectors.joining(", "));
 			if (!unknown.isEmpty())
 				throw new InscribeSyntaxException("Unknown attributes for " + xml + ": " + unknown);
-			
+
 			String missing = requiredAttributes.stream()
 								.filter(a -> xml.getAttribute(a) == null)
 								.collect(Collectors.joining(", "));

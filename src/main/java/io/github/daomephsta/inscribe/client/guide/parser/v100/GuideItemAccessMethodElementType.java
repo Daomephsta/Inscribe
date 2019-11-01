@@ -25,15 +25,15 @@ final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAcc
 		super("guide_item", GuideItemAccessMethod.class);
 	}
 
-	private static final Lazy<Map<String, ItemGroup>> ID_TO_GROUP = 
+	private static final Lazy<Map<String, ItemGroup>> ID_TO_GROUP =
 			new Lazy<>(() -> Arrays.stream(ItemGroup.GROUPS).collect(Collectors.toMap(ItemGroup::getId, ig -> ig)));
-	
+
 	@Override
 	protected void configurePreconditions(Preconditions attributePreconditions)
 	{
 		attributePreconditions.required(ITEM_GROUP, MODEL);
 	}
-	
+
 	@Override
 	protected GuideItemAccessMethod translate(Element xml) throws InscribeSyntaxException
 	{

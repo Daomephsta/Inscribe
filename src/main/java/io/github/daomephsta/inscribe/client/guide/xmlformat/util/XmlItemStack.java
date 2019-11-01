@@ -13,7 +13,7 @@ public class XmlItemStack implements StackSetProvider
 	{
 		this.stacks = Collections.singleton(stack);
 	}
-	
+
 	/* TODO: Extract to separate class
 	 * public static XmlItemStack fromXml(Element xml)
 	{
@@ -24,13 +24,13 @@ public class XmlItemStack implements StackSetProvider
 		ItemStack stack = new ItemStack(item, count);
 		return new XmlItemStack(stack);
 	}*/
-	
+
 	@Override
 	public Collection<ItemStack> getStacks()
 	{
 		return stacks;
 	}
-	
+
 	public ItemStack getStack()
 	{
 		return stacks.iterator().next();

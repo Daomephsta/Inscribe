@@ -26,7 +26,7 @@ public abstract class MixinReloadableResourceManagerImpl implements ReloadableRe
 	private List<ResourceReloadListener> initialListeners;
 
 	private static final Logger INSCRIBE_LOGGER = LogManager.getLogger();
-	
+
 	@Inject(method = "beginReloadInner(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/List;Ljava/util/concurrent/CompletableFuture;)Lnet/minecraft/resource/ResourceReloadMonitor;", at = @At("HEAD"))
 	public void inscribe_beginReloadInner(Executor loadExecutor, Executor applyExecutor, List<ResourceReloadListener> listeners, CompletableFuture<Void> future, CallbackInfoReturnable<CompletableFuture<Void>> info)
 	{
@@ -40,7 +40,7 @@ public abstract class MixinReloadableResourceManagerImpl implements ReloadableRe
 		if (successInitialListeners || successListeners)
 			INSCRIBE_LOGGER.info("[Inscribe] Registered Guide Manager as a resource reload listener");
 	}
-	
+
 	private boolean injectListenerBefore(List<ResourceReloadListener> listeners, ResourceReloadListener listener, Class<? extends ResourceReloadListener> targetClass)
 	{
 		int targetIndex = -1;

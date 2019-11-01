@@ -8,7 +8,7 @@ public class InscribeXmlParseException extends RuntimeException
 	{
 		super(message);
 	}
-	
+
 	public InscribeXmlParseException(String message, Throwable cause)
 	{
 		super(message, cause);

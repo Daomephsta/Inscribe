@@ -10,20 +10,20 @@ import org.jdom2.Content.CType;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 
 public interface ContentDeserialiser
-{	
+{
 	public List<Object> deserialise(List<Content> list) throws InscribeSyntaxException;
 
 	public static class Impl implements ContentDeserialiser
 	{
 		private final Map<String, XmlElementType<?>> deserialisers = new HashMap<>();
 		private static final Logger LOGGER = LogManager.getLogger();
-		
+
 		public Impl registerDeserialiser(XmlElementType<?> elementType)
 		{
 			deserialisers.put(elementType.getElementName(), elementType);
 			return this;
 		}
-		
+
 		@Override
 		public List<Object> deserialise(List<Content> list) throws InscribeSyntaxException
 		{
@@ -54,12 +54,12 @@ public interface ContentDeserialiser
 				default:
 					Object[] args = {content};
 					LOGGER.debug("[Inscribe] Ignored {} as it is not text or an element", args);
-					break;			
+					break;
 				}
 			}
 			return result;
 		}
-		
+
 		private boolean isMetadata(Content content)
 		{
 			if (content.getCType() == CType.Element) try

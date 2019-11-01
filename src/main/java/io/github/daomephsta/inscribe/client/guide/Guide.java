@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
 import io.github.daomephsta.inscribe.common.Inscribe;

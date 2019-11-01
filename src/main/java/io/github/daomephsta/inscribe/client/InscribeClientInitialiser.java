@@ -22,7 +22,7 @@ public class InscribeClientInitialiser implements ClientModInitializer
 
 	public void registerEventCallbacks()
 	{
-		ClientPlayerJoinWorldCallback.EVENT.register(player -> 
+		ClientPlayerJoinWorldCallback.EVENT.register(player ->
 		{
 			if (GuideManager.INSTANCE.getErrored())
 				player.addChatMessage(new TranslatableTextComponent(Inscribe.MOD_ID + ".chat_message.load_failure"), false);

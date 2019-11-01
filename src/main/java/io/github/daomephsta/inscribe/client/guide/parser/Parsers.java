@@ -29,7 +29,7 @@ public class Parsers
 	{
 		return getParser(root).loadGuideDefinition(root);
 	}
-	
+
 	public static XmlEntry loadEntry(Element root) throws InscribeSyntaxException
 	{
 		return getParser(root).loadEntry(root);
@@ -50,8 +50,8 @@ public class Parsers
 				throw invalidVersionException(versionAttribute.getValue());
 			lastVersion.set(versionAttribute.getValue());
 			lastParser.set(parser);
-			return parser; 
-		} 
+			return parser;
+		}
 		catch (ParserVersion.InvalidVersionException e)
 		{
 			throw invalidVersionException(e.versionString);
@@ -61,12 +61,12 @@ public class Parsers
 	private static InscribeSyntaxException invalidVersionException(String versionString)
 	{
 		return new InscribeSyntaxException(String.format(
-				"Invalid parser version '%s'. Valid versions: %s", versionString, 
+				"Invalid parser version '%s'. Valid versions: %s", versionString,
 				PARSERS.keySet().stream()
 					.map(Object::toString)
 					.collect(Collectors.joining(", "))));
 	}
-	
+
 	private static class ParserVersion
 	{
 		private static final Pattern VERSION_PATTERN = Pattern.compile("(?<major>\\d+).(?<minor>\\d+).(?<patch>\\d+)");
@@ -74,15 +74,15 @@ public class Parsers
 						  minor,
 						  patch;
 		private final String versionString;
-		
+
 		public ParserVersion(int major, int minor, int patch)
-		{	
+		{
 			this.major = major;
 			this.minor = minor;
 			this.patch = patch;
 			this.versionString = major + "." + minor + "." + patch;
 		}
-		
+
 		public static ParserVersion parse(String versionString) throws InvalidVersionException
 		{
 			Matcher versionMatcher = VERSION_PATTERN.matcher(versionString);
@@ -93,7 +93,7 @@ public class Parsers
 				patch = Ints.tryParse(versionMatcher.group("patch"));
 			return new ParserVersion(major, minor, patch);
 		}
-		
+
 		@Override
 		public int hashCode()
 		{
@@ -110,7 +110,7 @@ public class Parsers
 			if (getClass() != obj.getClass())
 				return false;
 			ParserVersion other = (ParserVersion) obj;
-			return major == other.major 
+			return major == other.major
 				&& minor == other.minor
 				&& patch == other.patch;
 		}
@@ -120,8 +120,8 @@ public class Parsers
 		{
 			return versionString;
 		}
-		
-		private static class InvalidVersionException extends Exception 
+
+		private static class InvalidVersionException extends Exception
 		{
 			private final String versionString;
 

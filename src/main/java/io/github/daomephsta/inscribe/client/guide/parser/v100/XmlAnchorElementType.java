@@ -10,18 +10,18 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlAn
 class XmlAnchorElementType extends XmlElementType<XmlAnchor>
 {
 	private static final String NAME = "name";
-	
+
 	XmlAnchorElementType()
 	{
 		super("anchor", XmlAnchor.class);
 	}
-	
+
 	@Override
 	protected void configurePreconditions(Preconditions attributePreconditions)
 	{
 		attributePreconditions.required(NAME);
 	}
-	
+
 	@Override
 	protected XmlAnchor translate(Element xml) throws InscribeSyntaxException
 	{

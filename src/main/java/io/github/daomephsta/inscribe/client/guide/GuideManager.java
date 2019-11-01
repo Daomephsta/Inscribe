@@ -33,23 +33,23 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	private static final Identifier ID = new Identifier(Inscribe.MOD_ID, "guide_manager");
 	private static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
 	private static final String GUIDE_DEFINITION_FILENAME = "guide_definition.xml";
-	
+
 	private final SAXBuilder builder;
 	private final Map<Identifier, Guide> guides = new HashMap<>();
 	private final Collection<Guide> guidesImmutable = Collections.unmodifiableCollection(guides.values());
 	private boolean errored;
-	
-	private GuideManager() 
+
+	private GuideManager()
 	{
 		this.builder = new SAXBuilder();
 		this.builder.setIgnoringBoundaryWhitespace(true);
 	}
-	
+
 	public Guide getGuide(Identifier guideId)
 	{
 		return guides.getOrDefault(guideId, guides.get(Guide.INVALID_GUIDE_ID));
 	}
-	
+
 	public Collection<Guide> getGuides()
 	{
 		return guidesImmutable;
@@ -67,7 +67,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		return streamGuideModelIds()
 			.collect(Collectors.toSet());
 	}
-	
+
 	@Override
 	public CompletableFuture<Void> reload(Helper helper, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor)
 	{
@@ -75,9 +75,9 @@ public class GuideManager implements IdentifiableResourceReloadListener
 			.thenAccept(data -> apply(data, resourceManager, applyProfiler, applyExecutor))
 			.thenCompose(helper::waitForAll);
 	}
-	
+
 	public CompletableFuture<Collection<Guide>> load(ResourceManager resourceManager, Profiler profiler, Executor executor)
-	{	
+	{
 		return CompletableFuture.supplyAsync(() ->
 		{
 			Collection<Identifier> guideDefinitions = resourceManager.findResources(FOLDER_NAME, path -> path.endsWith(GUIDE_DEFINITION_FILENAME));
@@ -91,7 +91,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 					Collection<XmlEntry> entries = loadEntries(builder, resourceManager, rootPath);
 					guides.add(new Guide(guideDefinition, entries));
 				}
-				catch (JDOMException | InscribeSyntaxException e) 
+				catch (JDOMException | InscribeSyntaxException e)
 				{
 					LOGGER.error("[Inscribe] {} failed to load correctly:\n\t{}", guideDefPath, e.getMessage());
 					errored = true;
@@ -102,22 +102,22 @@ public class GuideManager implements IdentifiableResourceReloadListener
 					throw new RuntimeException("An unrecoverable error occured while loading " + guideDefPath, e);
 				}
 			}
-			
+
 			return guides;
 		}, executor)
-		.exceptionally(thrw -> 
+		.exceptionally(thrw ->
 		{
 			LOGGER.error("An unexpected error occured during the LOAD stage of guide loading", thrw);
 			return null;
 		});
 	}
-	
+
 	private GuideDefinition loadGuideDefinition(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException, InscribeSyntaxException
 	{
 		Element root = builder.build(resourceManager.getResource(path).getInputStream()).getRootElement();
 		return Parsers.loadGuideDefinition(root);
 	}
-	
+
 	private Collection<XmlEntry> loadEntries(SAXBuilder builder, ResourceManager resourceManager, String rootPath)
 	{
 		Collection<XmlEntry> entries = new ArrayList<>();
@@ -140,7 +140,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		}
 		return entries;
 	}
-	
+
 	private XmlEntry loadEntry(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException, InscribeSyntaxException
 	{
 		Element root = builder.build(resourceManager.getResource(path).getInputStream()).getRootElement();
@@ -161,7 +161,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	{
 		return errored;
 	}
-	
+
 	@Override
 	public Identifier getFabricId()
 	{

@@ -2,7 +2,6 @@ package io.github.daomephsta.inscribe.common.guide.item;
 
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
-import io.github.daomephsta.inscribe.client.guide.gui.GuideScreen;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import io.github.daomephsta.inscribe.common.Inscribe;
@@ -23,7 +22,7 @@ public class GuideItem extends Item
 	{
 		super(new Settings().stackSize(1));
 	}
-	
+
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand)
 	{
@@ -59,13 +58,13 @@ public class GuideItem extends Item
 			}
 		}
 	}
-	
+
 	@Override
 	public String getTranslationKey(ItemStack itemStack)
 	{
 		return getGuide(itemStack).getDefinition().getTranslationKey();
 	}
-	
+
 	public Guide getGuide(ItemStack guideStack)
 	{
 		return GuideManager.INSTANCE.getGuide(getGuideId(guideStack));
@@ -77,7 +76,7 @@ public class GuideItem extends Item
 			return Guide.INVALID_GUIDE_ID;
 		return new Identifier(guideStack.getTag().getString(GUIDE_ID_TAG));
 	}
-	
+
 	private ItemStack forGuide(Guide guide)
 	{
 		ItemStack guideStack = new ItemStack(this);

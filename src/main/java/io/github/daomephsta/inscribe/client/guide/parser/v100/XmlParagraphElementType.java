@@ -11,7 +11,7 @@ import net.minecraft.util.Lazy;
 class XmlParagraphElementType extends XmlElementType<XmlParagraph>
 {
 	private final Lazy<ContentDeserialiser> contentDeserialiser;
-	
+
 	public XmlParagraphElementType()
 	{
 		super("p", XmlParagraph.class);

@@ -22,12 +22,12 @@ public class GuideDefinition
 	{
 		return guideId;
 	}
-	
+
 	public String getTranslationKey()
 	{
 		return translationKey;
 	}
-	
+
 	public GuideAccessMethod getAccessMethod()
 	{
 		return guideAccess;

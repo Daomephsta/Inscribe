@@ -24,7 +24,7 @@ public class XmlElements
 	public static List<String> asStringList(Element xml, String childName, Supplier<List<String>> fallback)
 	{
 		Element child = xml.getChild(childName);
-		if (child == null) 
+		if (child == null)
 			return fallback.get();
 		return toStringList(child.getText());
 	}
@@ -33,7 +33,7 @@ public class XmlElements
 	 * Gets an xml element as a String array
 	 * @param xml the parent element
 	 * @param childName the name of the child element
-	 * @throws 
+	 * @throws
 	 * InscribeSyntaxException if the child element does not exist
 	 * @return the value of the element as a String array
 	 */
@@ -54,12 +54,12 @@ public class XmlElements
 			throw new InscribeSyntaxException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Gets an xml element as an Identifier
 	 * @param xml the parent element
 	 * @param childName the name of the child element
-	 * @throws 
+	 * @throws
 	 * InscribeSyntaxException if the child element does not exist
 	 * @return the value of the element as an Identifier
 	 */
@@ -74,12 +74,12 @@ public class XmlElements
 			throw new InscribeSyntaxException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Gets an xml element as a String
 	 * @param xml the parent element
 	 * @param childName the name of the child element
-	 * @throws 
+	 * @throws
 	 * InscribeSyntaxException if the child element does not exist
 	 * @return the value of the element as a String
 	 */
@@ -87,21 +87,21 @@ public class XmlElements
 	{
 		return getChild(xml, childName).getText();
 	}
-	
+
 	/**
-	 * @throws InscribeSyntaxException 
+	 * @throws InscribeSyntaxException
 	 * Gets a child element named {@code childName}.
 	 * @param xml the parent element
 	 * @param childName the name of the child element
-	 * @throws 
+	 * @throws
 	 * InscribeSyntaxException if the child element does not exist
 	 * @return the child element
-	 * @throws  
+	 * @throws
 	 */
 	public static Element getChild(Element xml, String childName) throws InscribeSyntaxException
 	{
 		Element child = xml.getChild(childName);
-		if (child == null) 
+		if (child == null)
 			throw noElementException(xml, childName);
 		return child;
 	}

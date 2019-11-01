@@ -10,12 +10,12 @@ public abstract class XmlMixedContent implements IXmlRepresentation
 	{
 		this.content = content;
 	}
-	
+
 	public List<Object> getContent()
 	{
 		return content;
 	}
-	
+
 	public static class XmlParagraph extends XmlMixedContent
 	{
 		public XmlParagraph(List<Object> content)
@@ -23,7 +23,7 @@ public abstract class XmlMixedContent implements IXmlRepresentation
 			super(content);
 		}
 	}
-	
+
 	public static class XmlBold extends XmlMixedContent
 	{
 		public XmlBold(List<Object> content)
@@ -31,7 +31,7 @@ public abstract class XmlMixedContent implements IXmlRepresentation
 			super(content);
 		}
 	}
-	
+
 	public static class XmlStrong extends XmlBold
 	{
 		public XmlStrong(List<Object> content)
@@ -39,25 +39,25 @@ public abstract class XmlMixedContent implements IXmlRepresentation
 			super(content);
 		}
 	}
-	
+
 	public static class XmlItalics extends XmlMixedContent
-	{	
+	{
 		public XmlItalics(List<Object> content)
 		{
 			super(content);
 		}
-	}	
-	
+	}
+
 	public static class XmlEmphasis extends XmlItalics
-	{	
+	{
 		public XmlEmphasis(List<Object> content)
 		{
 			super(content);
 		}
-	}	
-	
+	}
+
 	public static class XmlDel extends XmlMixedContent
-	{	
+	{
 		public XmlDel(List<Object> content)
 		{
 			super(content);
