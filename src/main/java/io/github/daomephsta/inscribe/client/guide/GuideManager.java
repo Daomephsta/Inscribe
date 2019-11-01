@@ -1,7 +1,11 @@
 package io.github.daomephsta.inscribe.client.guide;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
@@ -58,8 +62,8 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	public Stream<Identifier> streamGuideModelIds()
 	{
 		return getGuides().stream()
-			.filter(guide -> guide.getDefinition().getAccessMethod() instanceof GuideItemAccessMethod)
-			.map(guide -> ((GuideItemAccessMethod) guide.getDefinition().getAccessMethod()).getModelId());
+			.filter(guide -> guide.getAccessMethod() instanceof GuideItemAccessMethod)
+			.map(guide -> ((GuideItemAccessMethod) guide.getAccessMethod()).getModelId());
 	}
 
 	public Collection<Identifier> getGuideModelIds()

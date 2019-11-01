@@ -7,10 +7,15 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItem
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class GuideItem extends Item
@@ -32,7 +37,7 @@ public class GuideItem extends Item
 			Guide guide = getGuide(stack);
 			MinecraftClient.getInstance().openScreen(new GuideScreen(guide));
 		}
-		return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, stack );
+		return new TypedActionResult<>(ActionResult.SUCCESS, stack );
 	}
 
 	@Override
@@ -49,7 +54,7 @@ public class GuideItem extends Item
 		{
 			for (Guide guide : GuideManager.INSTANCE.getGuides())
 			{
-				GuideAccessMethod accessMethod = guide.getDefinition().getAccessMethod();
+				GuideAccessMethod accessMethod = guide.getAccessMethod();
 				if (accessMethod instanceof GuideItemAccessMethod
 					&& ((GuideItemAccessMethod) accessMethod).getItemGroup() == itemGroup)
 				{
@@ -62,7 +67,7 @@ public class GuideItem extends Item
 	@Override
 	public String getTranslationKey(ItemStack itemStack)
 	{
-		return getGuide(itemStack).getDefinition().getTranslationKey();
+		return getGuide(itemStack).getTranslationKey();
 	}
 
 	public Guide getGuide(ItemStack guideStack)
