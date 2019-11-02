@@ -35,7 +35,7 @@ public class Identifiers
 
 	public static Identifier subPath(Identifier base, int start)
 	{
-		return builder(base).subPath(0).build();
+		return builder(base).subPath(start).build();
 	}
 
 	public static Identifier subPath(Identifier base, int start, int end)
