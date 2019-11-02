@@ -7,11 +7,12 @@ import org.apache.logging.log4j.Logger;
 import org.jdom2.*;
 import org.jdom2.Content.CType;
 
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 
 public interface ContentDeserialiser
 {
-	public List<Object> deserialise(List<Content> list) throws InscribeSyntaxException;
+	public List<Object> deserialise(List<Content> list) throws GuideLoadingException;
 
 	public static class Impl implements ContentDeserialiser
 	{
@@ -25,7 +26,7 @@ public interface ContentDeserialiser
 		}
 
 		@Override
-		public List<Object> deserialise(List<Content> list) throws InscribeSyntaxException
+		public List<Object> deserialise(List<Content> list) throws GuideLoadingException
 		{
 			List<Object> result = new ArrayList<>();
 			for (Content content : list)

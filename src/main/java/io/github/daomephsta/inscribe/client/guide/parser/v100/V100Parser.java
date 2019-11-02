@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jdom2.Element;
 
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.*;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser.Impl;
@@ -36,7 +37,7 @@ public class V100Parser implements Parser
 	private V100Parser() {}
 
 	@Override
-	public GuideDefinition loadGuideDefinition(Element xml) throws InscribeSyntaxException
+	public GuideDefinition loadGuideDefinition(Element xml) throws GuideLoadingException
 	{
 		Identifier guideId = XmlElements.asIdentifier(xml, "id");
 		GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(xml.getChild("access_method"));
@@ -46,7 +47,7 @@ public class V100Parser implements Parser
 	}
 
 	@Override
-	public XmlEntry loadEntry(Element root) throws InscribeSyntaxException
+	public XmlEntry loadEntry(Element root) throws GuideLoadingException
 	{
 		String title = root.getChildText("title");
 	    Identifier icon = new Identifier(root.getChildText("icon")),

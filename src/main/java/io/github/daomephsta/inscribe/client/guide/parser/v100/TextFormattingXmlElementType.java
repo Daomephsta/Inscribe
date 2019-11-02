@@ -5,9 +5,9 @@ import java.util.function.Function;
 
 import org.jdom2.Element;
 
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent;
 import net.minecraft.util.Lazy;
 
@@ -32,7 +32,7 @@ public class TextFormattingXmlElementType<T extends XmlMixedContent> extends Xml
 	}
 
 	@Override
-	protected T translate(Element xml) throws InscribeSyntaxException
+	protected T translate(Element xml) throws GuideLoadingException
 	{
 		return constructorHandle.apply(contentDeserialiser.get().deserialise(xml.getContent()));
 	}

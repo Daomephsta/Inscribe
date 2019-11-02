@@ -2,7 +2,7 @@ package io.github.daomephsta.inscribe.client.guide.parser;
 
 import org.jdom2.Element;
 
-import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentation;
 
@@ -21,13 +21,13 @@ public abstract class XmlElementType<T extends IXmlRepresentation>
 
 	protected void configurePreconditions(XmlAttributes.Preconditions attributePreconditions) {}
 
-	public final T fromXml(Element xml) throws InscribeSyntaxException
+	public final T fromXml(Element xml) throws GuideLoadingException
 	{
 		attributePreconditions.validate(xml);
 		return translate(xml);
 	}
 
-	protected abstract T translate(Element xml) throws InscribeSyntaxException;
+	protected abstract T translate(Element xml) throws GuideLoadingException;
 
 	public String getElementName()
 	{

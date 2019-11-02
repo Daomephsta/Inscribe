@@ -9,12 +9,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.Element;
 
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentation;
 
 public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 {
-	public T deserialise(Element root) throws InscribeSyntaxException;
+	public T deserialise(Element root) throws GuideLoadingException;
 
 	public class Impl<T extends IXmlRepresentation> implements SubtypeDeserialiser<T>
 	{
@@ -34,7 +35,7 @@ public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 		}
 
 		@Override
-		public T deserialise(Element root) throws InscribeSyntaxException
+		public T deserialise(Element root) throws GuideLoadingException
 		{
 			Object subtype = null;
 			for (Entry<String, XmlElementType<? extends T>> deserialiser : deserialisers.entrySet())

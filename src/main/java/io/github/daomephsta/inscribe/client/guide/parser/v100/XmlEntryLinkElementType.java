@@ -2,6 +2,7 @@ package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
 import org.jdom2.Element;
 
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.*;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntryLink;
@@ -28,7 +29,7 @@ class XmlEntryLinkElementType extends XmlElementType<XmlEntryLink>
 	}
 
 	@Override
-	protected XmlEntryLink translate(Element xml) throws InscribeSyntaxException
+	protected XmlEntryLink translate(Element xml) throws GuideLoadingException
 	{
 		Identifier entryId = XmlAttributes.asIdentifier(xml, "entry");
 		String anchorId = xml.getAttributeValue("anchor");

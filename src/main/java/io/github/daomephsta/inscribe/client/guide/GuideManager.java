@@ -13,13 +13,13 @@ import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException.Severity;
 import io.github.daomephsta.inscribe.client.guide.parser.Parsers;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeXmlParseException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
@@ -90,20 +90,14 @@ public class GuideManager implements IdentifiableResourceReloadListener
 			{
 				try
 				{
-					GuideDefinition guideDefinition = loadGuideDefinition(builder, resourceManager, guideDefPath);
+					GuideDefinition guideDefinition = loadGuideDefinition(resourceManager, guideDefPath);
 					String rootPath = Identifiers.replaceFromEnd(guideDefPath, 1, "entries").getPath();
-					Collection<XmlEntry> entries = loadEntries(builder, resourceManager, rootPath);
+					Collection<XmlEntry> entries = loadEntries(resourceManager, rootPath);
 					guides.add(new Guide(guideDefinition, entries));
 				}
-				catch (JDOMException | InscribeSyntaxException e)
+				catch (GuideLoadingException loadingException)
 				{
-					LOGGER.error("[Inscribe] {} failed to load correctly:\n\t{}", guideDefPath, e.getMessage());
-					errored = true;
-					continue;
-				}
-				catch (IOException | InscribeXmlParseException e)
-				{
-					throw new RuntimeException("An unrecoverable error occured while loading " + guideDefPath, e);
+					if (handleGuideLoadingException(loadingException, guideDefPath.toString())) continue;
 				}
 			}
 
@@ -116,38 +110,32 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		});
 	}
 
-	private GuideDefinition loadGuideDefinition(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException, InscribeSyntaxException
+	private GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
-		Element root = builder.build(resourceManager.getResource(path).getInputStream()).getRootElement();
+		Element root = readDocument(resourceManager, path).getRootElement();
 		return Parsers.loadGuideDefinition(root);
 	}
 
-	private Collection<XmlEntry> loadEntries(SAXBuilder builder, ResourceManager resourceManager, String rootPath)
+	private Collection<XmlEntry> loadEntries(ResourceManager resourceManager, String rootPath)
 	{
 		Collection<XmlEntry> entries = new ArrayList<>();
 		for(Identifier entryPath : resourceManager.findResources(rootPath, path -> path.endsWith(".xml")))
 		{
 			try
 			{
-				entries.add(loadEntry(builder, resourceManager, entryPath));
+				entries.add(loadEntry(resourceManager, entryPath));
 			}
-			catch (JDOMException | InscribeSyntaxException e)
+			catch (GuideLoadingException loadingException)
 			{
-				LOGGER.error("[Inscribe] {} failed to load correctly:\n{}", entryPath, e.getMessage());
-				errored = true;
-				continue;
-			}
-			catch (IOException e)
-			{
-				throw new RuntimeException("An unrecoverable error occured while loading " + entryPath, e);
+				if (handleGuideLoadingException(loadingException, entryPath.toString())) continue;
 			}
 		}
 		return entries;
 	}
 
-	private XmlEntry loadEntry(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws JDOMException, IOException, InscribeSyntaxException
+	private XmlEntry loadEntry(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
-		Element root = builder.build(resourceManager.getResource(path).getInputStream()).getRootElement();
+		Element root = readDocument(resourceManager, path).getRootElement();
 		return Parsers.loadEntry(root);
 	}
 
@@ -159,6 +147,34 @@ public class GuideManager implements IdentifiableResourceReloadListener
 			this.guides.put(guide.getIdentifier(), guide);
 		}
 		LOGGER.info("[Inscribe] Loaded {} guides", guidesIn.size());
+	}
+
+	private Document readDocument(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+	{
+		try
+		{
+			return builder.build(resourceManager.getResource(path).getInputStream());
+		}
+		catch (JDOMException e)
+		{
+			throw new GuideLoadingException(e, Severity.NON_FATAL);
+		}
+		catch(IOException e)
+		{
+			throw new GuideLoadingException(e, Severity.FATAL);
+		}
+	}
+
+	private boolean handleGuideLoadingException(GuideLoadingException loadingException, String resourcePath)
+	{
+		if (loadingException.isFatal())
+			throw new RuntimeException("An unrecoverable error occured while loading " + resourcePath, loadingException);
+		else
+		{
+			LOGGER.error("[Inscribe] {} failed to load correctly:\n\t{}", resourcePath, loadingException.getMessage());
+			errored = true;
+		}
+		return true;
 	}
 
 	public boolean getErrored()

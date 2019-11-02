@@ -5,6 +5,8 @@ import java.net.URL;
 
 import org.jdom2.Element;
 
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException.Severity;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.*;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlWebLink;
@@ -30,7 +32,7 @@ class XmlWebLinkElementType extends XmlElementType<XmlWebLink>
 	}
 
 	@Override
-	protected XmlWebLink translate(Element xml) throws InscribeSyntaxException
+	protected XmlWebLink translate(Element xml) throws GuideLoadingException
 	{
 		String url = XmlAttributes.getValue(xml, "target");
 		try
@@ -40,7 +42,7 @@ class XmlWebLinkElementType extends XmlElementType<XmlWebLink>
 		}
 		catch (MalformedURLException e)
 		{
-			throw new InscribeXmlParseException("Could not parse URL " + url, e);
+			throw new GuideLoadingException("Could not parse URL " + url, e, Severity.FATAL);
 		}
 	}
 }

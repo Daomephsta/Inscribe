@@ -12,6 +12,7 @@ import org.jdom2.Element;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Ints;
 
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.v100.V100Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
@@ -25,12 +26,12 @@ public class Parsers
 	private static final ThreadLocal<String> lastVersion = ThreadLocal.withInitial(() -> "");
 	private static final ThreadLocal<Parser> lastParser = new ThreadLocal<>();
 
-	public static GuideDefinition loadGuideDefinition(Element root) throws InscribeSyntaxException
+	public static GuideDefinition loadGuideDefinition(Element root) throws GuideLoadingException
 	{
 		return getParser(root).loadGuideDefinition(root);
 	}
 
-	public static XmlEntry loadEntry(Element root) throws InscribeSyntaxException
+	public static XmlEntry loadEntry(Element root) throws GuideLoadingException
 	{
 		return getParser(root).loadEntry(root);
 	}

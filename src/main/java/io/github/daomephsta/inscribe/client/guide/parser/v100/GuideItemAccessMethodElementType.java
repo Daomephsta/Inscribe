@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.jdom2.Element;
 
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
@@ -35,7 +36,7 @@ final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAcc
 	}
 
 	@Override
-	protected GuideItemAccessMethod translate(Element xml) throws InscribeSyntaxException
+	protected GuideItemAccessMethod translate(Element xml) throws GuideLoadingException
 	{
 		String itemGroupId = xml.getAttributeValue(ITEM_GROUP);
 		ItemGroup itemGroup = ID_TO_GROUP.get().get(itemGroupId);
