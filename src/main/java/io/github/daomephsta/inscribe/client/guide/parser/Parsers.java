@@ -17,6 +17,7 @@ import io.github.daomephsta.inscribe.client.guide.parser.v100.V100Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
+import net.minecraft.resource.ResourceManager;
 
 public class Parsers
 {
@@ -26,9 +27,9 @@ public class Parsers
 	private static final ThreadLocal<String> lastVersion = ThreadLocal.withInitial(() -> "");
 	private static final ThreadLocal<Parser> lastParser = new ThreadLocal<>();
 
-	public static GuideDefinition loadGuideDefinition(Element root) throws GuideLoadingException
+	public static GuideDefinition loadGuideDefinition(Element root, ResourceManager resourceManager) throws GuideLoadingException
 	{
-		return getParser(root).loadGuideDefinition(root);
+		return getParser(root).loadGuideDefinition(root, resourceManager);
 	}
 
 	public static XmlEntry loadEntry(Element root) throws GuideLoadingException

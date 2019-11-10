@@ -113,7 +113,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	private GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
 		Element root = readDocument(resourceManager, path).getRootElement();
-		return Parsers.loadGuideDefinition(root);
+		return Parsers.loadGuideDefinition(root, resourceManager);
 	}
 
 	private Collection<XmlEntry> loadEntries(ResourceManager resourceManager, String rootPath)
