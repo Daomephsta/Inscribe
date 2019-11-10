@@ -1,9 +1,15 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.jdom2.*;
+import org.jdom2.Attribute;
+import org.jdom2.DataConversionException;
+import org.jdom2.Element;
 
 import com.google.common.collect.Sets;
 
@@ -117,6 +123,25 @@ public class XmlAttributes
 			throw new InscribeSyntaxException(e.getMessage());
 		}
 	}
+
+    /**
+     * Gets an xml attribute as an enum constant
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @param getter a function to convert a string to an enum constant
+     * @throws
+     * InscribeSyntaxException if the attribute does not exist
+     * or its value cannot be parsed as an enum constant
+     * @return the value of the attribute as an enum constant
+     */
+    public static <E extends Enum<E>> E asEnum(Element xml, String attributeName, Function<String, E> getter) throws InscribeSyntaxException
+    {
+        String attributeValue = getValue(xml, attributeName);
+        E result = getter.apply(attributeValue);
+        if (result == null)
+             throw new InscribeSyntaxException("Could not parse " + attributeValue + " as an enum constant");
+        return result;
+    }
 
 	/**
 	 * Gets the attribute named {@code attributeName}.
