@@ -59,6 +59,21 @@ public class XmlAttributes
 		}
 	}
 
+    /**
+     * Gets an xml attribute as an Optional<String>
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @return the value of the attribute as an Optional<String>, or {@link Optional#empty()}
+     * if the attribute does not exist.
+     */
+    public static Optional<String> asOptionalString(Element xml, String attributeName)
+    {
+        Attribute attribute = xml.getAttribute(attributeName);
+        if (attribute == null)
+            return Optional.empty();
+        return Optional.of(attribute.getValue());
+    }
+
 	/**
 	 * Gets an xml attribute as a ModelIdentifier
 	 * @param xml the element with the attribute
