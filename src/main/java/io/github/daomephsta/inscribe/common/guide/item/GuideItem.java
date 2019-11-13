@@ -2,9 +2,11 @@ package io.github.daomephsta.inscribe.common.guide.item;
 
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
+import io.github.daomephsta.inscribe.client.guide.gui.GuideScreen;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import io.github.daomephsta.inscribe.common.Inscribe;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -33,8 +35,8 @@ public class GuideItem extends Item
 		ItemStack stack = playerEntity.getStackInHand(hand);
 		if (world.isClient)
 		{
-//			Guide guide = getGuide(stack);
-//			MinecraftClient.getInstance().openScreen(new GuideScreen(guide));
+		    Guide guide = getGuide(stack);
+		    MinecraftClient.getInstance().openScreen(new GuideScreen(guide));
 		}
 		return new TypedActionResult<>(ActionResult.SUCCESS, stack );
 	}
