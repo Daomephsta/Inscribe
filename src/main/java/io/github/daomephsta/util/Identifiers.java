@@ -107,8 +107,8 @@ public class Identifiers
 		public Builder subPath(int start, int end)
 		{
 			checkStartBounds(start, pathSegments.size());
-			if (end == -1)
-				end = pathSegments.size();
+			if (end < 0)
+				end = pathSegments.size() + 1 + end;
 			checkEndBounds(end, pathSegments.size());
 			this.pathSegments = pathSegments.subList(start, end);
 			return this;
