@@ -22,8 +22,8 @@ public class LabelWidget extends GuideWidget
     @Override
 	public void renderWidget(int mouseX, int mouseY, float lastFrameDuration)
 	{
-        MinecraftClient.getInstance().textRenderer.draw(text, horizontalAlignment.offsetX(x(), this, width()),
-            verticalAlignment.offsetY(y(), this, height()), color);
+        MinecraftClient.getInstance().textRenderer.draw(text, horizontalAlignment.offsetX(x(), this, hintWidth()),
+            verticalAlignment.offsetY(y(), this, hintHeight()), color);
 	}
 
     @Override
