@@ -52,6 +52,7 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
     private void drawDebugBounds()
     {
         GlStateManager.disableTexture();
+        GlStateManager.lineWidth(1.0F);
         drawBox(0, left() - margin().left(), top() - margin().top(), right() + margin().right(), bottom() + margin().bottom(), 0xFF0000FF);
         drawBox(1, left() + padding().left(), top() + padding().top(), right() - padding().right(), bottom() - padding().bottom(), 0x00FF00FF);
         drawBox(2, left(), top(), right(), bottom(), 0x0000FFFF);
