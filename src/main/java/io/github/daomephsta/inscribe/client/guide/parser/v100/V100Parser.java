@@ -53,9 +53,10 @@ public class V100Parser implements Parser
 	private V100Parser() {}
 
 	@Override
-	public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager) throws GuideLoadingException
+	public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
-		Identifier guideId = XmlElements.asIdentifier(xml, "id");
+	    //Remove "inscribe_guides" from the start and "guide_definition.xml" from the end
+		Identifier guideId = Identifiers.builder(path).subPath(1, -2).build();
         Identifier mainTocPath = Identifiers.builder(XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
             .namespace(guideId.getNamespace())
             .prefixPath(guideId.getPath())
@@ -100,7 +101,7 @@ public class V100Parser implements Parser
     }
 
 	@Override
-	public XmlEntry loadEntry(Element root) throws GuideLoadingException
+	public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
 		String title = root.getChildText("title");
 	    Identifier icon = new Identifier(root.getChildText("icon")),
