@@ -50,4 +50,16 @@ public class GuideFlow extends GuideWidget implements ParentWidget
     {
         elements.layoutChildren();
     }
+
+    @Override
+    public int hintHeight()
+    {
+        return elements.hintHeight();
+    }
+
+    @Override
+    public int hintWidth()
+    {
+        return elements.hintWidth();
+    }
 }
