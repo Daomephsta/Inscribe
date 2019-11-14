@@ -27,6 +27,8 @@ public class GuideScreen extends Screen
         this.guideWidth = 146;
         this.guideTop = 2;
         this.guideLeft = (width - guideWidth) / 2;
+        this.visibleContent = new TableOfContentsEntries(guide.getMainTableOfContents(),
+                guideLeft, guideTop, guideWidth, guideHeight);
     }
 
     @Override

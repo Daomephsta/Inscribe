@@ -1,0 +1,7 @@
+<toc link_style="icon_with_text">
+	<link name="Foo" destination="inscribe:invalid_guide_notice">
+		<icon>
+			<image src="inscribe:dolphins_grace.png" alt_text="Dolphin's Grace" width="18" height="18"/>
+		</icon>
+	</link>
+</toc>

@@ -1,6 +1,5 @@
 package io.github.daomephsta.inscribe.client.guide;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,18 +12,16 @@ import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
-import io.github.daomephsta.inscribe.client.guide.GuideLoadingException.Severity;
 import io.github.daomephsta.inscribe.client.guide.parser.Parsers;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.util.Identifiers;
+import io.github.daomephsta.util.XmlResources;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -35,7 +32,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	public static final GuideManager INSTANCE = new GuideManager();
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier ID = new Identifier(Inscribe.MOD_ID, "guide_manager");
-	private static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
+	public static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
 	private static final String GUIDE_DEFINITION_FILENAME = "guide_definition.xml";
 
 	private final SAXBuilder builder;
@@ -112,7 +109,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 
 	private GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
-		Element root = readDocument(resourceManager, path).getRootElement();
+		Element root = XmlResources.readDocument(builder, resourceManager, path).getRootElement();
 		return Parsers.loadGuideDefinition(root, resourceManager);
 	}
 
@@ -135,7 +132,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 
 	private XmlEntry loadEntry(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
-		Element root = readDocument(resourceManager, path).getRootElement();
+		Element root = XmlResources.readDocument(builder, resourceManager, path).getRootElement();
 		return Parsers.loadEntry(root);
 	}
 
@@ -149,23 +146,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		LOGGER.info("[Inscribe] Loaded {} guides", guidesIn.size());
 	}
 
-	private Document readDocument(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
-	{
-		try
-		{
-			return builder.build(resourceManager.getResource(path).getInputStream());
-		}
-		catch (JDOMException e)
-		{
-			throw new GuideLoadingException(e, Severity.NON_FATAL);
-		}
-		catch(IOException e)
-		{
-			throw new GuideLoadingException(e, Severity.FATAL);
-		}
-	}
-
-	private boolean handleGuideLoadingException(GuideLoadingException loadingException, String resourcePath)
+	public boolean handleGuideLoadingException(GuideLoadingException loadingException, String resourcePath)
 	{
 		if (loadingException.isFatal())
 			throw new RuntimeException("An unrecoverable error occured while loading " + resourcePath, loadingException);

@@ -1,24 +1,22 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements;
 
-import java.util.OptionalInt;
-
-import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentation;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlGuideGuiElement;
 import net.minecraft.util.Identifier;
 
-public class XmlImage implements IXmlRepresentation
+public class XmlImage implements XmlGuideGuiElement
 {
 	private final Identifier src;
     private final String altText;
-    private final OptionalInt width,
-    				  		  height;
+    private final int width,
+    				  height;
 
-	public XmlImage(Identifier src, String altText, OptionalInt width, OptionalInt height)
-	{
-		this.src = src;
-		this.altText = altText;
-		this.width = width;
-		this.height = height;
-	}
+    public XmlImage(Identifier src, String altText, int width, int height)
+    {
+        this.src = src;
+        this.altText = altText;
+        this.width = width;
+        this.height = height;
+    }
 
 	public Identifier getSrc()
 	{
@@ -30,13 +28,13 @@ public class XmlImage implements IXmlRepresentation
 		return altText;
 	}
 
-	public OptionalInt getWidth()
-	{
-		return width;
-	}
+    public int getWidth()
+    {
+        return width;
+    }
 
-	public OptionalInt getHeight()
-	{
-		return height;
-	}
+    public int getHeight()
+    {
+        return height;
+    }
 }
