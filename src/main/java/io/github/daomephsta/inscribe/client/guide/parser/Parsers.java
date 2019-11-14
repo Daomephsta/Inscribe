@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.jdom2.Attribute;
 import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Ints;
@@ -17,7 +18,9 @@ import io.github.daomephsta.inscribe.client.guide.parser.v100.V100Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
+import io.github.daomephsta.util.XmlResources;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
 
 public class Parsers
 {
@@ -26,15 +29,26 @@ public class Parsers
 			.build();
 	private static final ThreadLocal<String> lastVersion = ThreadLocal.withInitial(() -> "");
 	private static final ThreadLocal<Parser> lastParser = new ThreadLocal<>();
-
-	public static GuideDefinition loadGuideDefinition(Element root, ResourceManager resourceManager) throws GuideLoadingException
+	private static final SAXBuilder guideDefinitionBuilder,
+	                                entryBuilder;
+	static
 	{
-		return getParser(root).loadGuideDefinition(root, resourceManager);
+	    guideDefinitionBuilder = new SAXBuilder();
+        guideDefinitionBuilder.setIgnoringBoundaryWhitespace(true);
+	    entryBuilder = new SAXBuilder();
+	    entryBuilder.setIgnoringBoundaryWhitespace(true);
 	}
 
-	public static XmlEntry loadEntry(Element root) throws GuideLoadingException
+	public static GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
-		return getParser(root).loadEntry(root);
+        Element root = XmlResources.readDocument(guideDefinitionBuilder, resourceManager, path).getRootElement();
+		return getParser(root).loadGuideDefinition(root, resourceManager, path);
+	}
+
+	public static XmlEntry loadEntry(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+	{
+        Element root = XmlResources.readDocument(entryBuilder, resourceManager, path).getRootElement();
+		return getParser(root).loadEntry(root, resourceManager, path);
 	}
 
 	private static Parser getParser(Element root) throws InscribeSyntaxException

@@ -12,8 +12,6 @@ import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.Element;
-import org.jdom2.input.SAXBuilder;
 
 import io.github.daomephsta.inscribe.client.guide.parser.Parsers;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
@@ -21,7 +19,6 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItem
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.util.Identifiers;
-import io.github.daomephsta.util.XmlResources;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -35,16 +32,9 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	public static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
 	private static final String GUIDE_DEFINITION_FILENAME = "guide_definition.xml";
 
-	private final SAXBuilder builder;
 	private final Map<Identifier, Guide> guides = new HashMap<>();
 	private final Collection<Guide> guidesImmutable = Collections.unmodifiableCollection(guides.values());
 	private boolean errored;
-
-	private GuideManager()
-	{
-		this.builder = new SAXBuilder();
-		this.builder.setIgnoringBoundaryWhitespace(true);
-	}
 
 	public Guide getGuide(Identifier guideId)
 	{
@@ -109,8 +99,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 
 	private GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
-		Element root = XmlResources.readDocument(builder, resourceManager, path).getRootElement();
-		return Parsers.loadGuideDefinition(root, resourceManager);
+		return Parsers.loadGuideDefinition(resourceManager, path);
 	}
 
 	private Collection<XmlEntry> loadEntries(ResourceManager resourceManager, String rootPath)
@@ -132,8 +121,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 
 	private XmlEntry loadEntry(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
-		Element root = XmlResources.readDocument(builder, resourceManager, path).getRootElement();
-		return Parsers.loadEntry(root);
+		return Parsers.loadEntry(resourceManager, path);
 	}
 
 	public void apply(Collection<Guide> guidesIn, ResourceManager resourceManager, Profiler profiler, Executor executor)
