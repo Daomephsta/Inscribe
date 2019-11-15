@@ -27,11 +27,6 @@ public class Guide
 		return definition.getGuideId();
 	}
 
-	public Identifier getGuideId()
-	{
-		return definition.getGuideId();
-	}
-
 	public String getTranslationKey()
 	{
 		return definition.getTranslationKey();
