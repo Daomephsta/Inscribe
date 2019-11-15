@@ -40,6 +40,8 @@ public class TableOfContents
 
 		public GuideWidget getIcon()
         {
+		    if (iconFactory == null)
+		        throw new NullPointerException("Icon not present");
             return iconFactory.get();
         }
 	}

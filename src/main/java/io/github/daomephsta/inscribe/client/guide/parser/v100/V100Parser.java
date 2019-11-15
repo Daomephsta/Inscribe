@@ -2,6 +2,8 @@ package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
+
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 
@@ -10,6 +12,7 @@ import com.google.common.collect.Lists;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.LinkStyle;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.parser.Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
@@ -89,12 +92,17 @@ public class V100Parser implements Parser
         for (Element link : linkElements)
         {
             Element iconXml = link.getChild("icon");
-            if (style.requiresIcon() && iconXml == null)
+            if (style.requiresIcon() && iconXml != null)
                 throw new InscribeSyntaxException("Style " + style + " requires that an icon is specified");
-            XmlGuideGuiElement icon = GUIDE_GUI_ELEMENT_DESERIALISER.deserialise(iconXml);
             String name = XmlAttributes.getValue(link, "name");
             Identifier destination = XmlAttributes.asIdentifier(link, "destination");
-            links.add(new TableOfContents.Link(() -> RenderFormatConverter.convert(icon), name, destination, style));
+            Supplier<GuideWidget> iconFactory = null;
+            if (iconXml != null)
+            {
+                XmlGuideGuiElement icon = GUIDE_GUI_ELEMENT_DESERIALISER.deserialise(iconXml);
+                iconFactory = () -> RenderFormatConverter.convert(icon );
+            }
+            links.add(new TableOfContents.Link(iconFactory, name, destination, style));
         }
 
         return new TableOfContents(links);
