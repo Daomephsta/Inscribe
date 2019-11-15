@@ -1,5 +1,7 @@
 package io.github.daomephsta.inscribe.client.guide;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -131,7 +133,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		{
 			this.guides.put(guide.getIdentifier(), guide);
 		}
-		LOGGER.info("[Inscribe] Loaded {} guides", guidesIn.size());
+		LOGGER.info("[Inscribe] Loaded {} guides {}", guidesIn.size(), guidesIn.stream().map(Guide::getIdentifier).collect(toList()));
 	}
 
 	public boolean handleGuideLoadingException(GuideLoadingException loadingException, String resourcePath)

@@ -13,10 +13,13 @@ public abstract class MixinImplReloadableResourceManagerImpl
 
 	public static void injectGuideManagerAsListener(List<ResourceReloadListener> initialListeners, List<ResourceReloadListener> listeners)
 	{
-		boolean successInitialListeners = injectListenerBefore(initialListeners, GuideManager.INSTANCE, BakedModelManager.class);
-		boolean successListeners = injectListenerBefore(listeners, GuideManager.INSTANCE, BakedModelManager.class);
-		if (successInitialListeners || successListeners)
+		boolean success = false;
+		if (!(success = injectListenerBefore(initialListeners, GuideManager.INSTANCE, BakedModelManager.class)))
+		    success = injectListenerBefore(listeners, GuideManager.INSTANCE, BakedModelManager.class);
+		if (success)
 			INSCRIBE_LOGGER.info("[Inscribe] Registered Guide Manager as a resource reload listener");
+		else
+		    INSCRIBE_LOGGER.error("[Inscribe] Failed to register Guide Manager as a resource reload listener");
 	}
 
 	private static boolean injectListenerBefore(List<ResourceReloadListener> listeners, ResourceReloadListener listener, Class<? extends ResourceReloadListener> targetClass)
