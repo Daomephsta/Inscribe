@@ -77,6 +77,11 @@ public class GuideManager implements IdentifiableResourceReloadListener
 			Collection<Guide> guides = new ArrayList<>(guideDefinitions.size());
 			for (Identifier guideDefPath : guideDefinitions)
 			{
+			    if (guideDefPath.getPath().equals(FOLDER_NAME + "/" + GUIDE_DEFINITION_FILENAME))
+			    {
+			        LOGGER.error("Ignored {}, it must be in a subfolder of the {} folder", guideDefPath, FOLDER_NAME);
+			        continue;
+			    }
 				try
 				{
 					GuideDefinition guideDefinition = loadGuideDefinition(resourceManager, guideDefPath);
