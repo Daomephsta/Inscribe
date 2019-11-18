@@ -80,8 +80,9 @@ public class GuideManager implements IdentifiableResourceReloadListener
 				try
 				{
 					GuideDefinition guideDefinition = loadGuideDefinition(resourceManager, guideDefPath);
-					String rootPath = Identifiers.replaceFromEnd(guideDefPath, 1, "entries").getPath();
-					Collection<XmlEntry> entries = loadEntries(resourceManager, rootPath);
+					String rootPath = Identifiers.replaceFromEnd(guideDefPath, 0, "entries").getPath();
+					Map<Identifier, XmlEntry> entries = loadEntries(resourceManager, guideDefPath.getNamespace(), rootPath);
+					LOGGER.info("Loaded {} entries for {}", entries.size(), guideDefinition.getGuideId());
 					guides.add(new Guide(guideDefinition, entries));
 				}
 				catch (GuideLoadingException loadingException)
@@ -104,14 +105,17 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		return Parsers.loadGuideDefinition(resourceManager, path);
 	}
 
-	private Collection<XmlEntry> loadEntries(ResourceManager resourceManager, String rootPath)
+	private Map<Identifier, XmlEntry> loadEntries(ResourceManager resourceManager, String namespace, String rootPath)
 	{
-		Collection<XmlEntry> entries = new ArrayList<>();
+		Map<Identifier, XmlEntry> entries = new HashMap<>();
 		for(Identifier entryPath : resourceManager.findResources(rootPath, path -> path.endsWith(".xml")))
 		{
+		    if (!entryPath.getNamespace().equals(namespace))
+		        continue;
 			try
 			{
-				entries.add(loadEntry(resourceManager, entryPath));
+				XmlEntry entry = loadEntry(resourceManager, entryPath);
+                entries.put(entry.getId(), entry);
 			}
 			catch (GuideLoadingException loadingException)
 			{

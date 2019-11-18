@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Ints;
 
@@ -34,9 +33,7 @@ public class Parsers
 	static
 	{
 	    guideDefinitionBuilder = new SAXBuilder();
-        guideDefinitionBuilder.setIgnoringBoundaryWhitespace(true);
 	    entryBuilder = new SAXBuilder();
-	    entryBuilder.setIgnoringBoundaryWhitespace(true);
 	}
 
 	public static GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException

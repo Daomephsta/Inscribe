@@ -1,8 +1,11 @@
 package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -25,6 +28,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAcce
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
 import io.github.daomephsta.util.Identifiers;
 import io.github.daomephsta.util.XmlResources;
@@ -51,7 +55,8 @@ public class V100Parser implements Parser
 			.registerDeserialiser(V100ElementTypes.WEB_LINK)
 			.registerDeserialiser(V100ElementTypes.ENTRY_LINK)
 			.registerDeserialiser(V100ElementTypes.ANCHOR)
-			.registerDeserialiser(V100ElementTypes.IMAGE);
+			.registerDeserialiser(V100ElementTypes.IMAGE)
+	        .registerDeserialiser(V100ElementTypes.ITEMSTACK);
 
 	private V100Parser() {}
 
@@ -108,14 +113,24 @@ public class V100Parser implements Parser
         return new TableOfContents(links);
     }
 
+    private static final Pattern ENTRY_PATH_TO_ID = Pattern.compile("inscribe_guides\\/(?<guideName>[a-z0-9\\/._-]+)\\/entries\\/(?<entryName>[a-z0-9\\/._-]+)\\.xml");
 	@Override
 	public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
-		String title = root.getChildText("title");
-	    Identifier icon = new Identifier(root.getChildText("icon")),
-	    		   category = new Identifier(root.getChildText("category"));
-		List<Object> content = ENTRY_DESERIALISER.deserialise(root.getContent());
-		List<String> tags = XmlElements.asStringList(root, "tags", () -> Collections.emptyList());
-		return new XmlEntry(title, icon, category, tags, content);
+		Matcher pathMatcher = ENTRY_PATH_TO_ID.matcher(path.getPath());
+		if (!pathMatcher.matches())
+		    throw new RuntimeException("Expected " + path + " to match regex " + ENTRY_PATH_TO_ID + ". Please report this error to the Inscribe author.");
+        Identifier id = new Identifier(path.getNamespace(), pathMatcher.group("guideName") + "/" + pathMatcher.group("entryName"));
+        List<String> tags = XmlElements.asStringList(root, "tags", () -> Collections.emptyList());
+        List<XmlPage> pages = readPages(root);
+		return new XmlEntry(id, tags, pages);
 	}
+
+    private List<XmlPage> readPages(Element root) throws GuideLoadingException
+    {
+        List<XmlPage> pages = new ArrayList<>();
+        for (Element page : root.getChildren("page"))
+            pages.add(new XmlPage(ENTRY_DESERIALISER.deserialise(page.getContent())));
+        return pages;
+    }
 }

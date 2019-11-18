@@ -9,6 +9,7 @@ import org.jdom2.Content.CType;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
+import io.github.daomephsta.util.Unindenter;
 
 public interface ContentDeserialiser
 {
@@ -18,6 +19,7 @@ public interface ContentDeserialiser
 	{
 		private final Map<String, XmlElementType<?>> deserialisers = new HashMap<>();
 		private static final Logger LOGGER = LogManager.getLogger();
+		private static final Unindenter UNINDENTER = new Unindenter();
 
 		public Impl registerDeserialiser(XmlElementType<?> elementType)
 		{
@@ -50,11 +52,10 @@ public interface ContentDeserialiser
 						result.add(deserialiser.fromXml(element));
 					break;
 				case Text:
-					result.add(content.getValue());
+					result.add(UNINDENTER.unindent(content.getValue()));
 					break;
 				default:
-					Object[] args = {content};
-					LOGGER.debug("[Inscribe] Ignored {} as it is not text or an element", args);
+					LOGGER.debug("[Inscribe] Ignored {} as it is not text or an element", content);
 					break;
 				}
 			}
