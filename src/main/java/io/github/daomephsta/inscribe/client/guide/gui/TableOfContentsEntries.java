@@ -2,6 +2,7 @@ package io.github.daomephsta.inscribe.client.guide.gui;
 
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.LabelWidget;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoEntry;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
@@ -14,20 +15,26 @@ public class TableOfContentsEntries implements VisibleContent
 {
     private final GuideFlow root;
 
-	public TableOfContentsEntries(TableOfContents toc, int x, int y, int width, int height)
+	public TableOfContentsEntries(TableOfContents toc)
 	{
         this.root = new GuideFlow(Direction.VERTICAL);
-		root.setLayoutParameters(x, y, width, height);
 		root.padding().setLeft(13).setTop(10);
 		GuideFlow links = new GuideFlow(Direction.VERTICAL);
 		for (Link link : toc.getLinks())
 		{
 		    GuideWidget linkElement = createLinkElement(link);
+		    linkElement.attach(new GotoEntry(link.destination));
 		    linkElement.margin().setVertical(2);
             links.add(linkElement);
 		}
 		root.add(links, d -> d.setSize(Size.percentage(100)));
-		root.layoutChildren();
+	}
+
+	@Override
+	public void setRenderArea(int x, int y, int width, int height)
+	{
+        root.setLayoutParameters(x, y, width, height);
+        root.layoutChildren();
 	}
 
 	private GuideWidget createLinkElement(Link link)
@@ -63,5 +70,12 @@ public class TableOfContentsEntries implements VisibleContent
 	public void render(int mouseX, int mouseY, float lastFrameDuration)
 	{
 	    root.render(mouseX, mouseY, lastFrameDuration);
+	}
+
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int button)
+	{
+	    root.mouseClicked(mouseX, mouseY, button);
+	    return VisibleContent.super.mouseClicked(mouseX, mouseY, button);
 	}
 }

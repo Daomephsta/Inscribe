@@ -146,6 +146,12 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
                 && this.y() <= y && y <= (this.y() + height());
     }
 
+    public boolean contains(double x, double y)
+    {
+        return this.x() <= x && x <= (this.x() + width())
+            && this.y() <= y && y <= (this.y() + height());
+    }
+
     public int left()
     {
         return x();

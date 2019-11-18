@@ -1,6 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide;
 
-import java.util.Collection;
+import java.util.Map;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
@@ -14,12 +14,17 @@ public class Guide
 {
 	public static final Identifier INVALID_GUIDE_ID = new Identifier(Inscribe.MOD_ID, "invalid");
 	private final GuideDefinition definition;
-	private final Collection<XmlEntry> entries;
+	private final Map<Identifier, XmlEntry> entries;
 
-	public Guide(GuideDefinition definition, Collection<XmlEntry> entries)
+	public Guide(GuideDefinition definition, Map<Identifier, XmlEntry> entries)
 	{
 		this.definition = definition;
 		this.entries = entries;
+	}
+
+	public XmlEntry getEntry(Identifier entryId)
+	{
+	    return entries.get(entryId);
 	}
 
 	public Identifier getIdentifier()

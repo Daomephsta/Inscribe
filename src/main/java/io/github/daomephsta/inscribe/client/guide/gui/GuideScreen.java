@@ -1,14 +1,20 @@
 package io.github.daomephsta.inscribe.client.guide.gui;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import io.github.daomephsta.inscribe.client.guide.Guide;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.Identifier;
 
-public class GuideScreen extends Screen
+public class GuideScreen extends Screen implements GuideGui
 {
+    private static final Logger LOGGER = LogManager.getLogger();
     private final Guide guide;
     private VisibleContent visibleContent;
     private int guideLeft, guideTop, guideWidth, guideHeight;
@@ -17,6 +23,7 @@ public class GuideScreen extends Screen
     {
         super(new TranslatableTextComponent(guide.getTranslationKey()));
         this.guide = guide;
+        this.visibleContent = new TableOfContentsEntries(guide.getMainTableOfContents());
     }
 
     @Override
@@ -27,8 +34,7 @@ public class GuideScreen extends Screen
         this.guideWidth = 146;
         this.guideTop = 2;
         this.guideLeft = (width - guideWidth) / 2;
-        this.visibleContent = new TableOfContentsEntries(guide.getMainTableOfContents(),
-                guideLeft, guideTop, guideWidth, guideHeight);
+        this.visibleContent.setRenderArea(guideLeft, guideTop, guideWidth, guideHeight);
     }
 
     @Override
@@ -40,6 +46,19 @@ public class GuideScreen extends Screen
         if (visibleContent != null)
             visibleContent.render(mouseX, mouseY, lastFrameDuration);
         GlStateManager.enableLighting();
+    }
+
+    @Override
+    public void openEntry(Identifier entryId)
+    {
+        XmlEntry entry = guide.getEntry(entryId);
+        if (entry != null)
+        {
+            visibleContent = new OpenEntry(entry, guideLeft, guideTop, guideWidth, guideHeight);
+            visibleContent.setRenderArea(guideLeft, guideTop, guideWidth, guideHeight);
+        }
+        else
+            LOGGER.error("Could not open unknown entry {}", entryId);
     }
 
     @Override
