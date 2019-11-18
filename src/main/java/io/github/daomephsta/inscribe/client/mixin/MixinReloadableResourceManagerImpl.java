@@ -11,8 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.github.daomephsta.inscribe.client.mixinimpl.MixinImplReloadableResourceManagerImpl;
-import net.minecraft.resource.*;
-import net.minecraft.util.Void;
+import net.minecraft.resource.ReloadableResourceManager;
+import net.minecraft.resource.ReloadableResourceManagerImpl;
+import net.minecraft.resource.ResourceReloadListener;
 
 @Mixin(ReloadableResourceManagerImpl.class)
 public abstract class MixinReloadableResourceManagerImpl implements ReloadableResourceManager

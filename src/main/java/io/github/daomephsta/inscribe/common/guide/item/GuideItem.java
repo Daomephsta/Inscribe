@@ -26,7 +26,7 @@ public class GuideItem extends Item
 
 	public GuideItem()
 	{
-		super(new Settings().stackSize(1));
+		super(new Settings().maxCount(1));
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class GuideItem extends Item
 	}
 
 	@Override
-	public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> items)
+	public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> items)
 	{
 		if (itemGroup == ItemGroup.SEARCH)
 		{

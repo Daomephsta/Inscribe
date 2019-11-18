@@ -6,9 +6,9 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum LinkStyle implements StringRepresentable
+public enum LinkStyle implements StringIdentifiable
 {
 	ICON_WITH_TOOLTIP("icon_with_tooltip", true),
 	ICON_WITH_TEXT("icon_with_text", true),

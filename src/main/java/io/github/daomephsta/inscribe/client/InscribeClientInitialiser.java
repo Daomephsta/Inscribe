@@ -7,7 +7,7 @@ import io.github.daomephsta.inscribe.common.Inscribe;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class InscribeClientInitialiser implements ClientModInitializer
@@ -25,7 +25,7 @@ public class InscribeClientInitialiser implements ClientModInitializer
 		ClientPlayerJoinWorldCallback.EVENT.register(player ->
 		{
 			if (GuideManager.INSTANCE.getErrored())
-				player.addChatMessage(new TranslatableTextComponent(Inscribe.MOD_ID + ".chat_message.load_failure"), false);
+				player.addChatMessage(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure"), false);
 		});
 	}
 

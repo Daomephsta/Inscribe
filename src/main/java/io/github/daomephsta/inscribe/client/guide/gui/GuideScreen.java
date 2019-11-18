@@ -8,8 +8,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class GuideScreen extends Screen implements GuideGui
@@ -21,7 +21,7 @@ public class GuideScreen extends Screen implements GuideGui
 
     public GuideScreen(Guide guide)
     {
-        super(new TranslatableTextComponent(guide.getTranslationKey()));
+        super(new TranslatableText(guide.getTranslationKey()));
         this.guide = guide;
         this.visibleContent = new TableOfContentsEntries(guide.getMainTableOfContents());
     }

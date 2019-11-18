@@ -1,7 +1,7 @@
-import net.fabricmc.loom.task.RemapJar
+import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
-	id 'fabric-loom' version '0.2.0-SNAPSHOT'
+	id 'fabric-loom' version '0.2.5-SNAPSHOT'
 	id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
@@ -23,7 +23,7 @@ dependencies {
 	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	modCompile "net.fabricmc:fabric:${project.fabric_version}"
+	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     
     //Mosaic for layout
     implementation project(':mosaic')
@@ -74,8 +74,8 @@ shadowJar {
     relocate 'org.jdom2', 'io.github.daomephsta.inscribe.shadowed.org.jdom2'
 }
 
-task remapShadowJar(type: RemapJar) {
-    jar = shadowJar.archivePath
+task remapShadowJar(type: RemapJarTask) {
+    input = shadowJar.archivePath
 }
 tasks.remapShadowJar.dependsOn tasks.shadowJar
 tasks.assemble.dependsOn tasks.remapShadowJar

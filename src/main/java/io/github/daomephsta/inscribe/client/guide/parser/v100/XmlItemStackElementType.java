@@ -11,8 +11,8 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxExcept
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes.Preconditions;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
+import net.minecraft.command.arguments.ItemStringReader;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sortme.ItemStringReader;
 
 final class XmlItemStackElementType extends XmlElementType<XmlItemStack>
 {
@@ -37,7 +37,7 @@ final class XmlItemStackElementType extends XmlElementType<XmlItemStack>
 			ItemStringReader itemStringReader = new ItemStringReader(new StringReader(itemString), false).consume();
 			int amount = XmlAttributes.asOptionalInt(xml, "amount").orElse(1);
 			ItemStack stack = new ItemStack(itemStringReader.getItem(), amount);
-			stack.setTag(itemStringReader.method_9797());
+			stack.setTag(itemStringReader.getTag());
 			return new XmlItemStack(stack);
 		}
 		catch (CommandSyntaxException e)

@@ -62,11 +62,11 @@ public class GuideManager implements IdentifiableResourceReloadListener
 	}
 
 	@Override
-	public CompletableFuture<Void> reload(Helper helper, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor)
+	public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor)
 	{
 		return load(resourceManager, loadProfiler, loadExecutor)
 			.thenAccept(data -> apply(data, resourceManager, applyProfiler, applyExecutor))
-			.thenCompose(helper::waitForAll);
+			.thenCompose(synchronizer::whenPrepared);
 	}
 
 	public CompletableFuture<Collection<Guide>> load(ResourceManager resourceManager, Profiler profiler, Executor executor)

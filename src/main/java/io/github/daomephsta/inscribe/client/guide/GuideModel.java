@@ -20,9 +20,9 @@ import net.fabricmc.fabric.api.client.model.ModelResourceProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.ModelRotation;
-import net.minecraft.client.render.model.ModelRotationContainer;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -64,10 +64,10 @@ public class GuideModel
 		}
 
 		@Override
-		public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> spriteGetter, ModelRotationContainer rotationContainer)
+		public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> spriteGetter, ModelBakeSettings bakeSettings)
 		{
 			Map<Identifier, BakedModel> modelMap = GuideManager.INSTANCE.streamGuideModelIds()
-				.collect(toMap(id -> id, id -> modelLoader.bake(id, rotationContainer)));
+				.collect(toMap(id -> id, id -> modelLoader.bake(id, bakeSettings)));
 			ModelItemPropertyOverrideList overrides = new Overrides(modelLoader, modelMap);
 			return new Baked(overrides);
 		}
