@@ -4,7 +4,6 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 import java.util.concurrent.CompletableFuture;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -51,10 +50,9 @@ public class InscribeCommand
                     .executes(context ->
                     {
                         Identifier guideId = IdentifierArgumentType.getIdentifier(context, "guide_id");
-                        Guide guide = GuideManager.INSTANCE.getGuide(guideId);
-                        if (!guide.isValid())
+                        if (!GuideManager.INSTANCE.hasGuide(guideId))
                             throw ID_INVALID_EXCEPTION.create(guideId);
-                        ItemStack guideStack = Inscribe.GUIDE_ITEM.forGuide(guide);
+                        ItemStack guideStack = Inscribe.GUIDE_ITEM.forGuide(GuideManager.INSTANCE.getGuide(guideId));
                         String command = String.format("give %s %s%s", context.getArgument("selector", String.class),
                             Registry.ITEM.getId(guideStack.getItem()), guideStack.getTag().asString());
                         return context.getSource().getMinecraftServer().getCommandManager().getDispatcher().execute(command, context.getSource());

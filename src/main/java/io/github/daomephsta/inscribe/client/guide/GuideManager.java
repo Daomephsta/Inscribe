@@ -43,6 +43,11 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		return guides.getOrDefault(guideId, guides.get(Guide.INVALID_GUIDE_ID));
 	}
 
+	public boolean hasGuide(Identifier guideId)
+    {
+        return guides.containsKey(guideId);
+    }
+
 	public Collection<Guide> getGuides()
 	{
 		return guidesImmutable;
