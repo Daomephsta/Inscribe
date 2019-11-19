@@ -28,6 +28,7 @@ dependencies {
     
     //Mosaic for layout
     implementation project(':mosaic')
+    shadow project(':mosaic')
 	
 	//Shade JDOM, for a nice XML parser 
 	implementation "org.jdom:jdom2:${project.jdom_version}"
@@ -67,10 +68,19 @@ task includeJDOM2License(type: Download) {
     dest "${sourceSets.main.output.resourcesDir.path}/io/github/daomephsta/inscribe/shadow/org/jdom2/LICENSE.txt"
 }
 
+task includeMosaicLicense(type: Copy) {
+    from (project(':mosaic').projectDir) {
+    	include 'LICENSE'
+    	rename 'LICENSE', 'LICENSE.txt'
+    }
+    into ("${sourceSets.main.output.resourcesDir.path}/io/github/daomephsta/inscribe/shadow/mosaic")
+}
+
 shadowJar {
- 	dependsOn includeJDOM2License
+ 	dependsOn includeJDOM2License, includeMosaicLicense
     configurations = [project.configurations.shadow]
     relocate 'org.jdom2', 'io.github.daomephsta.inscribe.shadow.org.jdom2'
+    relocate 'io.github.daomephsta.mosaic', 'io.github.daomephsta.inscribe.shadow.mosaic'
 	minimize()
 }
 
