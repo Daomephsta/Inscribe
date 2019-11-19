@@ -83,7 +83,7 @@ public class GuideItem extends Item
 		return new Identifier(guideStack.getTag().getString(GUIDE_ID_TAG));
 	}
 
-	private ItemStack forGuide(Guide guide)
+	public ItemStack forGuide(Guide guide)
 	{
 		ItemStack guideStack = new ItemStack(this);
 		CompoundTag guideTag = new CompoundTag();

@@ -1,10 +1,11 @@
 {
 	"required": true,
-	"package": "daomephsta.inscribe.common.mixin",
+	"package": "io.github.daomephsta.inscribe.common.mixin",
 	"compatibilityLevel": "JAVA_8",
     "minVersion": "0.7.11",
 	"mixins": 
 	[
+        "ArgumentTypesAccessors"
 	],
 	"injectors": 
 	{
