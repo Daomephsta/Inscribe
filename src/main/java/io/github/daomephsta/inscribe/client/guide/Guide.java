@@ -54,6 +54,6 @@ public class Guide
 
 	public boolean isValid()
 	{
-		return definition.getGuideId().equals(INVALID_GUIDE_ID);
+		return !definition.getGuideId().equals(INVALID_GUIDE_ID);
 	}
 }
