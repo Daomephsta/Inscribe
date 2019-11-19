@@ -1,48 +1,67 @@
 package io.github.daomephsta.inscribe.client.mixinimpl;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.resource.*;
+import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.util.ActionResult;
 
-public abstract class MixinImplReloadableResourceManagerImpl
+public class MixinImplReloadableResourceManagerImpl
 {
 	private static final Logger INSCRIBE_LOGGER = LogManager.getLogger();
+    private final ResourceType type;
 
-	public static void injectGuideManagerAsListener(List<ResourceReloadListener> initialListeners, List<ResourceReloadListener> listeners)
-	{
-		boolean success = false;
-		if (!(success = injectListenerBefore(initialListeners, GuideManager.INSTANCE, BakedModelManager.class)))
-		    success = injectListenerBefore(listeners, GuideManager.INSTANCE, BakedModelManager.class);
-		if (success)
-			INSCRIBE_LOGGER.info("[Inscribe] Registered Guide Manager as a resource reload listener");
-		else
-		    INSCRIBE_LOGGER.error("[Inscribe] Failed to register Guide Manager as a resource reload listener");
-	}
+	public MixinImplReloadableResourceManagerImpl(ResourceType type)
+    {
+        this.type = type;
+    }
 
-	private static boolean injectListenerBefore(List<ResourceReloadListener> listeners, ResourceReloadListener listener, Class<? extends ResourceReloadListener> targetClass)
+    public void inscribe_beginReloadInner(Executor loadExecutor, Executor applyExecutor, List<ResourceReloadListener> listeners, CompletableFuture<Void> future, CallbackInfoReturnable<CompletableFuture<Void>> info)
+    {
+        if (type == ResourceType.CLIENT_RESOURCES)
+        {
+            ActionResult injectionResult = injectListenerBefore(listeners, GuideManager.INSTANCE, BakedModelManager.class);
+            if (injectionResult == ActionResult.SUCCESS)
+                INSCRIBE_LOGGER.info("[Inscribe] Registered Guide Manager as a resource reload listener");
+            else if (injectionResult == ActionResult.FAIL)
+                INSCRIBE_LOGGER.error("[Inscribe] Failed to register Guide Manager as a resource reload listener. Listeners: {}", listeners);
+        }
+    }
+
+    private ActionResult injectListenerBefore(List<ResourceReloadListener> listeners, ResourceReloadListener listener, Class<? extends ResourceReloadListener> targetClass)
 	{
 		int targetIndex = -1;
-		for (int i = 0; i < listeners.size(); i++)
+		int i = 0;
+		Iterator<ResourceReloadListener> iter = listeners.iterator();
+		while(iter.hasNext())
 		{
-			if (listeners.get(i) == listener)
-				listeners.remove(i);
-			else if (targetClass.isInstance(listeners.get(i)))
+		    ResourceReloadListener current = iter.next();
+			if (current == listener)
+				return ActionResult.PASS;
+			else if (targetClass.isInstance(current))
 			{
 				if (targetIndex < 0)
 					targetIndex = i;
 				else
 					throw new IllegalStateException("[Inscribe] Did not expect multiple instances of " + targetClass.getName() + " in resource reload listener list");
 			}
+			i++;
 		}
 		if (targetIndex < 0)
-			return false;
+			return ActionResult.FAIL;
 		else
 		{
 			listeners.add(targetIndex, listener);
-			return true;
+			return ActionResult.SUCCESS;
 		}
 	}
 }
