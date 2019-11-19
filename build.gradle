@@ -3,7 +3,8 @@ import net.fabricmc.loom.task.RemapJarTask
 plugins {
 	id 'fabric-loom' version '0.2.5-SNAPSHOT'
 	id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'com.github.johnrengelman.shadow' version '4.0.2'
+    id 'de.undercouch.download' version '4.0.1'
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -61,35 +62,36 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 	from sourceSets.main.allSource
 }
 
-jar {
-	from "LICENSE"
-    //Disable thin jar generation
-    enabled = false
+task includeJDOM2License(type: Download) {
+    src 'https://raw.githubusercontent.com/hunterhacker/jdom/master/LICENSE.txt'
+    dest "${sourceSets.main.output.resourcesDir.path}/io/github/daomephsta/inscribe/shadow/org/jdom2/LICENSE.txt"
 }
 
 shadowJar {
-    classifier = null
+ 	dependsOn includeJDOM2License
     configurations = [project.configurations.shadow]
+    relocate 'org.jdom2', 'io.github.daomephsta.inscribe.shadow.org.jdom2'
 	minimize()
-    relocate 'org.jdom2', 'io.github.daomephsta.inscribe.shadowed.org.jdom2'
 }
 
 task remapShadowJar(type: RemapJarTask) {
+	dependsOn tasks.shadowJar
     input = shadowJar.archivePath
 }
-tasks.remapShadowJar.dependsOn tasks.shadowJar
-tasks.assemble.dependsOn tasks.remapShadowJar
+
+artifacts {
+	archives(shadowJar) {
+		builtBy tasks.remapShadowJar
+	}
+}
 
 // configure the maven publication
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
 			// add all the jars that should be included when publishing to maven
-			artifact(jar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
+			artifact(shadowJar) {
+				builtBy tasks.shadowJar
 			}
 		}
 	}
