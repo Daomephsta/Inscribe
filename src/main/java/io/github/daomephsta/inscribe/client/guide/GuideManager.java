@@ -1,7 +1,5 @@
 package io.github.daomephsta.inscribe.client.guide;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +27,7 @@ import net.minecraft.util.profiler.Profiler;
 public class GuideManager implements IdentifiableResourceReloadListener
 {
 	public static final GuideManager INSTANCE = new GuideManager();
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.guide_manager");
 	private static final Identifier ID = new Identifier(Inscribe.MOD_ID, "guide_manager");
 	public static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
 	private static final String GUIDE_DEFINITION_FILENAME = "guide_definition.xml";
@@ -147,7 +145,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 		{
 			this.guides.put(guide.getIdentifier(), guide);
 		}
-		LOGGER.info("[Inscribe] Loaded {} guides {}", guidesIn.size(), guidesIn.stream().map(Guide::getIdentifier).collect(toList()));
+		LOGGER.info("Loaded {} guides", guidesIn.size());
 	}
 
 	public boolean handleGuideLoadingException(GuideLoadingException loadingException, String resourcePath)
@@ -156,7 +154,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 			throw new RuntimeException("An unrecoverable error occured while loading " + resourcePath, loadingException);
 		else
 		{
-			LOGGER.error("[Inscribe] {} failed to load correctly:\n\t{}", resourcePath, loadingException.getMessage());
+			LOGGER.error("{} failed to load correctly:\n\t{}", resourcePath, loadingException.getMessage());
 			errored = true;
 		}
 		return true;

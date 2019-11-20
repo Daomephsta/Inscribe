@@ -21,7 +21,7 @@ public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 	{
 		private final Class<T> parentType;
 		private final Map<String, XmlElementType<? extends T>> deserialisers = new HashMap<>();
-		private static final Logger LOGGER = LogManager.getLogger();
+		private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.subtype_deserialiser.default");
 
 		public Impl(Class<T> parentType)
 		{

@@ -17,7 +17,7 @@ import net.minecraft.util.ActionResult;
 
 public class MixinImplReloadableResourceManagerImpl
 {
-	private static final Logger INSCRIBE_LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
     private final ResourceType type;
 
 	public MixinImplReloadableResourceManagerImpl(ResourceType type)
@@ -31,9 +31,9 @@ public class MixinImplReloadableResourceManagerImpl
         {
             ActionResult injectionResult = injectListenerBefore(listeners, GuideManager.INSTANCE, BakedModelManager.class);
             if (injectionResult == ActionResult.SUCCESS)
-                INSCRIBE_LOGGER.info("[Inscribe] Registered Guide Manager as a resource reload listener");
+                LOGGER.info("[Inscribe] Registered Guide Manager as a resource reload listener");
             else if (injectionResult == ActionResult.FAIL)
-                INSCRIBE_LOGGER.error("[Inscribe] Failed to register Guide Manager as a resource reload listener. Listeners: {}", listeners);
+                LOGGER.error("[Inscribe] Failed to register Guide Manager as a resource reload listener. Listeners: {}", listeners);
         }
     }
 

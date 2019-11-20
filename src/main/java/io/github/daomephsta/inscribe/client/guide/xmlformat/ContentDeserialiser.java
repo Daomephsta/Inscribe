@@ -18,7 +18,7 @@ public interface ContentDeserialiser
 	public static class Impl implements ContentDeserialiser
 	{
 		private final Map<String, XmlElementType<?>> deserialisers = new HashMap<>();
-		private static final Logger LOGGER = LogManager.getLogger();
+		private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.content_deserialiser.default");
 		private static final Unindenter UNINDENTER = new Unindenter();
 
 		public Impl registerDeserialiser(XmlElementType<?> elementType)
@@ -35,7 +35,7 @@ public interface ContentDeserialiser
 			{
 				if (isMetadata(content))
 				{
-					LOGGER.debug("[Inscribe] {} not parsed as element content as it is metadata", content);
+					LOGGER.debug("{} not parsed as element content as it is metadata", content);
 					continue;
 				}
 				else switch (content.getCType())
@@ -45,7 +45,7 @@ public interface ContentDeserialiser
 					XmlElementType<?> deserialiser = deserialisers.get(element.getName());
 					if (deserialiser == null)
 					{
-						LOGGER.debug("[Inscribe] Ignored unknown element {}", element);
+						LOGGER.debug("Ignored unknown element {}", element);
 						continue;
 					}
 					else
@@ -55,7 +55,7 @@ public interface ContentDeserialiser
 					result.add(UNINDENTER.unindent(content.getValue()));
 					break;
 				default:
-					LOGGER.debug("[Inscribe] Ignored {} as it is not text or an element", content);
+					LOGGER.debug("Ignored {} as it is not text or an element", content);
 					break;
 				}
 			}
