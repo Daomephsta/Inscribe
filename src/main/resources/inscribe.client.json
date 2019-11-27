@@ -7,7 +7,9 @@
   [
     "MixinMinecraftClient",
     "MixinClientPlayNetworkHandler",
-    "MixinReloadableResourceManagerImpl"
+    "MixinReloadableResourceManagerImpl",
+    "MixinKeyboard",
+    "MixinMouse"
   ],
   "injectors": {
     "defaultRequire": 1

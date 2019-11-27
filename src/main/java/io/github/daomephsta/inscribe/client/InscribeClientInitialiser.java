@@ -3,6 +3,7 @@ package io.github.daomephsta.inscribe.client;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.GuideModel;
 import io.github.daomephsta.inscribe.client.hooks.ClientPlayerJoinWorldCallback;
+import io.github.daomephsta.inscribe.client.input.KeyBindings;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
@@ -18,6 +19,7 @@ public class InscribeClientInitialiser implements ClientModInitializer
 		new Inscribe().onInitialise();
 		registerEventCallbacks();
 		registerModels();
+		KeyBindings.initialise();
 	}
 
 	public void registerEventCallbacks()
