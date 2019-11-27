@@ -28,9 +28,9 @@ public class Inscribe
 	public void onInitialise()
 	{
 		Registry.register(Registry.ITEM, MOD_ID + ":guide", GUIDE_ITEM);
+        ArgumentTypes.register(Inscribe.MOD_ID + ":delegating", DelegatingArgumentType.class, new DelegatingArgumentType.Serialiser());
         ServerStartCallback.EVENT.register(server ->
         {
-            ArgumentTypes.register(Inscribe.MOD_ID + ":delegating", DelegatingArgumentType.class, new DelegatingArgumentType.Serialiser());
             InscribeCommand.register(server.getCommandManager().getDispatcher());
         });
         configureLogging();
