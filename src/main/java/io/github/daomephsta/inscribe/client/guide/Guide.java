@@ -1,6 +1,7 @@
 package io.github.daomephsta.inscribe.client.guide;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
@@ -25,6 +26,17 @@ public class Guide
 	public XmlEntry getEntry(Identifier entryId)
 	{
 	    return entries.get(entryId);
+	}
+
+	void replaceEntry(Identifier entryId, XmlEntry entry)
+	{
+	    if (entries.computeIfPresent(entryId, (k, v) -> entry) == null)
+	        throw new UnsupportedOperationException("Only replacement of entries is allowed");
+	}
+
+	public Stream<Identifier> getEntryIds()
+	{
+	    return entries.keySet().stream();
 	}
 
 	public Identifier getIdentifier()

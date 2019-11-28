@@ -5,4 +5,8 @@ import net.minecraft.util.Identifier;
 public interface GuideGui
 {
     public void openEntry(Identifier entryId);
+
+    public void reloadOpenGuide();
+
+    public void reloadOpenEntry();
 }

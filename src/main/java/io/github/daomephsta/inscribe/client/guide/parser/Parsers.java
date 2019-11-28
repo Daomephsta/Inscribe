@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Ints;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException.Severity;
 import io.github.daomephsta.inscribe.client.guide.parser.v100.V100Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
@@ -42,10 +43,19 @@ public class Parsers
 		return getParser(root).loadGuideDefinition(root, resourceManager, path);
 	}
 
+	private static final Pattern ENTRY_PATH_TO_ID = Pattern.compile("inscribe_guides\\/(?<guideName>[a-z0-9\\/._-]+)\\/entries\\/(?<entryName>[a-z0-9\\/._-]+)\\.xml");
 	public static XmlEntry loadEntry(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
 	{
+	    Matcher pathMatcher = ENTRY_PATH_TO_ID.matcher(path.getPath());
+        if (!pathMatcher.matches())
+        {
+            throw new GuideLoadingException(String.format("Expected %s to match regex %s. Please report this error to the Inscribe author.",
+                path.getPath(), ENTRY_PATH_TO_ID), Severity.NON_FATAL);
+        }
+        Identifier id = new Identifier(path.getNamespace(), pathMatcher.group("guideName") + "/" + pathMatcher.group("entryName"));
         Element root = XmlResources.readDocument(entryBuilder, resourceManager, path).getRootElement();
-		return getParser(root).loadEntry(root, resourceManager, path);
+		XmlEntry loadEntry = getParser(root).loadEntry(root, resourceManager, id);
+        return loadEntry;
 	}
 
 	private static Parser getParser(Element root) throws InscribeSyntaxException

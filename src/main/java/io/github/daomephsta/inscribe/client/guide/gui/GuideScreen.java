@@ -1,16 +1,22 @@
 package io.github.daomephsta.inscribe.client.guide.gui;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import io.github.daomephsta.inscribe.client.guide.Guide;
+import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
+import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.util.profiler.DummyProfiler;
 
 public class GuideScreen extends Screen implements GuideGui
 {
@@ -54,11 +60,64 @@ public class GuideScreen extends Screen implements GuideGui
         XmlEntry entry = guide.getEntry(entryId);
         if (entry != null)
         {
-            visibleContent = new OpenEntry(entry, guideLeft, guideTop, guideWidth, guideHeight);
+            visibleContent = new OpenEntry(entry);
             visibleContent.setRenderArea(guideLeft, guideTop, guideWidth, guideHeight);
         }
         else
             LOGGER.error("Could not open unknown entry {}", entryId);
+    }
+
+    @Override
+    public void reloadOpenGuide()
+    {
+        try
+        {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            GuideManager.INSTANCE.reloadGuide(guide.getIdentifier(), CompletableFuture::completedFuture, mc.getResourceManager(),
+                DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, SystemUtil.getServerWorkerExecutor(), mc)
+                .thenAccept(guide ->
+                {
+                    if (visibleContent instanceof OpenEntry)
+                        visibleContent = new OpenEntry(guide.getEntry(((OpenEntry) visibleContent).getEntryId()));
+                    else if (visibleContent instanceof TableOfContentsEntries)
+                        visibleContent = new TableOfContentsEntries(guide.getMainTableOfContents());
+                    if (visibleContent != null)
+                        visibleContent.setRenderArea(guideLeft, guideTop, guideWidth, guideHeight);
+                });
+        }
+        catch (GuideLoadingException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void reloadOpenEntry()
+    {
+        if (visibleContent instanceof OpenEntry)
+        {
+            try
+            {
+                MinecraftClient mc = MinecraftClient.getInstance();
+                GuideManager.INSTANCE.reloadEntry(guide.getIdentifier(), ((OpenEntry) visibleContent).getEntryId(),
+                    CompletableFuture::completedFuture, mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
+                    SystemUtil.getServerWorkerExecutor(), mc)
+                    .thenAccept(entry ->
+                    {
+                        visibleContent = new OpenEntry(entry);
+                        visibleContent.setRenderArea(guideLeft, guideTop, guideWidth, guideHeight);
+                    });
+            }
+            catch (GuideLoadingException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Identifier getGuideId()
+    {
+        return guide.getIdentifier();
     }
 
     @Override

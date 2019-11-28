@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 
@@ -30,14 +30,18 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfCo
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
+import io.github.daomephsta.inscribe.common.Inscribe;
+import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
 import io.github.daomephsta.util.Identifiers;
 import io.github.daomephsta.util.XmlResources;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class V100Parser implements Parser
 {
 	public static final Parser INSTANCE = new V100Parser();
+    private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.parserV100");
 	private static final SubtypeDeserialiser<GuideAccessMethod> GUIDE_ACCESS_METHOD_DESERIALISER = new Impl<>(GuideAccessMethod.class)
 				.registerDeserialiser(V100ElementTypes.NO_GUIDE_ACCESS_METHOD)
 				.registerDeserialiser(V100ElementTypes.GUIDE_ITEM_ACCESS_METHOD);
@@ -67,8 +71,8 @@ public class V100Parser implements Parser
 		Identifier guideId = Identifiers.builder(path).subPath(1, -2).build();
         Identifier mainTocPath = Identifiers.builder(XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
             .namespace(guideId.getNamespace())
-            .prefixPath(guideId.getPath())
-            .prefixPath(GuideManager.FOLDER_NAME)
+            .prependPathSegments(guideId.getPath())
+            .prependPathSegments(GuideManager.FOLDER_NAME)
             .build();
         try
         {
@@ -78,9 +82,15 @@ public class V100Parser implements Parser
             Theme theme = themeXml != null ? Theme.fromXml(themeXml) : Theme.DEFAULT;
             return new GuideDefinition(guideId, guideAccess, mainTableOfContents, theme);
         }
-        catch (GuideLoadingException e)
+        catch (GuideLoadingException loadingException)
         {
-            GuideManager.INSTANCE.handleGuideLoadingException(e, mainTocPath.toString());
+            if (loadingException.isFatal())
+                throw new RuntimeException("An unrecoverable error occured while loading guide definition '" + path + "'", loadingException);
+            else
+            {
+                LOGGER.error("Guide definition at {} failed to load correctly:\n\t{}", path, loadingException.getMessage());
+                Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.guide_definition"));
+            }
         }
         return GuideDefinition.FALLBACK;
     }
@@ -113,14 +123,9 @@ public class V100Parser implements Parser
         return new TableOfContents(links);
     }
 
-    private static final Pattern ENTRY_PATH_TO_ID = Pattern.compile("inscribe_guides\\/(?<guideName>[a-z0-9\\/._-]+)\\/entries\\/(?<entryName>[a-z0-9\\/._-]+)\\.xml");
 	@Override
-	public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+	public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier id) throws GuideLoadingException
 	{
-		Matcher pathMatcher = ENTRY_PATH_TO_ID.matcher(path.getPath());
-		if (!pathMatcher.matches())
-		    throw new RuntimeException("Expected " + path + " to match regex " + ENTRY_PATH_TO_ID + ". Please report this error to the Inscribe author.");
-        Identifier id = new Identifier(path.getNamespace(), pathMatcher.group("guideName") + "/" + pathMatcher.group("entryName"));
         List<String> tags = XmlElements.asStringList(root, "tags", () -> Collections.emptyList());
         List<XmlPage> pages = readPages(root);
 		return new XmlEntry(id, tags, pages);

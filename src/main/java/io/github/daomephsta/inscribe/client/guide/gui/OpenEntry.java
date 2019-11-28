@@ -4,18 +4,22 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.parser.v100.RenderFormatConverter;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
+import net.minecraft.util.Identifier;
 
 public class OpenEntry implements VisibleContent
 {
+    private final XmlEntry entry;
     private final GuideFlow root;
 
-    public OpenEntry(XmlEntry entry, int x, int y, int width, int height)
+    public OpenEntry(XmlEntry entry)
     {
+        this.entry = entry;
         this.root = new GuideFlow(Direction.VERTICAL);
         root.padding().setLeft(13).setTop(10);
-        entry.getPages().get(0).getContent().stream()
-            .map(RenderFormatConverter::convert)
-            .forEachOrdered(root::add);
+        if (!entry.getPages().isEmpty())
+            entry.getPages().get(0).getContent().stream()
+                .map(RenderFormatConverter::convert)
+                .forEachOrdered(root::add);
     }
 
     @Override
@@ -29,5 +33,10 @@ public class OpenEntry implements VisibleContent
     public void render(int mouseX, int mouseY, float lastFrameDuration)
     {
         root.render(mouseX, mouseY, lastFrameDuration);
+    }
+
+    Identifier getEntryId()
+    {
+        return entry.getId();
     }
 }

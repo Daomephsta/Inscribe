@@ -4,6 +4,7 @@ import java.util.concurrent.CompletableFuture;
 
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.GuideGui;
+import io.github.daomephsta.inscribe.client.guide.gui.GuideScreen;
 import io.github.daomephsta.inscribe.client.input.WatchedKeyBinding.Modifier;
 import io.github.daomephsta.inscribe.client.input.KeyWatcher.KeyAction;
 import io.github.daomephsta.inscribe.common.Inscribe;
@@ -34,10 +35,17 @@ public class KeyBindings
     {
         if (action == KeyAction.DOWN)
             return;
-        System.out.println("Reloading guides");
         //Reload all guides
         GuideManager.INSTANCE.reload(CompletableFuture::completedFuture, client.getResourceManager(),
-            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, SystemUtil.getServerWorkerExecutor(), client);
+            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, SystemUtil.getServerWorkerExecutor(), client)
+            .thenRun(() ->
+            {
+                if (client.currentScreen instanceof GuideGui)
+                {
+                    MinecraftClient.getInstance().openScreen(new GuideScreen(
+                        GuideManager.INSTANCE.getGuide(((GuideScreen) client.currentScreen).getGuideId())));
+                }
+            });
     }
 
     private static void processReloadOpenGuideBinding(MinecraftClient client, KeyWatcher.KeyAction action)
@@ -46,10 +54,7 @@ public class KeyBindings
             return;
         //Reload open guide
         if (client.currentScreen instanceof GuideGui)
-        {
-            System.out.println("Reloading open guide");
             ((GuideGui) client.currentScreen).reloadOpenGuide();
-        }
     }
 
     private static void processReloadOpenEntryBinding(MinecraftClient client, KeyWatcher.KeyAction action)
@@ -58,9 +63,6 @@ public class KeyBindings
             return;
         //Reload open entry
         if (client.currentScreen instanceof GuideGui)
-        {
-            System.out.println("Reloading open entry");
             ((GuideGui) client.currentScreen).reloadOpenEntry();
-        }
     }
 }

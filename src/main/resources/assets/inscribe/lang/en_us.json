@@ -2,7 +2,11 @@
     "inscribe.guide.invalid.name": "Invalid Guide",
     "inscribe.command.give-guide.invalid_guide_name": "Unknown guide '%s'",
     "inscribe.chat_message.invalid_guide": "[Inscribe] This guide is invalid",
-    "inscribe.chat_message.load_failure": "[Inscribe] One or more guides failed to load properly. Check logs/inscribe.log for details.",
+    "inscribe.chat_message.reload_failure.open_entry": "[Inscribe] The open entry failed to reload properly. Check logs/inscribe.log for details.",
+    "inscribe.chat_message.reload_failure.open_guide": "[Inscribe] The open guide failed to reload properly. Check logs/inscribe.log for details.",
+    "inscribe.chat_message.load_failure.guide_definition": "[Inscribe] One or more guide definitions failed to load properly. Check logs/inscribe.log for details.",
+    "inscribe.chat_message.load_failure.guide": "[Inscribe] One or more guides failed to load properly. Check logs/inscribe.log for details.",
+    "inscribe.chat_message.load_failure.entry": "[Inscribe] One or more entries failed to load properly. Check logs/inscribe.log for details.",
     "category.inscribe.keys": "Inscribe",
     "key.inscribe.reload_guide_base": "Guide Reload Base Key"
 }
