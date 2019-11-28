@@ -127,14 +127,17 @@ public class V100Parser implements Parser
 	public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier id) throws GuideLoadingException
 	{
         List<String> tags = XmlElements.asStringList(root, "tags", () -> Collections.emptyList());
-        List<XmlPage> pages = readPages(root);
+        List<XmlPage> pages = readPages(root, id);
 		return new XmlEntry(id, tags, pages);
 	}
 
-    private List<XmlPage> readPages(Element root) throws GuideLoadingException
+    private List<XmlPage> readPages(Element root, Identifier entryId) throws GuideLoadingException
     {
         List<XmlPage> pages = new ArrayList<>();
-        for (Element page : root.getChildren("page"))
+        List<Element> pageElements = root.getChildren("page");
+        if (pageElements.isEmpty())
+            LOGGER.warn("Entry '{}' has no pages", entryId);
+        for (Element page : pageElements)
             pages.add(new XmlPage(ENTRY_DESERIALISER.deserialise(page.getContent())));
         return pages;
     }
