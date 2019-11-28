@@ -25,12 +25,12 @@ public class Identifiers
 
 	public static Identifier prefixPath(Identifier base, String prefix)
 	{
-		return builder(base).prefixPath(prefix).build();
+		return builder(base).prependPathSegments(prefix).build();
 	}
 
 	public static Identifier suffixPath(Identifier base, String suffix)
 	{
-		return builder(base).suffixPath(suffix).build();
+		return builder(base).appendPathSegments(suffix).build();
 	}
 
 	public static Identifier subPath(Identifier base, int start)
@@ -63,10 +63,21 @@ public class Identifiers
 		return new Builder(base);
 	}
 
+    public static Builder builder(String namespace)
+    {
+        return new Builder(namespace);
+    }
+
 	public static class Builder
 	{
 		private String namespace;
 		private List<String> pathSegments;
+
+		private Builder(String namespace)
+        {
+		    namespace(namespace);
+		    this.pathSegments = new ArrayList<>();
+        }
 
 		private Builder(Identifier base)
 		{
@@ -85,16 +96,51 @@ public class Identifiers
 			return this;
 		}
 
-		public Builder prefixPath(String prefix)
+		public Builder prependPathSegments(String[] prefixes)
+        {
+		    for (String prefix : prefixes)
+		        this.pathSegments.addAll(0, splitPath(prefix));
+            return this;
+        }
+
+		public Builder prependPathSegments(String prefix)
 		{
 			this.pathSegments.addAll(0, splitPath(prefix));
 			return this;
 		}
 
-		public Builder suffixPath(String suffix)
+		public Builder appendPathSegments(String firstSuffix, String... suffixes)
+        {
+		    appendPathSegments(firstSuffix);
+		    for (String suffix : suffixes)
+		        appendPathSegments(suffix);
+            return this;
+        }
+
+		public Builder appendPathSegments(String[] suffixes)
+        {
+            for (String suffix : suffixes)
+                appendPathSegments(suffix);
+            return this;
+        }
+
+		public Builder appendPathSegments(String suffix)
 		{
 			this.pathSegments.addAll(splitPath(suffix));
 			return this;
+		}
+
+		public Builder prefixPath(String prefix)
+        {
+		    this.pathSegments.set(0, prefix + this.pathSegments.get(0));
+            return this;
+        }
+
+		public Builder suffixPath(String suffix)
+		{
+		    int last = this.pathSegments.size() - 1;
+	        this.pathSegments.set(last, this.pathSegments.get(last) + suffix);
+		    return this;
 		}
 
 		public Builder subPath(int start)
