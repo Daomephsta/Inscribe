@@ -1,11 +1,12 @@
 package io.github.daomephsta.inscribe.client.guide.gui;
 
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoEntry;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents.Link;
 import io.github.daomephsta.mosaic.Size;
@@ -48,7 +49,7 @@ public class TableOfContentsEntries implements VisibleContent
 			GuideWidget icon = link.getIcon();
 
 			linkElement.add(icon, d -> d.setSize(Size.pixels(16)));
-			LabelWidget label = new LabelWidget(link.name, Alignment.CENTER, Alignment.CENTER, 0x000000);
+			LabelWidget label = new LabelWidget(new FormattedTextNode(link.name, 0x000000), Alignment.CENTER, Alignment.CENTER, 1.0F);
 			label.margin().setLeft(1);
 			linkElement.add(label);
 			return linkElement;
@@ -60,7 +61,7 @@ public class TableOfContentsEntries implements VisibleContent
 			return linkElement;
 		}
 		case TEXT:
-			return new LabelWidget(link.name, Alignment.LEADING, Alignment.CENTER, 0x000000);
+			return new LabelWidget(new FormattedTextNode(link.name, 0x000000), Alignment.LEADING, Alignment.CENTER, 1.0F);
 		default:
 			throw new IllegalArgumentException("Unknown link style " + link.style);
 		}
