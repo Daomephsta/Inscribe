@@ -15,11 +15,14 @@ public class OpenEntry implements VisibleContent
     {
         this.entry = entry;
         this.root = new GuideFlow(Direction.VERTICAL);
-        root.padding().setLeft(13).setTop(10);
+        root.padding()
+            .setHorizontal(13)
+            .setVertical(10);
         if (!entry.getPages().isEmpty())
-            entry.getPages().get(0).getContent().stream()
-                .map(RenderFormatConverter::convert)
-                .forEachOrdered(root::add);
+        {
+            for (Object content : entry.getPages().get(0).getContent())
+                root.add(RenderFormatConverter.convert(content));
+        }
     }
 
     @Override
