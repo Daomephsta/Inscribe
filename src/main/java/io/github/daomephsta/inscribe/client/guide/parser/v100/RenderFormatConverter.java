@@ -5,7 +5,10 @@ import org.commonmark.node.Node;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.ImageWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.StackDisplayWidget;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.parser.markdown.InscribeMarkdownVisitor;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlImage;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
@@ -26,8 +29,7 @@ public class RenderFormatConverter
 		}
 		else if (xmlForm instanceof Node)
 		    return parseMarkDown((Node) xmlForm);
-		else
-		    throw new IllegalArgumentException("Cannot convert " + xmlForm);
+		return new LabelWidget(new FormattedTextNode("CONVERT_FAIL", 0), Alignment.CENTER, Alignment.CENTER, 1.0F);
 	}
 
 	private static GuideFlow parseMarkDown(Node markDownRoot)
