@@ -10,7 +10,6 @@ import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes.Preconditions;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
@@ -30,14 +29,9 @@ final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAcc
 			new Lazy<>(() -> Arrays.stream(ItemGroup.GROUPS).collect(Collectors.toMap(ItemGroup::getId, ig -> ig)));
 
 	@Override
-	protected void configurePreconditions(Preconditions attributePreconditions)
+    public GuideItemAccessMethod fromXml(Element xml) throws GuideLoadingException
 	{
-		attributePreconditions.required(ITEM_GROUP, MODEL);
-	}
-
-	@Override
-	protected GuideItemAccessMethod translate(Element xml) throws GuideLoadingException
-	{
+	    XmlAttributes.requireAttributes(xml, ITEM_GROUP, MODEL);
 		String itemGroupId = xml.getAttributeValue(ITEM_GROUP);
 		ItemGroup itemGroup = ID_TO_GROUP.get().get(itemGroupId);
 		if (itemGroup == null)

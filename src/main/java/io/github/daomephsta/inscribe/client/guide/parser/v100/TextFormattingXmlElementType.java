@@ -32,7 +32,7 @@ public class TextFormattingXmlElementType<T extends XmlMixedContent> extends Xml
 	}
 
 	@Override
-	protected T translate(Element xml) throws GuideLoadingException
+    public T fromXml(Element xml) throws GuideLoadingException
 	{
 		return constructorHandle.apply(contentDeserialiser.get().deserialise(xml.getContent()));
 	}

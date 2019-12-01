@@ -31,7 +31,7 @@ class XmlParagraphElementType extends XmlElementType<XmlParagraph>
 	}
 
 	@Override
-	protected XmlParagraph translate(Element xml) throws GuideLoadingException
+    public XmlParagraph fromXml(Element xml) throws GuideLoadingException
 	{
 		return new XmlParagraph(contentDeserialiser.get().deserialise(xml.getContent()));
 	}

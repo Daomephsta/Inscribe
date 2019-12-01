@@ -9,7 +9,6 @@ import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes.Preconditions;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlElements;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Animation;
@@ -28,13 +27,7 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
     }
 
     @Override
-    protected void configurePreconditions(Preconditions attributePreconditions)
-    {
-        attributePreconditions.required("entity").optional("tag", "lighting");
-    }
-
-    @Override
-    protected XmlEntityDisplay translate(Element xml) throws GuideLoadingException
+    public XmlEntityDisplay fromXml(Element xml) throws GuideLoadingException
     {
         try
         {

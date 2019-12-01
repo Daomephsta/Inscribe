@@ -9,7 +9,6 @@ import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes.Preconditions;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
 import net.minecraft.command.arguments.ItemStringReader;
 import net.minecraft.item.ItemStack;
@@ -22,13 +21,7 @@ final class XmlItemStackElementType extends XmlElementType<XmlItemStack>
 	}
 
 	@Override
-	protected void configurePreconditions(Preconditions attributePreconditions)
-	{
-		attributePreconditions.required("item").optional("tag", "amount");
-	}
-
-	@Override
-	protected XmlItemStack translate(Element xml) throws GuideLoadingException
+    public XmlItemStack fromXml(Element xml) throws GuideLoadingException
 	{
 		try
 		{

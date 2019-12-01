@@ -29,7 +29,7 @@ class XmlEntryLinkElementType extends XmlElementType<XmlEntryLink>
 	}
 
 	@Override
-	protected XmlEntryLink translate(Element xml) throws GuideLoadingException
+    public XmlEntryLink fromXml(Element xml) throws GuideLoadingException
 	{
 		Identifier entryId = XmlAttributes.asIdentifier(xml, "entry");
 		String anchorId = xml.getAttributeValue("anchor");

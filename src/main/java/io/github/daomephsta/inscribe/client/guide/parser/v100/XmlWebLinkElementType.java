@@ -32,7 +32,7 @@ class XmlWebLinkElementType extends XmlElementType<XmlWebLink>
 	}
 
 	@Override
-	protected XmlWebLink translate(Element xml) throws GuideLoadingException
+    public XmlWebLink fromXml(Element xml) throws GuideLoadingException
 	{
 		String url = XmlAttributes.getValue(xml, "target");
 		try

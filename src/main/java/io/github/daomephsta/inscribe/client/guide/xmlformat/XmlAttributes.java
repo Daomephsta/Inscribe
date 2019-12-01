@@ -1,8 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -13,8 +11,6 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Sets;
-
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -418,11 +414,6 @@ public class XmlAttributes
 	        throw new InscribeSyntaxException("Missing required attributes for " + xml + ": " + missing);
 	}
 
-	public static Preconditions preconditions()
-	{
-		return new Preconditions();
-	}
-
 	private static InscribeSyntaxException noAttributeException(Element xml, String attributeName)
 	{
 		return new InscribeSyntaxException(String.format("No attribute named '%s' found in element of type %s", attributeName, xml.getQualifiedName()));
@@ -431,41 +422,5 @@ public class XmlAttributes
 	private static RuntimeException wrappedDataConversionException(String attributeName, DataConversionException e)
 	{
 		return new InscribeXmlParseException(String.format("Could not parse value of attribute '%s' as an integer", attributeName), e);
-	}
-
-	public static class Preconditions
-	{
-		private Collection<String> requiredAttributes = Collections.emptySet(),
-								   optionalAttributes = Collections.emptySet();
-
-		private Preconditions() {}
-
-		public Preconditions required(String... required)
-		{
-			this.requiredAttributes = Sets.newHashSet(required);
-			return this;
-		}
-
-		public Preconditions optional(String... optional)
-		{
-			this.optionalAttributes = Sets.newHashSet(optional);
-			return this;
-		}
-
-		public void validate(Element xml) throws InscribeSyntaxException
-		{
-			String unknown = xml.getAttributes().stream()
-								.map(Attribute::getName)
-								.filter(a -> !(requiredAttributes.contains(a) || optionalAttributes.contains(a)))
-								.collect(Collectors.joining(", "));
-			if (!unknown.isEmpty())
-				throw new InscribeSyntaxException("Unknown attributes for " + xml + ": " + unknown);
-
-			String missing = requiredAttributes.stream()
-								.filter(a -> xml.getAttribute(a) == null)
-								.collect(Collectors.joining(", "));
-			if (!missing.isEmpty())
-				throw new InscribeSyntaxException("Missing required attributes for " + xml + ": " + missing);
-		}
 	}
 }

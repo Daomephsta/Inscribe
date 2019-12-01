@@ -18,7 +18,7 @@ public class SimpleXmlElementType<T extends IXmlRepresentation> extends XmlEleme
 	}
 
 	@Override
-	protected T translate(Element xml) throws GuideLoadingException
+    public T fromXml(Element xml) throws GuideLoadingException
 	{
 		return constructorHandle.get();
 	}

@@ -4,28 +4,20 @@ import org.jdom2.Element;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes.Preconditions;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlAnchor;
 
 class XmlAnchorElementType extends XmlElementType<XmlAnchor>
 {
-	private static final String NAME = "name";
-
 	XmlAnchorElementType()
 	{
 		super("anchor", XmlAnchor.class);
 	}
 
 	@Override
-	protected void configurePreconditions(Preconditions attributePreconditions)
+    public XmlAnchor fromXml(Element xml) throws GuideLoadingException
 	{
-		attributePreconditions.required(NAME);
-	}
-
-	@Override
-	protected XmlAnchor translate(Element xml) throws GuideLoadingException
-	{
-		String name = xml.getAttributeValue(NAME);
+		String name = XmlAttributes.getValue(xml, "name");
 		return new XmlAnchor(name);
 	}
 }
