@@ -3,13 +3,16 @@ package io.github.daomephsta.inscribe.client.guide.xmlformat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 
 import net.minecraft.client.util.ModelIdentifier;
@@ -323,6 +326,41 @@ public class XmlAttributes
              throw new InscribeSyntaxException("Could not parse " + attributeValue + " as an enum constant");
         return result;
     }
+
+    /**
+     * Gets an xml attribute as a String array
+     * @param xml the parent element
+     * @param attributeName the name of the attribute
+     * @param fallback supplies a fallback value
+     * @return the value of the attribute as a String array or
+     * the result of {@code fallback} if it does not exist
+     */
+    public static List<String> asStringList(Element xml, String attributeName, Supplier<List<String>> fallback)
+    {
+        Element child = xml.getChild(attributeName);
+        if (child == null)
+            return fallback.get();
+        return toStringList(child.getText());
+    }
+
+    /**
+     * Gets an xml attribute as a String array
+     * @param xml the parent element
+     * Gets an xml attribute as a String array
+     * @throws InscribeSyntaxException if the attribute does not exist
+     * @return the value of the attribute as a String array
+     */
+    public static List<String> asStringList(Element xml, String attributeName) throws InscribeSyntaxException
+    {
+        return toStringList(getValue(xml, attributeName));
+    }
+
+    private static final Splitter ON_COMMA = Splitter.on(',').trimResults();
+    private static List<String> toStringList(String s)
+    {
+        return ON_COMMA.splitToList(s);
+    }
+
 
 	/**
 	 * Gets the attribute named {@code attributeName}.
