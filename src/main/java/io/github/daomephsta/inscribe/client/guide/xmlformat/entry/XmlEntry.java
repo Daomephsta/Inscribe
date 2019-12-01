@@ -14,7 +14,7 @@ public class XmlEntry implements IXmlRepresentation
     private final Set<String> tags;
     private final List<XmlPage> pages;
 
-	public XmlEntry(Identifier id, Collection<String> tags, List<XmlPage> pages)
+    public XmlEntry(Identifier id, Collection<String> tags, List<XmlPage> pages)
     {
         this.id = id;
         this.tags = new HashSet<>(tags);
@@ -22,22 +22,22 @@ public class XmlEntry implements IXmlRepresentation
     }
 
     @Override
-	public String toString()
-	{
-		return String.format("XmlEntry [id=%s, tags=%s]", tags);
-	}
+    public String toString()
+    {
+        return String.format("XmlEntry [id=%s, tags=%s]", tags);
+    }
 
     public Identifier getId()
     {
         return id;
     }
 
-	public Set<String> getTags()
-	{
-		return tags;
-	}
+    public Set<String> getTags()
+    {
+        return tags;
+    }
 
-	public List<XmlPage> getPages()
+    public List<XmlPage> getPages()
     {
         return pages;
     }

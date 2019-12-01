@@ -17,17 +17,17 @@ public class XmlResources
 
     public static Document readDocument(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
     {
-    	try
-    	{
-    		return builder.build(resourceManager.getResource(path).getInputStream());
-    	}
-    	catch (JDOMException e)
-    	{
-    		throw new GuideLoadingException(e, Severity.NON_FATAL);
-    	}
-    	catch(IOException e)
-    	{
-    		throw new GuideLoadingException(e, Severity.FATAL);
-    	}
+        try
+        {
+            return builder.build(resourceManager.getResource(path).getInputStream());
+        }
+        catch (JDOMException e)
+        {
+            throw new GuideLoadingException(e, Severity.NON_FATAL);
+        }
+        catch(IOException e)
+        {
+            throw new GuideLoadingException(e, Severity.FATAL);
+        }
     }
 }

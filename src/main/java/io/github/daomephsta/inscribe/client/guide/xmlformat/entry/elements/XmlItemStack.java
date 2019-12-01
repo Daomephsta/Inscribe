@@ -5,10 +5,10 @@ import net.minecraft.item.ItemStack;
 
 public class XmlItemStack implements XmlGuideGuiElement
 {
-	public final ItemStack stack;
+    public final ItemStack stack;
 
-	public XmlItemStack(ItemStack stack)
-	{
-		this.stack = stack;
-	}
+    public XmlItemStack(ItemStack stack)
+    {
+        this.stack = stack;
+    }
 }

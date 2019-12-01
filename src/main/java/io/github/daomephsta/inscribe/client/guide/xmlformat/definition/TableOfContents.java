@@ -11,38 +11,38 @@ import net.minecraft.util.Identifier;
 
 public class TableOfContents
 {
-	private final List<Link> links;
+    private final List<Link> links;
 
-	public TableOfContents(List<Link> links)
-	{
-		this.links = ImmutableList.copyOf(links);
-	}
+    public TableOfContents(List<Link> links)
+    {
+        this.links = ImmutableList.copyOf(links);
+    }
 
-	public Iterable<Link> getLinks()
-	{
-		return links;
-	}
+    public Iterable<Link> getLinks()
+    {
+        return links;
+    }
 
-	public static class Link
-	{
-		private final Supplier<GuideWidget> iconFactory;
-		public final String name;
-		public final Identifier destination;
-		public final LinkStyle style;
+    public static class Link
+    {
+        private final Supplier<GuideWidget> iconFactory;
+        public final String name;
+        public final Identifier destination;
+        public final LinkStyle style;
 
-		public Link(Supplier<GuideWidget> iconFactory, String name, Identifier destination, LinkStyle style)
-		{
-			this.iconFactory = iconFactory;
-			this.name = name;
-			this.destination = destination;
-			this.style = style;
-		}
-
-		public GuideWidget getIcon()
+        public Link(Supplier<GuideWidget> iconFactory, String name, Identifier destination, LinkStyle style)
         {
-		    if (iconFactory == null)
-		        throw new NullPointerException("Icon not present");
+            this.iconFactory = iconFactory;
+            this.name = name;
+            this.destination = destination;
+            this.style = style;
+        }
+
+        public GuideWidget getIcon()
+        {
+            if (iconFactory == null)
+                throw new NullPointerException("Icon not present");
             return iconFactory.get();
         }
-	}
+    }
 }

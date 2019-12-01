@@ -13,27 +13,27 @@ import net.minecraft.util.Lazy;
 
 public class TextFormattingXmlElementType<T extends XmlMixedContent> extends XmlElementType<T>
 {
-	private final Function<List<Object>, T> constructorHandle;
-	private final Lazy<ContentDeserialiser> contentDeserialiser;
+    private final Function<List<Object>, T> constructorHandle;
+    private final Lazy<ContentDeserialiser> contentDeserialiser;
 
-	public TextFormattingXmlElementType(String elementName, Class<T> clazz, Function<List<Object>, T> constructorHandle)
-	{
-		super(elementName, clazz);
-		this.constructorHandle = constructorHandle;
-		this.contentDeserialiser = new Lazy<>
-		(() ->
-			new ContentDeserialiser.Impl()
-				.registerDeserialiser(V100ElementTypes.BOLD)
-				.registerDeserialiser(V100ElementTypes.STRONG)
-				.registerDeserialiser(V100ElementTypes.EMPHASIS)
-				.registerDeserialiser(V100ElementTypes.ITALICS)
-				.registerDeserialiser(V100ElementTypes.DEL)
-		);
-	}
+    public TextFormattingXmlElementType(String elementName, Class<T> clazz, Function<List<Object>, T> constructorHandle)
+    {
+        super(elementName, clazz);
+        this.constructorHandle = constructorHandle;
+        this.contentDeserialiser = new Lazy<>
+        (() ->
+            new ContentDeserialiser.Impl()
+                .registerDeserialiser(V100ElementTypes.BOLD)
+                .registerDeserialiser(V100ElementTypes.STRONG)
+                .registerDeserialiser(V100ElementTypes.EMPHASIS)
+                .registerDeserialiser(V100ElementTypes.ITALICS)
+                .registerDeserialiser(V100ElementTypes.DEL)
+        );
+    }
 
-	@Override
+    @Override
     public T fromXml(Element xml) throws GuideLoadingException
-	{
-		return constructorHandle.apply(contentDeserialiser.get().deserialise(xml.getContent()));
-	}
+    {
+        return constructorHandle.apply(contentDeserialiser.get().deserialise(xml.getContent()));
+    }
 }

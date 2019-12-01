@@ -40,37 +40,37 @@ import net.minecraft.util.Identifier;
 
 public class V100Parser implements Parser
 {
-	public static final Parser INSTANCE = new V100Parser();
+    public static final Parser INSTANCE = new V100Parser();
     private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.parserV100");
-	private static final SubtypeDeserialiser<GuideAccessMethod> GUIDE_ACCESS_METHOD_DESERIALISER = new Impl<>(GuideAccessMethod.class)
-				.registerDeserialiser(V100ElementTypes.NO_GUIDE_ACCESS_METHOD)
-				.registerDeserialiser(V100ElementTypes.GUIDE_ITEM_ACCESS_METHOD);
-	private static final SubtypeDeserialiser<XmlGuideGuiElement> GUIDE_GUI_ELEMENT_DESERIALISER = new Impl<>(XmlGuideGuiElement.class)
+    private static final SubtypeDeserialiser<GuideAccessMethod> GUIDE_ACCESS_METHOD_DESERIALISER = new Impl<>(GuideAccessMethod.class)
+                .registerDeserialiser(V100ElementTypes.NO_GUIDE_ACCESS_METHOD)
+                .registerDeserialiser(V100ElementTypes.GUIDE_ITEM_ACCESS_METHOD);
+    private static final SubtypeDeserialiser<XmlGuideGuiElement> GUIDE_GUI_ELEMENT_DESERIALISER = new Impl<>(XmlGuideGuiElement.class)
         .registerDeserialiser(V100ElementTypes.IMAGE)
-	    .registerDeserialiser(V100ElementTypes.ITEMSTACK)
-	    .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
-	private static final ContentDeserialiser ENTRY_DESERIALISER = new ContentDeserialiser.Impl()
-			.registerDeserialiser(V100ElementTypes.PARAGRAPH)
-			.registerDeserialiser(V100ElementTypes.ITALICS)
-			.registerDeserialiser(V100ElementTypes.EMPHASIS)
-			.registerDeserialiser(V100ElementTypes.BOLD)
-			.registerDeserialiser(V100ElementTypes.STRONG)
-			.registerDeserialiser(V100ElementTypes.DEL)
-			.registerDeserialiser(V100ElementTypes.LINE_BREAK)
-			.registerDeserialiser(V100ElementTypes.WEB_LINK)
-			.registerDeserialiser(V100ElementTypes.ENTRY_LINK)
-			.registerDeserialiser(V100ElementTypes.ANCHOR)
-			.registerDeserialiser(V100ElementTypes.IMAGE)
-	        .registerDeserialiser(V100ElementTypes.ITEMSTACK)
-	        .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
+        .registerDeserialiser(V100ElementTypes.ITEMSTACK)
+        .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
+    private static final ContentDeserialiser ENTRY_DESERIALISER = new ContentDeserialiser.Impl()
+            .registerDeserialiser(V100ElementTypes.PARAGRAPH)
+            .registerDeserialiser(V100ElementTypes.ITALICS)
+            .registerDeserialiser(V100ElementTypes.EMPHASIS)
+            .registerDeserialiser(V100ElementTypes.BOLD)
+            .registerDeserialiser(V100ElementTypes.STRONG)
+            .registerDeserialiser(V100ElementTypes.DEL)
+            .registerDeserialiser(V100ElementTypes.LINE_BREAK)
+            .registerDeserialiser(V100ElementTypes.WEB_LINK)
+            .registerDeserialiser(V100ElementTypes.ENTRY_LINK)
+            .registerDeserialiser(V100ElementTypes.ANCHOR)
+            .registerDeserialiser(V100ElementTypes.IMAGE)
+            .registerDeserialiser(V100ElementTypes.ITEMSTACK)
+            .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
 
-	private V100Parser() {}
+    private V100Parser() {}
 
-	@Override
-	public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
-	{
-	    //Remove "inscribe_guides" from the start and "guide_definition.xml" from the end
-		Identifier guideId = Identifiers.builder(path).subPath(1, -2).build();
+    @Override
+    public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    {
+        //Remove "inscribe_guides" from the start and "guide_definition.xml" from the end
+        Identifier guideId = Identifiers.builder(path).subPath(1, -2).build();
         Identifier mainTocPath = Identifiers.builder(XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
             .namespace(guideId.getNamespace())
             .prependPathSegments(guideId.getPath())
@@ -125,13 +125,13 @@ public class V100Parser implements Parser
         return new TableOfContents(links);
     }
 
-	@Override
-	public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier id) throws GuideLoadingException
-	{
+    @Override
+    public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier id) throws GuideLoadingException
+    {
         List<String> tags = XmlAttributes.asStringList(root, "tags", Collections::emptyList);
         List<XmlPage> pages = readPages(root, id);
-		return new XmlEntry(id, tags, pages);
-	}
+        return new XmlEntry(id, tags, pages);
+    }
 
     private List<XmlPage> readPages(Element root, Identifier entryId) throws GuideLoadingException
     {

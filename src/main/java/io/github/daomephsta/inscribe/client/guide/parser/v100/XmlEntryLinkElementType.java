@@ -11,28 +11,28 @@ import net.minecraft.util.Lazy;
 
 class XmlEntryLinkElementType extends XmlElementType<XmlEntryLink>
 {
-	private final Lazy<ContentDeserialiser> contentDeserialiser;
+    private final Lazy<ContentDeserialiser> contentDeserialiser;
 
-	XmlEntryLinkElementType()
-	{
-		super("entry_link", XmlEntryLink.class);
-		this.contentDeserialiser = new Lazy<>
-		(() ->
-			new ContentDeserialiser.Impl()
-				.registerDeserialiser(V100ElementTypes.BOLD)
-				.registerDeserialiser(V100ElementTypes.STRONG)
-				.registerDeserialiser(V100ElementTypes.EMPHASIS)
-				.registerDeserialiser(V100ElementTypes.ITALICS)
-				.registerDeserialiser(V100ElementTypes.DEL)
-				.registerDeserialiser(V100ElementTypes.IMAGE)
-		);
-	}
+    XmlEntryLinkElementType()
+    {
+        super("entry_link", XmlEntryLink.class);
+        this.contentDeserialiser = new Lazy<>
+        (() ->
+            new ContentDeserialiser.Impl()
+                .registerDeserialiser(V100ElementTypes.BOLD)
+                .registerDeserialiser(V100ElementTypes.STRONG)
+                .registerDeserialiser(V100ElementTypes.EMPHASIS)
+                .registerDeserialiser(V100ElementTypes.ITALICS)
+                .registerDeserialiser(V100ElementTypes.DEL)
+                .registerDeserialiser(V100ElementTypes.IMAGE)
+        );
+    }
 
-	@Override
+    @Override
     public XmlEntryLink fromXml(Element xml) throws GuideLoadingException
-	{
-		Identifier entryId = XmlAttributes.asIdentifier(xml, "entry");
-		String anchorId = xml.getAttributeValue("anchor");
-		return new XmlEntryLink(contentDeserialiser.get().deserialise(xml.getContent()), entryId, anchorId);
-	}
+    {
+        Identifier entryId = XmlAttributes.asIdentifier(xml, "entry");
+        String anchorId = xml.getAttributeValue("anchor");
+        return new XmlEntryLink(contentDeserialiser.get().deserialise(xml.getContent()), entryId, anchorId);
+    }
 }

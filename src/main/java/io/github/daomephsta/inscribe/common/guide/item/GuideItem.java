@@ -21,74 +21,74 @@ import net.minecraft.world.World;
 
 public class GuideItem extends Item
 {
-	public static final Identifier INVALID_GUIDE = new Identifier(Inscribe.MOD_ID, "invalid");
-	private static final String GUIDE_ID_TAG = "guide_id";
+    public static final Identifier INVALID_GUIDE = new Identifier(Inscribe.MOD_ID, "invalid");
+    private static final String GUIDE_ID_TAG = "guide_id";
 
-	public GuideItem()
-	{
-		super(new Settings().maxCount(1));
-	}
+    public GuideItem()
+    {
+        super(new Settings().maxCount(1));
+    }
 
-	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand)
-	{
-		ItemStack stack = playerEntity.getStackInHand(hand);
-		if (world.isClient)
-		{
-		    Guide guide = getGuide(stack);
-		    MinecraftClient.getInstance().openScreen(new GuideScreen(guide));
-		}
-		return new TypedActionResult<>(ActionResult.SUCCESS, stack );
-	}
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand)
+    {
+        ItemStack stack = playerEntity.getStackInHand(hand);
+        if (world.isClient)
+        {
+            Guide guide = getGuide(stack);
+            MinecraftClient.getInstance().openScreen(new GuideScreen(guide));
+        }
+        return new TypedActionResult<>(ActionResult.SUCCESS, stack );
+    }
 
-	@Override
-	public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> items)
-	{
-		if (itemGroup == ItemGroup.SEARCH)
-		{
-			for (Guide guide : GuideManager.INSTANCE.getGuides())
-			{
-				items.add(this.forGuide(guide));
-			}
-		}
-		else
-		{
-			for (Guide guide : GuideManager.INSTANCE.getGuides())
-			{
-				GuideAccessMethod accessMethod = guide.getAccessMethod();
-				if (accessMethod instanceof GuideItemAccessMethod
-					&& ((GuideItemAccessMethod) accessMethod).getItemGroup() == itemGroup)
-				{
-					items.add(this.forGuide(guide));
-				}
-			}
-		}
-	}
+    @Override
+    public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> items)
+    {
+        if (itemGroup == ItemGroup.SEARCH)
+        {
+            for (Guide guide : GuideManager.INSTANCE.getGuides())
+            {
+                items.add(this.forGuide(guide));
+            }
+        }
+        else
+        {
+            for (Guide guide : GuideManager.INSTANCE.getGuides())
+            {
+                GuideAccessMethod accessMethod = guide.getAccessMethod();
+                if (accessMethod instanceof GuideItemAccessMethod
+                    && ((GuideItemAccessMethod) accessMethod).getItemGroup() == itemGroup)
+                {
+                    items.add(this.forGuide(guide));
+                }
+            }
+        }
+    }
 
-	@Override
-	public String getTranslationKey(ItemStack itemStack)
-	{
-		return getGuide(itemStack).getTranslationKey();
-	}
+    @Override
+    public String getTranslationKey(ItemStack itemStack)
+    {
+        return getGuide(itemStack).getTranslationKey();
+    }
 
-	public Guide getGuide(ItemStack guideStack)
-	{
-		return GuideManager.INSTANCE.getGuide(getGuideId(guideStack));
-	}
+    public Guide getGuide(ItemStack guideStack)
+    {
+        return GuideManager.INSTANCE.getGuide(getGuideId(guideStack));
+    }
 
-	private Identifier getGuideId(ItemStack guideStack)
-	{
-		if (!guideStack.hasTag() || (guideStack.hasTag() && !guideStack.getTag().containsKey(GUIDE_ID_TAG)))
-			return Guide.INVALID_GUIDE_ID;
-		return new Identifier(guideStack.getTag().getString(GUIDE_ID_TAG));
-	}
+    private Identifier getGuideId(ItemStack guideStack)
+    {
+        if (!guideStack.hasTag() || (guideStack.hasTag() && !guideStack.getTag().containsKey(GUIDE_ID_TAG)))
+            return Guide.INVALID_GUIDE_ID;
+        return new Identifier(guideStack.getTag().getString(GUIDE_ID_TAG));
+    }
 
-	public ItemStack forGuide(Guide guide)
-	{
-		ItemStack guideStack = new ItemStack(this);
-		CompoundTag guideTag = new CompoundTag();
-		guideTag.putString(GUIDE_ID_TAG, guide.getIdentifier().toString());
-		guideStack.setTag(guideTag);
-		return guideStack;
-	}
+    public ItemStack forGuide(Guide guide)
+    {
+        ItemStack guideStack = new ItemStack(this);
+        CompoundTag guideTag = new CompoundTag();
+        guideTag.putString(GUIDE_ID_TAG, guide.getIdentifier().toString());
+        guideStack.setTag(guideTag);
+        return guideStack;
+    }
 }

@@ -10,37 +10,37 @@ import net.minecraft.util.StringIdentifiable;
 
 public enum LinkStyle implements StringIdentifiable
 {
-	ICON_WITH_TOOLTIP("icon_with_tooltip", true),
-	ICON_WITH_TEXT("icon_with_text", true),
-	TEXT("text", false);
+    ICON_WITH_TOOLTIP("icon_with_tooltip", true),
+    ICON_WITH_TEXT("icon_with_text", true),
+    TEXT("text", false);
 
-	private final String stringRepresentation;
-	private final boolean requiresIcon;
-	private static final Map<String, LinkStyle> REPRESENTATION_TO_STYLE;
-	static
-	{
-		REPRESENTATION_TO_STYLE = stream(LinkStyle.values()).collect(ImmutableMap.toImmutableMap(LinkStyle::asString, s -> s));
-	}
+    private final String stringRepresentation;
+    private final boolean requiresIcon;
+    private static final Map<String, LinkStyle> REPRESENTATION_TO_STYLE;
+    static
+    {
+        REPRESENTATION_TO_STYLE = stream(LinkStyle.values()).collect(ImmutableMap.toImmutableMap(LinkStyle::asString, s -> s));
+    }
 
-	private LinkStyle(String stringRepresentation, boolean requiresIcon)
-	{
-		this.stringRepresentation = stringRepresentation;
-		this.requiresIcon = requiresIcon;
-	}
+    private LinkStyle(String stringRepresentation, boolean requiresIcon)
+    {
+        this.stringRepresentation = stringRepresentation;
+        this.requiresIcon = requiresIcon;
+    }
 
-	public static LinkStyle fromRepresentation(String representation)
-	{
-		return REPRESENTATION_TO_STYLE.get(representation);
-	}
+    public static LinkStyle fromRepresentation(String representation)
+    {
+        return REPRESENTATION_TO_STYLE.get(representation);
+    }
 
-	@Override
-	public String asString()
-	{
-		return stringRepresentation;
-	}
+    @Override
+    public String asString()
+    {
+        return stringRepresentation;
+    }
 
-	public boolean requiresIcon()
-	{
-		return requiresIcon;
-	}
+    public boolean requiresIcon()
+    {
+        return requiresIcon;
+    }
 }

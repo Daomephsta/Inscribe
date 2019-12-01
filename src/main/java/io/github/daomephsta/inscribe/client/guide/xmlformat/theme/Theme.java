@@ -8,23 +8,23 @@ import net.minecraft.util.Identifier;
 
 public class Theme
 {
-	public static final Theme DEFAULT = new Theme(new Identifier("minecraft:textures/gui/book.png"));
+    public static final Theme DEFAULT = new Theme(new Identifier("minecraft:textures/gui/book.png"));
 
-	private final Identifier guiTexture;
+    private final Identifier guiTexture;
 
-	private Theme(Identifier guiTexture)
-	{
-		this.guiTexture = guiTexture;
-	}
+    private Theme(Identifier guiTexture)
+    {
+        this.guiTexture = guiTexture;
+    }
 
-	public static Theme fromXml(Element xml) throws InscribeSyntaxException
-	{
-		Identifier pageTexture = XmlAttributes.asIdentifier(xml, "gui_texture", DEFAULT.getGuiTexture());
-		return new Theme(pageTexture);
-	}
+    public static Theme fromXml(Element xml) throws InscribeSyntaxException
+    {
+        Identifier pageTexture = XmlAttributes.asIdentifier(xml, "gui_texture", DEFAULT.getGuiTexture());
+        return new Theme(pageTexture);
+    }
 
-	public Identifier getGuiTexture()
-	{
-		return guiTexture;
-	}
+    public Identifier getGuiTexture()
+    {
+        return guiTexture;
+    }
 }

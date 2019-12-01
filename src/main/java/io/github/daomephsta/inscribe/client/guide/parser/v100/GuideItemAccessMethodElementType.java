@@ -17,28 +17,28 @@ import net.minecraft.util.Lazy;
 
 final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAccessMethod>
 {
-	private static final String ITEM_GROUP = "item_group",
-								MODEL = "model";
+    private static final String ITEM_GROUP = "item_group",
+                                MODEL = "model";
 
-	GuideItemAccessMethodElementType()
-	{
-		super("guide_item", GuideItemAccessMethod.class);
-	}
+    GuideItemAccessMethodElementType()
+    {
+        super("guide_item", GuideItemAccessMethod.class);
+    }
 
-	private static final Lazy<Map<String, ItemGroup>> ID_TO_GROUP =
-			new Lazy<>(() -> Arrays.stream(ItemGroup.GROUPS).collect(Collectors.toMap(ItemGroup::getId, ig -> ig)));
+    private static final Lazy<Map<String, ItemGroup>> ID_TO_GROUP =
+            new Lazy<>(() -> Arrays.stream(ItemGroup.GROUPS).collect(Collectors.toMap(ItemGroup::getId, ig -> ig)));
 
-	@Override
+    @Override
     public GuideItemAccessMethod fromXml(Element xml) throws GuideLoadingException
-	{
-	    XmlAttributes.requireAttributes(xml, ITEM_GROUP, MODEL);
-		String itemGroupId = xml.getAttributeValue(ITEM_GROUP);
-		ItemGroup itemGroup = ID_TO_GROUP.get().get(itemGroupId);
-		if (itemGroup == null)
-			throw new InscribeSyntaxException(itemGroupId + " is not a valid item group id");
-		Identifier modelId = xml.getAttributeValue(MODEL).contains("#")
-				? XmlAttributes.asModelIdentifier(xml, MODEL)
-				: XmlAttributes.asIdentifier(xml, MODEL);
-		return new GuideItemAccessMethod(itemGroup, modelId);
-	}
+    {
+        XmlAttributes.requireAttributes(xml, ITEM_GROUP, MODEL);
+        String itemGroupId = xml.getAttributeValue(ITEM_GROUP);
+        ItemGroup itemGroup = ID_TO_GROUP.get().get(itemGroupId);
+        if (itemGroup == null)
+            throw new InscribeSyntaxException(itemGroupId + " is not a valid item group id");
+        Identifier modelId = xml.getAttributeValue(MODEL).contains("#")
+                ? XmlAttributes.asModelIdentifier(xml, MODEL)
+                : XmlAttributes.asIdentifier(xml, MODEL);
+        return new GuideItemAccessMethod(itemGroup, modelId);
+    }
 }

@@ -11,14 +11,14 @@ public class GuideDefinition
     public static final GuideDefinition FALLBACK = new GuideDefinition(Guide.INVALID_GUIDE_ID, new NoGuideAccessMethod(),
         new TableOfContents(Collections.emptyList()), Theme.DEFAULT);
 
-	private final Identifier guideId;
-	private final String translationKey;
-	private final GuideAccessMethod guideAccess;
-	private final TableOfContents mainTableOfContents;
-	private final Theme theme;
+    private final Identifier guideId;
+    private final String translationKey;
+    private final GuideAccessMethod guideAccess;
+    private final TableOfContents mainTableOfContents;
+    private final Theme theme;
 
 
-	public GuideDefinition(Identifier guideId, GuideAccessMethod guideAccess, TableOfContents mainTableOfContents, Theme theme)
+    public GuideDefinition(Identifier guideId, GuideAccessMethod guideAccess, TableOfContents mainTableOfContents, Theme theme)
     {
         this.guideId = guideId;
         this.translationKey = guideId.getNamespace() + ".guide." + guideId.getPath() + ".name";
@@ -28,33 +28,33 @@ public class GuideDefinition
     }
 
     public Identifier getGuideId()
-	{
-		return guideId;
-	}
+    {
+        return guideId;
+    }
 
-	public String getTranslationKey()
-	{
-		return translationKey;
-	}
+    public String getTranslationKey()
+    {
+        return translationKey;
+    }
 
-	public GuideAccessMethod getAccessMethod()
-	{
-		return guideAccess;
-	}
+    public GuideAccessMethod getAccessMethod()
+    {
+        return guideAccess;
+    }
 
-	public TableOfContents getMainTableOfContents()
+    public TableOfContents getMainTableOfContents()
     {
         return mainTableOfContents;
     }
 
-	public Theme getTheme()
-	{
-		return theme;
-	}
+    public Theme getTheme()
+    {
+        return theme;
+    }
 
-	@Override
-	public String toString()
-	{
-		return String.format("GuideDefinitionClient [guideId=%s, theme=%s]", guideId, theme);
-	}
+    @Override
+    public String toString()
+    {
+        return String.format("GuideDefinitionClient [guideId=%s, theme=%s]", guideId, theme);
+    }
 }

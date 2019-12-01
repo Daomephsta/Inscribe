@@ -15,27 +15,27 @@ import net.minecraft.item.ItemStack;
 
 final class XmlItemStackElementType extends XmlElementType<XmlItemStack>
 {
-	XmlItemStackElementType()
-	{
-		super("itemstack", XmlItemStack.class);
-	}
+    XmlItemStackElementType()
+    {
+        super("itemstack", XmlItemStack.class);
+    }
 
-	@Override
+    @Override
     public XmlItemStack fromXml(Element xml) throws GuideLoadingException
-	{
-		try
-		{
-			String itemId = XmlAttributes.getValue(xml, "item");
-			String itemString = itemId + XmlAttributes.getValue(xml, "tag", "");
-			ItemStringReader itemStringReader = new ItemStringReader(new StringReader(itemString), false).consume();
-			int amount = XmlAttributes.asInt(xml, "amount", 1);
-			ItemStack stack = new ItemStack(itemStringReader.getItem(), amount);
-			stack.setTag(itemStringReader.getTag());
-			return new XmlItemStack(stack);
-		}
-		catch (CommandSyntaxException e)
-		{
-			throw new InscribeSyntaxException("Failed to parse itemstack", e);
-		}
-	}
+    {
+        try
+        {
+            String itemId = XmlAttributes.getValue(xml, "item");
+            String itemString = itemId + XmlAttributes.getValue(xml, "tag", "");
+            ItemStringReader itemStringReader = new ItemStringReader(new StringReader(itemString), false).consume();
+            int amount = XmlAttributes.asInt(xml, "amount", 1);
+            ItemStack stack = new ItemStack(itemStringReader.getItem(), amount);
+            stack.setTag(itemStringReader.getTag());
+            return new XmlItemStack(stack);
+        }
+        catch (CommandSyntaxException e)
+        {
+            throw new InscribeSyntaxException("Failed to parse itemstack", e);
+        }
+    }
 }

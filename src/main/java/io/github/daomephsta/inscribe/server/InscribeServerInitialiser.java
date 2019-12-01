@@ -5,9 +5,9 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 
 public class InscribeServerInitialiser implements DedicatedServerModInitializer
 {
-	@Override
-	public void onInitializeServer()
-	{
-		new Inscribe().onInitialise();
-	}
+    @Override
+    public void onInitializeServer()
+    {
+        new Inscribe().onInitialise();
+    }
 }

@@ -9,15 +9,15 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlAn
 
 class XmlAnchorElementType extends XmlElementType<XmlAnchor>
 {
-	XmlAnchorElementType()
-	{
-		super("anchor", XmlAnchor.class);
-	}
+    XmlAnchorElementType()
+    {
+        super("anchor", XmlAnchor.class);
+    }
 
-	@Override
+    @Override
     public XmlAnchor fromXml(Element xml) throws GuideLoadingException
-	{
-		String name = XmlAttributes.getValue(xml, "name");
-		return new XmlAnchor(name);
-	}
+    {
+        String name = XmlAttributes.getValue(xml, "name");
+        return new XmlAnchor(name);
+    }
 }

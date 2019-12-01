@@ -11,9 +11,9 @@ import io.github.daomephsta.mosaic.flow.FlowLayoutData;
 
 public class GuideFlow extends GuideWidget implements ParentWidget
 {
-	private final Flow<GuideWidget> elements;
+    private final Flow<GuideWidget> elements;
 
-	public GuideFlow(Direction direction)
+    public GuideFlow(Direction direction)
     {
         this.elements = new Flow<>(direction);
         setPadding(elements.padding());

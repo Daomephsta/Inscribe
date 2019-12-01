@@ -10,19 +10,19 @@ import net.minecraft.util.Identifier;
 
 final class XmlImageElementType extends XmlElementType<XmlImage>
 {
-	XmlImageElementType()
-	{
-		super("image", XmlImage.class);
-	}
+    XmlImageElementType()
+    {
+        super("image", XmlImage.class);
+    }
 
-	@Override
+    @Override
     public XmlImage fromXml(Element xml) throws GuideLoadingException
-	{
-	    XmlAttributes.requireAttributes(xml, "src", "alt_text", "width", "height");
-		Identifier src = XmlAttributes.asIdentifier(xml, "src");
-	    String alt_text = XmlAttributes.getValue(xml, "alt_text");
-		int width = XmlAttributes.asInt(xml, "width"),
-		    height = XmlAttributes.asInt(xml, "height");
-		return new XmlImage(src, alt_text, width, height);
-	}
+    {
+        XmlAttributes.requireAttributes(xml, "src", "alt_text", "width", "height");
+        Identifier src = XmlAttributes.asIdentifier(xml, "src");
+        String alt_text = XmlAttributes.getValue(xml, "alt_text");
+        int width = XmlAttributes.asInt(xml, "width"),
+            height = XmlAttributes.asInt(xml, "height");
+        return new XmlImage(src, alt_text, width, height);
+    }
 }

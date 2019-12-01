@@ -21,20 +21,20 @@ import net.minecraft.util.registry.Registry;
 
 public class Inscribe
 {
-	public static final String MOD_ID = "inscribe";
-	public static final GuideItem GUIDE_ITEM = new GuideItem();
-	public static final Logger LOGGER = LogManager.getLogger();
+    public static final String MOD_ID = "inscribe";
+    public static final GuideItem GUIDE_ITEM = new GuideItem();
+    public static final Logger LOGGER = LogManager.getLogger();
 
-	public void onInitialise()
-	{
-		Registry.register(Registry.ITEM, MOD_ID + ":guide", GUIDE_ITEM);
+    public void onInitialise()
+    {
+        Registry.register(Registry.ITEM, MOD_ID + ":guide", GUIDE_ITEM);
         ArgumentTypes.register(Inscribe.MOD_ID + ":delegating", DelegatingArgumentType.class, new DelegatingArgumentType.Serialiser());
         ServerStartCallback.EVENT.register(server ->
         {
             InscribeCommand.register(server.getCommandManager().getDispatcher());
         });
         configureLogging();
-	}
+    }
 
     private void configureLogging()
     {

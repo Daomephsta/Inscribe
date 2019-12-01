@@ -5,10 +5,10 @@ import net.minecraft.util.Identifier;
 
 public class XmlImage implements XmlGuideGuiElement
 {
-	private final Identifier src;
+    private final Identifier src;
     private final String altText;
     private final int width,
-    				  height;
+                      height;
 
     public XmlImage(Identifier src, String altText, int width, int height)
     {
@@ -18,15 +18,15 @@ public class XmlImage implements XmlGuideGuiElement
         this.height = height;
     }
 
-	public Identifier getSrc()
-	{
-		return src;
-	}
+    public Identifier getSrc()
+    {
+        return src;
+    }
 
-	public String getAltText()
-	{
-		return altText;
-	}
+    public String getAltText()
+    {
+        return altText;
+    }
 
     public int getWidth()
     {

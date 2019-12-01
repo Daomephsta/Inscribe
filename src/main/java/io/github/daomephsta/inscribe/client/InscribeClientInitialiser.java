@@ -11,24 +11,24 @@ import net.minecraft.util.Identifier;
 
 public class InscribeClientInitialiser implements ClientModInitializer
 {
-	@Override
-	public void onInitializeClient()
-	{
-		new Inscribe().onInitialise();
-		registerModels();
-		KeyBindings.initialise();
-	}
+    @Override
+    public void onInitializeClient()
+    {
+        new Inscribe().onInitialise();
+        registerModels();
+        KeyBindings.initialise();
+    }
 
-	public void registerModels()
-	{
-		ModelLoadingRegistry.INSTANCE.registerAppender((resourceManager, out) ->
-		{
-			for (Identifier modelId : GuideManager.INSTANCE.getGuideModelIds())
-			{
-				if (modelId instanceof ModelIdentifier)
-					out.accept((ModelIdentifier) modelId);
-			}
-		});
-		ModelLoadingRegistry.INSTANCE.registerResourceProvider(resourceManager -> new GuideModel.Provider());
-	}
+    public void registerModels()
+    {
+        ModelLoadingRegistry.INSTANCE.registerAppender((resourceManager, out) ->
+        {
+            for (Identifier modelId : GuideManager.INSTANCE.getGuideModelIds())
+            {
+                if (modelId instanceof ModelIdentifier)
+                    out.accept((ModelIdentifier) modelId);
+            }
+        });
+        ModelLoadingRegistry.INSTANCE.registerResourceProvider(resourceManager -> new GuideModel.Provider());
+    }
 }

@@ -9,17 +9,17 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentat
 
 public class SimpleXmlElementType<T extends IXmlRepresentation> extends XmlElementType<T>
 {
-	private final Supplier<T> constructorHandle;
+    private final Supplier<T> constructorHandle;
 
-	public SimpleXmlElementType(String elementName, Class<T> clazz, Supplier<T> constructorHandle)
-	{
-		super(elementName, clazz);
-		this.constructorHandle = constructorHandle;
-	}
+    public SimpleXmlElementType(String elementName, Class<T> clazz, Supplier<T> constructorHandle)
+    {
+        super(elementName, clazz);
+        this.constructorHandle = constructorHandle;
+    }
 
-	@Override
+    @Override
     public T fromXml(Element xml) throws GuideLoadingException
-	{
-		return constructorHandle.get();
-	}
+    {
+        return constructorHandle.get();
+    }
 }

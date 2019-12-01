@@ -15,17 +15,17 @@ public class XmlElements
      * InscribeSyntaxException if the child element does not exist or could not be parsed as a Vector3f
      * @return the value of the element as a Vector3f
      */
-	public static Vector3f asVector3f(Element xml, String childName) throws InscribeSyntaxException
-	{
-	    Element child = xml.getChild(childName);
-	    XmlAttributes.requireAttributes(xml, "x", "y", "z");
-	    return new Vector3f
+    public static Vector3f asVector3f(Element xml, String childName) throws InscribeSyntaxException
+    {
+        Element child = xml.getChild(childName);
+        XmlAttributes.requireAttributes(xml, "x", "y", "z");
+        return new Vector3f
         (
             XmlAttributes.asFloat(child, "x", 0.0F),
             XmlAttributes.asFloat(child, "y", 0.0F),
             XmlAttributes.asFloat(child, "z", 0.0F)
         );
-	}
+    }
 
     /**
      * Gets an xml element as a Vector3f
@@ -52,27 +52,27 @@ public class XmlElements
             return fallback;
     }
 
-	/**
-	 * @throws InscribeSyntaxException
-	 * Gets a child element named {@code childName}.
-	 * @param xml the parent element
-	 * @param childName the name of the child element
-	 * @throws
-	 * InscribeSyntaxException if the child element does not exist
-	 * @return the child element
-	 * @throws
-	 */
-	public static Element getChild(Element xml, String childName) throws InscribeSyntaxException
-	{
-		Element child = xml.getChild(childName);
-		if (child == null)
-			throw noElementException(xml, childName);
-		return child;
-	}
+    /**
+     * @throws InscribeSyntaxException
+     * Gets a child element named {@code childName}.
+     * @param xml the parent element
+     * @param childName the name of the child element
+     * @throws
+     * InscribeSyntaxException if the child element does not exist
+     * @return the child element
+     * @throws
+     */
+    public static Element getChild(Element xml, String childName) throws InscribeSyntaxException
+    {
+        Element child = xml.getChild(childName);
+        if (child == null)
+            throw noElementException(xml, childName);
+        return child;
+    }
 
-	private static InscribeSyntaxException noElementException(Element xml, String childName)
-	{
-		return new InscribeSyntaxException(String.format(
-				"No element named '%s' found for parent element of type %s", childName, xml.getQualifiedName()));
-	}
+    private static InscribeSyntaxException noElementException(Element xml, String childName)
+    {
+        return new InscribeSyntaxException(String.format(
+                "No element named '%s' found for parent element of type %s", childName, xml.getQualifiedName()));
+    }
 }

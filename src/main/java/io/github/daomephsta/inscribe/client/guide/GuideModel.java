@@ -35,121 +35,121 @@ import net.minecraft.world.World;
 
 public class GuideModel
 {
-	public static class Provider implements ModelResourceProvider
-	{
-		private static final Identifier GUIDE_MODEL_ID = new Identifier(Inscribe.MOD_ID, "item/guide");
+    public static class Provider implements ModelResourceProvider
+    {
+        private static final Identifier GUIDE_MODEL_ID = new Identifier(Inscribe.MOD_ID, "item/guide");
 
-		@Override
-		public UnbakedModel loadModelResource(Identifier resourceId, ModelProviderContext context)
-			throws ModelProviderException
-		{
-			return resourceId.equals(GUIDE_MODEL_ID) ? new GuideModel.Unbaked() : null;
-		}
-	}
+        @Override
+        public UnbakedModel loadModelResource(Identifier resourceId, ModelProviderContext context)
+            throws ModelProviderException
+        {
+            return resourceId.equals(GUIDE_MODEL_ID) ? new GuideModel.Unbaked() : null;
+        }
+    }
 
-	private static class Unbaked implements UnbakedModel
-	{
-		@Override
-		public Collection<Identifier> getModelDependencies()
-		{
-			return GuideManager.INSTANCE.getGuideModelIds();
-		}
+    private static class Unbaked implements UnbakedModel
+    {
+        @Override
+        public Collection<Identifier> getModelDependencies()
+        {
+            return GuideManager.INSTANCE.getGuideModelIds();
+        }
 
-		@Override
-		public Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> modelGetter, Set<String> errors)
-		{
-			return GuideManager.INSTANCE.streamGuideModelIds()
-				.flatMap(model -> modelGetter.apply(model).getTextureDependencies(modelGetter, errors).stream())
-				.collect(toSet());
-		}
+        @Override
+        public Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> modelGetter, Set<String> errors)
+        {
+            return GuideManager.INSTANCE.streamGuideModelIds()
+                .flatMap(model -> modelGetter.apply(model).getTextureDependencies(modelGetter, errors).stream())
+                .collect(toSet());
+        }
 
-		@Override
-		public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> spriteGetter, ModelBakeSettings bakeSettings)
-		{
-			Map<Identifier, BakedModel> modelMap = GuideManager.INSTANCE.streamGuideModelIds()
-				.collect(toMap(id -> id, id -> modelLoader.bake(id, bakeSettings)));
-			ModelItemPropertyOverrideList overrides = new Overrides(modelLoader, modelMap);
-			return new Baked(overrides);
-		}
-	}
+        @Override
+        public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> spriteGetter, ModelBakeSettings bakeSettings)
+        {
+            Map<Identifier, BakedModel> modelMap = GuideManager.INSTANCE.streamGuideModelIds()
+                .collect(toMap(id -> id, id -> modelLoader.bake(id, bakeSettings)));
+            ModelItemPropertyOverrideList overrides = new Overrides(modelLoader, modelMap);
+            return new Baked(overrides);
+        }
+    }
 
-	private static class Overrides extends ModelItemPropertyOverrideList
-	{
-		private final Map<Identifier, BakedModel> modelMap;
-		private final BakedModel missingModel;
+    private static class Overrides extends ModelItemPropertyOverrideList
+    {
+        private final Map<Identifier, BakedModel> modelMap;
+        private final BakedModel missingModel;
 
-		public Overrides(ModelLoader modelLoader, Map<Identifier, BakedModel> modelMap)
-		{
-			super(modelLoader, null, id -> null, Collections.emptyList());
-			this.modelMap = modelMap;
-			this.missingModel = modelLoader.bake(ModelLoader.MISSING, ModelRotation.X0_Y0);
-		}
+        public Overrides(ModelLoader modelLoader, Map<Identifier, BakedModel> modelMap)
+        {
+            super(modelLoader, null, id -> null, Collections.emptyList());
+            this.modelMap = modelMap;
+            this.missingModel = modelLoader.bake(ModelLoader.MISSING, ModelRotation.X0_Y0);
+        }
 
-		@Override
-		public BakedModel apply(BakedModel baseModel, ItemStack itemStack, World world, LivingEntity livingEntity)
-		{
-			Guide guide = Inscribe.GUIDE_ITEM.getGuide(itemStack);
-			if (!guide.isValid())
-				return missingModel;
+        @Override
+        public BakedModel apply(BakedModel baseModel, ItemStack itemStack, World world, LivingEntity livingEntity)
+        {
+            Guide guide = Inscribe.GUIDE_ITEM.getGuide(itemStack);
+            if (!guide.isValid())
+                return missingModel;
 
-			GuideAccessMethod accessMethod = guide.getAccessMethod();
-			if (accessMethod instanceof GuideItemAccessMethod)
-				return modelMap.get(((GuideItemAccessMethod) accessMethod).getModelId());
-			else
-				return missingModel;
-		}
-	}
+            GuideAccessMethod accessMethod = guide.getAccessMethod();
+            if (accessMethod instanceof GuideItemAccessMethod)
+                return modelMap.get(((GuideItemAccessMethod) accessMethod).getModelId());
+            else
+                return missingModel;
+        }
+    }
 
-	public static class Baked implements BakedModel
-	{
-		private final ModelItemPropertyOverrideList overrides;
+    public static class Baked implements BakedModel
+    {
+        private final ModelItemPropertyOverrideList overrides;
 
-		public Baked(ModelItemPropertyOverrideList overrides)
-		{
-			this.overrides = overrides;
-		}
+        public Baked(ModelItemPropertyOverrideList overrides)
+        {
+            this.overrides = overrides;
+        }
 
-		//Only this method matters, since it redirects to the correct model
-		@Override
-		public ModelItemPropertyOverrideList getItemPropertyOverrides()
-		{
-			return overrides;
-		}
+        //Only this method matters, since it redirects to the correct model
+        @Override
+        public ModelItemPropertyOverrideList getItemPropertyOverrides()
+        {
+            return overrides;
+        }
 
-		@Override
-		public List<BakedQuad> getQuads(BlockState var1, Direction var2, Random var3)
-		{
-			return Collections.emptyList();
-		}
+        @Override
+        public List<BakedQuad> getQuads(BlockState var1, Direction var2, Random var3)
+        {
+            return Collections.emptyList();
+        }
 
-		@Override
-		public boolean useAmbientOcclusion()
-		{
-			return false;
-		}
+        @Override
+        public boolean useAmbientOcclusion()
+        {
+            return false;
+        }
 
-		@Override
-		public boolean hasDepthInGui()
-		{
-			return false;
-		}
+        @Override
+        public boolean hasDepthInGui()
+        {
+            return false;
+        }
 
-		@Override
-		public boolean isBuiltin()
-		{
-			return false;
-		}
+        @Override
+        public boolean isBuiltin()
+        {
+            return false;
+        }
 
-		@Override
-		public Sprite getSprite()
-		{
-			return null;
-		}
+        @Override
+        public Sprite getSprite()
+        {
+            return null;
+        }
 
-		@Override
-		public ModelTransformation getTransformation()
-		{
-			return ModelTransformation.NONE;
-		}
-	}
+        @Override
+        public ModelTransformation getTransformation()
+        {
+            return ModelTransformation.NONE;
+        }
+    }
 }

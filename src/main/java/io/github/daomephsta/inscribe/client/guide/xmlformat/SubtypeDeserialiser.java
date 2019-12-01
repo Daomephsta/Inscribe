@@ -15,52 +15,52 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentat
 
 public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 {
-	public T deserialise(Element root) throws GuideLoadingException;
+    public T deserialise(Element root) throws GuideLoadingException;
 
-	public class Impl<T extends IXmlRepresentation> implements SubtypeDeserialiser<T>
-	{
-		private final Class<T> parentType;
-		private final Map<String, XmlElementType<? extends T>> deserialisers = new HashMap<>();
-		private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.subtype_deserialiser.default");
+    public class Impl<T extends IXmlRepresentation> implements SubtypeDeserialiser<T>
+    {
+        private final Class<T> parentType;
+        private final Map<String, XmlElementType<? extends T>> deserialisers = new HashMap<>();
+        private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.subtype_deserialiser.default");
 
-		public Impl(Class<T> parentType)
-		{
-			this.parentType = parentType;
-		}
+        public Impl(Class<T> parentType)
+        {
+            this.parentType = parentType;
+        }
 
-		public Impl<T> registerDeserialiser(XmlElementType<? extends T> elementType)
-		{
-			deserialisers.put(elementType.getElementName(), elementType);
-			return this;
-		}
+        public Impl<T> registerDeserialiser(XmlElementType<? extends T> elementType)
+        {
+            deserialisers.put(elementType.getElementName(), elementType);
+            return this;
+        }
 
-		@Override
-		public T deserialise(Element root) throws GuideLoadingException
-		{
-			Object subtype = null;
-			for (Entry<String, XmlElementType<? extends T>> deserialiser : deserialisers.entrySet())
-			{
-				Element element = root.getChild(deserialiser.getKey());
-				if (element == null)
-					continue;
-				T deserialised = deserialiser.getValue().fromXml(element);
-				if (parentType.isInstance(deserialised) && subtype == null)
-					subtype = deserialised;
-				else
-				{
-					throw new InscribeSyntaxException(
-							String.format("Cannot parse %s as an instance of %s", element, parentType.getName()));
-				}
-			}
-			if (subtype == null)
-			{
-				throw new InscribeSyntaxException(String.format("Expected %s to have a child element %s",
-								root,
-								deserialisers.keySet().stream()
-									.map(s -> "'" + s + "'")
-									.collect(Collectors.joining(" or "))));
-			}
-			return parentType.cast(subtype);
-		}
-	}
+        @Override
+        public T deserialise(Element root) throws GuideLoadingException
+        {
+            Object subtype = null;
+            for (Entry<String, XmlElementType<? extends T>> deserialiser : deserialisers.entrySet())
+            {
+                Element element = root.getChild(deserialiser.getKey());
+                if (element == null)
+                    continue;
+                T deserialised = deserialiser.getValue().fromXml(element);
+                if (parentType.isInstance(deserialised) && subtype == null)
+                    subtype = deserialised;
+                else
+                {
+                    throw new InscribeSyntaxException(
+                            String.format("Cannot parse %s as an instance of %s", element, parentType.getName()));
+                }
+            }
+            if (subtype == null)
+            {
+                throw new InscribeSyntaxException(String.format("Expected %s to have a child element %s",
+                                root,
+                                deserialisers.keySet().stream()
+                                    .map(s -> "'" + s + "'")
+                                    .collect(Collectors.joining(" or "))));
+            }
+            return parentType.cast(subtype);
+        }
+    }
 }

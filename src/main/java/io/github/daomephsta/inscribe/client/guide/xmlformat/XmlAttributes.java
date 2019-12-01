@@ -61,27 +61,27 @@ public class XmlAttributes
         }
     }
 
-	/**
-	 * Gets an xml attribute as an integer
-	 * @param xml the element with the attribute
-	 * @param attributeName the name of the attribute
-	 * @throws
-	 * InscribeSyntaxException if the attribute does not exist
-	 * or its value cannot be parsed as an integer
-	 * @return the value of the attribute as an integer
-	 */
-	public static int asInt(Element xml, String attributeName) throws InscribeSyntaxException
-	{
-		Attribute attribute = get(xml, attributeName);
-		try
-		{
-			return attribute.getIntValue();
-		}
-		catch (DataConversionException e)
-		{
-			throw wrappedDataConversionException(attributeName, e);
-		}
-	}
+    /**
+     * Gets an xml attribute as an integer
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws
+     * InscribeSyntaxException if the attribute does not exist
+     * or its value cannot be parsed as an integer
+     * @return the value of the attribute as an integer
+     */
+    public static int asInt(Element xml, String attributeName) throws InscribeSyntaxException
+    {
+        Attribute attribute = get(xml, attributeName);
+        try
+        {
+            return attribute.getIntValue();
+        }
+        catch (DataConversionException e)
+        {
+            throw wrappedDataConversionException(attributeName, e);
+        }
+    }
 
     /**
      * Gets an xml attribute as an integer
@@ -237,51 +237,51 @@ public class XmlAttributes
         }
     }
 
-	/**
-	 * Gets an xml attribute as a ModelIdentifier
-	 * @param xml the element with the attribute
-	 * @param attributeName the name of the attribute
-	 * @throws
-	 * InscribeSyntaxException if the attribute does not exist
-	 * or its value cannot be parsed as a ModelIdentifier
-	 * @return the value of the attribute as a ModelIdentifier
-	 */
-	public static ModelIdentifier asModelIdentifier(Element xml, String attributeName) throws InscribeSyntaxException
-	{
-		String attributeValue = getValue(xml, attributeName);
-		try
-		{
-			return new ModelIdentifier(attributeValue);
-		}
-		catch (InvalidIdentifierException e)
-		{
-			throw new InscribeSyntaxException(e.getMessage());
-		}
-	}
+    /**
+     * Gets an xml attribute as a ModelIdentifier
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws
+     * InscribeSyntaxException if the attribute does not exist
+     * or its value cannot be parsed as a ModelIdentifier
+     * @return the value of the attribute as a ModelIdentifier
+     */
+    public static ModelIdentifier asModelIdentifier(Element xml, String attributeName) throws InscribeSyntaxException
+    {
+        String attributeValue = getValue(xml, attributeName);
+        try
+        {
+            return new ModelIdentifier(attributeValue);
+        }
+        catch (InvalidIdentifierException e)
+        {
+            throw new InscribeSyntaxException(e.getMessage());
+        }
+    }
 
-	/**
-	 * Gets an xml attribute as an Identifier
-	 * @param xml the element with the attribute
-	 * @param attributeName the name of the attribute
-	 * @throws
-	 * InscribeSyntaxException if the attribute does not exist
-	 * or its value cannot be parsed as an Identifier
-	 * @return the value of the attribute as an Identifier
-	 */
-	public static Identifier asIdentifier(Element xml, String attributeName) throws InscribeSyntaxException
-	{
-		String attributeValue = getValue(xml, attributeName);
-		try
-		{
-			return new Identifier(attributeValue);
-		}
-		catch (InvalidIdentifierException e)
-		{
-			throw new InscribeSyntaxException(e.getMessage());
-		}
-	}
+    /**
+     * Gets an xml attribute as an Identifier
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws
+     * InscribeSyntaxException if the attribute does not exist
+     * or its value cannot be parsed as an Identifier
+     * @return the value of the attribute as an Identifier
+     */
+    public static Identifier asIdentifier(Element xml, String attributeName) throws InscribeSyntaxException
+    {
+        String attributeValue = getValue(xml, attributeName);
+        try
+        {
+            return new Identifier(attributeValue);
+        }
+        catch (InvalidIdentifierException e)
+        {
+            throw new InscribeSyntaxException(e.getMessage());
+        }
+    }
 
-	   /**
+       /**
      * Gets an xml attribute as an Identifier
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
@@ -293,7 +293,7 @@ public class XmlAttributes
     {
         Attribute attribute = xml.getAttribute(attributeName);
         if (attribute == null)
-        	return fallback;
+            return fallback;
         try
         {
             return new Identifier(attribute.getValue());
@@ -358,69 +358,69 @@ public class XmlAttributes
     }
 
 
-	/**
-	 * Gets the attribute named {@code attributeName}.
-	 * @param xml the parent element
-	 * @param attributeName the name of the child element
-	 * @throws
-	 * InscribeSyntaxException if the attribute does not exist
-	 * @return the attribute
-	 */
-	public static Attribute get(Element xml, String attributeName) throws InscribeSyntaxException
-	{
-		Attribute attribute = xml.getAttribute(attributeName);
-		if (attribute == null)
-			throw noAttributeException(xml, attributeName);
-		return attribute;
-	}
+    /**
+     * Gets the attribute named {@code attributeName}.
+     * @param xml the parent element
+     * @param attributeName the name of the child element
+     * @throws
+     * InscribeSyntaxException if the attribute does not exist
+     * @return the attribute
+     */
+    public static Attribute get(Element xml, String attributeName) throws InscribeSyntaxException
+    {
+        Attribute attribute = xml.getAttribute(attributeName);
+        if (attribute == null)
+            throw noAttributeException(xml, attributeName);
+        return attribute;
+    }
 
-	/**
-	 * Gets the value of the attribute named {@code attributeName}.
-	 * @param xml the parent element
-	 * @param attributeName the name of the child element
-	 * @return the value of the attribute or {@code fallback} if it does not exist
-	 */
-	public static String getValue(Element xml, String attributeName, String fallback)
-	{
-	    Attribute attribute = xml.getAttribute(attributeName);
-	    return attribute != null ? attribute.getValue() : fallback;
-	}
+    /**
+     * Gets the value of the attribute named {@code attributeName}.
+     * @param xml the parent element
+     * @param attributeName the name of the child element
+     * @return the value of the attribute or {@code fallback} if it does not exist
+     */
+    public static String getValue(Element xml, String attributeName, String fallback)
+    {
+        Attribute attribute = xml.getAttribute(attributeName);
+        return attribute != null ? attribute.getValue() : fallback;
+    }
 
-	/**
-	 * Gets the value of the attribute named {@code attributeName}.
-	 * @param xml the parent element
-	 * @param attributeName the name of the child element
-	 * @throws
-	 * InscribeSyntaxException if the attribute does not exist
-	 * @return the value of the attribute
-	 */
-	public static String getValue(Element xml, String attributeName) throws InscribeSyntaxException
-	{
-		return get(xml, attributeName).getValue();
-	}
+    /**
+     * Gets the value of the attribute named {@code attributeName}.
+     * @param xml the parent element
+     * @param attributeName the name of the child element
+     * @throws
+     * InscribeSyntaxException if the attribute does not exist
+     * @return the value of the attribute
+     */
+    public static String getValue(Element xml, String attributeName) throws InscribeSyntaxException
+    {
+        return get(xml, attributeName).getValue();
+    }
 
-	/**
-	 * Ensures that certain attributes are specified
-	 * @param xml the parent element
-	 * @param required an array of attribute names that are required to be specified
-	 * @throws InscribeSyntaxException if any of the specified attributes do not exist
-	 */
-	public static void requireAttributes(Element xml, String... required) throws InscribeSyntaxException
-	{
-	    String missing = Arrays.stream(required)
-	        .filter(a -> xml.getAttribute(a) == null)
-	        .collect(Collectors.joining(", "));
-	    if (!missing.isEmpty())
-	        throw new InscribeSyntaxException("Missing required attributes for " + xml + ": " + missing);
-	}
+    /**
+     * Ensures that certain attributes are specified
+     * @param xml the parent element
+     * @param required an array of attribute names that are required to be specified
+     * @throws InscribeSyntaxException if any of the specified attributes do not exist
+     */
+    public static void requireAttributes(Element xml, String... required) throws InscribeSyntaxException
+    {
+        String missing = Arrays.stream(required)
+            .filter(a -> xml.getAttribute(a) == null)
+            .collect(Collectors.joining(", "));
+        if (!missing.isEmpty())
+            throw new InscribeSyntaxException("Missing required attributes for " + xml + ": " + missing);
+    }
 
-	private static InscribeSyntaxException noAttributeException(Element xml, String attributeName)
-	{
-		return new InscribeSyntaxException(String.format("No attribute named '%s' found in element of type %s", attributeName, xml.getQualifiedName()));
-	}
+    private static InscribeSyntaxException noAttributeException(Element xml, String attributeName)
+    {
+        return new InscribeSyntaxException(String.format("No attribute named '%s' found in element of type %s", attributeName, xml.getQualifiedName()));
+    }
 
-	private static RuntimeException wrappedDataConversionException(String attributeName, DataConversionException e)
-	{
-		return new InscribeXmlParseException(String.format("Could not parse value of attribute '%s' as an integer", attributeName), e);
-	}
+    private static RuntimeException wrappedDataConversionException(String attributeName, DataConversionException e)
+    {
+        return new InscribeXmlParseException(String.format("Could not parse value of attribute '%s' as an integer", attributeName), e);
+    }
 }

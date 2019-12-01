@@ -14,35 +14,35 @@ import net.minecraft.util.Lazy;
 
 class XmlWebLinkElementType extends XmlElementType<XmlWebLink>
 {
-	private final Lazy<ContentDeserialiser> contentDeserialiser;
+    private final Lazy<ContentDeserialiser> contentDeserialiser;
 
-	XmlWebLinkElementType()
-	{
-		super("web_link", XmlWebLink.class);
-		this.contentDeserialiser = new Lazy<>
-		(() ->
-			new ContentDeserialiser.Impl()
-				.registerDeserialiser(V100ElementTypes.BOLD)
-				.registerDeserialiser(V100ElementTypes.STRONG)
-				.registerDeserialiser(V100ElementTypes.EMPHASIS)
-				.registerDeserialiser(V100ElementTypes.ITALICS)
-				.registerDeserialiser(V100ElementTypes.DEL)
-				.registerDeserialiser(V100ElementTypes.IMAGE)
-		);
-	}
+    XmlWebLinkElementType()
+    {
+        super("web_link", XmlWebLink.class);
+        this.contentDeserialiser = new Lazy<>
+        (() ->
+            new ContentDeserialiser.Impl()
+                .registerDeserialiser(V100ElementTypes.BOLD)
+                .registerDeserialiser(V100ElementTypes.STRONG)
+                .registerDeserialiser(V100ElementTypes.EMPHASIS)
+                .registerDeserialiser(V100ElementTypes.ITALICS)
+                .registerDeserialiser(V100ElementTypes.DEL)
+                .registerDeserialiser(V100ElementTypes.IMAGE)
+        );
+    }
 
-	@Override
+    @Override
     public XmlWebLink fromXml(Element xml) throws GuideLoadingException
-	{
-		String url = XmlAttributes.getValue(xml, "target");
-		try
-		{
-			URL targetUrl = new URL(url);
-			return new XmlWebLink(contentDeserialiser.get().deserialise(xml.getContent()), targetUrl);
-		}
-		catch (MalformedURLException e)
-		{
-			throw new GuideLoadingException("Could not parse URL " + url, e, Severity.FATAL);
-		}
-	}
+    {
+        String url = XmlAttributes.getValue(xml, "target");
+        try
+        {
+            URL targetUrl = new URL(url);
+            return new XmlWebLink(contentDeserialiser.get().deserialise(xml.getContent()), targetUrl);
+        }
+        catch (MalformedURLException e)
+        {
+            throw new GuideLoadingException("Could not parse URL " + url, e, Severity.FATAL);
+        }
+    }
 }

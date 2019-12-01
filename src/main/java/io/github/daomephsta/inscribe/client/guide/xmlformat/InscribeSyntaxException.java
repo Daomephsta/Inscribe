@@ -10,13 +10,13 @@ import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
  */
 public class InscribeSyntaxException extends GuideLoadingException
 {
-	public InscribeSyntaxException(String message)
-	{
-		super(message, Severity.NON_FATAL);
-	}
+    public InscribeSyntaxException(String message)
+    {
+        super(message, Severity.NON_FATAL);
+    }
 
-	public InscribeSyntaxException(String message, Throwable cause)
-	{
-		super(message, cause, Severity.NON_FATAL);
-	}
+    public InscribeSyntaxException(String message, Throwable cause)
+    {
+        super(message, cause, Severity.NON_FATAL);
+    }
 }

@@ -4,15 +4,15 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentat
 
 public class XmlAnchor implements IXmlRepresentation
 {
-	private final String name;
+    private final String name;
 
-	public XmlAnchor(String name)
-	{
-		this.name = name;
-	}
+    public XmlAnchor(String name)
+    {
+        this.name = name;
+    }
 
-	public String getName()
-	{
-		return name;
-	}
+    public String getName()
+    {
+        return name;
+    }
 }

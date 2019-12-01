@@ -7,16 +7,16 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent
 
 public class XmlWebLink extends XmlMixedContent
 {
-	private final URL target;
+    private final URL target;
 
-	public XmlWebLink(List<Object> content, URL target)
-	{
-		super(content);
-		this.target = target;
-	}
+    public XmlWebLink(List<Object> content, URL target)
+    {
+        super(content);
+        this.target = target;
+    }
 
-	public URL getTarget()
-	{
-		return target;
-	}
+    public URL getTarget()
+    {
+        return target;
+    }
 }

@@ -16,67 +16,67 @@ public class TableOfContentsEntries implements VisibleContent
 {
     private final GuideFlow root;
 
-	public TableOfContentsEntries(TableOfContents toc)
-	{
+    public TableOfContentsEntries(TableOfContents toc)
+    {
         this.root = new GuideFlow(Direction.VERTICAL);
-		root.padding().setLeft(13).setTop(10);
-		GuideFlow links = new GuideFlow(Direction.VERTICAL);
-		for (Link link : toc.getLinks())
-		{
-		    GuideWidget linkElement = createLinkElement(link);
-		    linkElement.attach(new GotoEntry(link.destination));
-		    linkElement.margin().setVertical(2);
+        root.padding().setLeft(13).setTop(10);
+        GuideFlow links = new GuideFlow(Direction.VERTICAL);
+        for (Link link : toc.getLinks())
+        {
+            GuideWidget linkElement = createLinkElement(link);
+            linkElement.attach(new GotoEntry(link.destination));
+            linkElement.margin().setVertical(2);
             links.add(linkElement);
-		}
-		root.add(links, d -> d.setSize(Size.percentage(100)));
-	}
+        }
+        root.add(links, d -> d.setSize(Size.percentage(100)));
+    }
 
-	@Override
-	public void setRenderArea(int x, int y, int width, int height)
-	{
+    @Override
+    public void setRenderArea(int x, int y, int width, int height)
+    {
         root.setLayoutParameters(x, y, width, height);
         root.layoutChildren();
-	}
+    }
 
-	private GuideWidget createLinkElement(Link link)
-	{
-		switch (link.style)
-		{
-		case ICON_WITH_TEXT:
-		{
-			GuideFlow linkElement = new GuideFlow(Direction.HORIZONTAL);
-			//TODO make copy
-			GuideWidget icon = link.getIcon();
+    private GuideWidget createLinkElement(Link link)
+    {
+        switch (link.style)
+        {
+        case ICON_WITH_TEXT:
+        {
+            GuideFlow linkElement = new GuideFlow(Direction.HORIZONTAL);
+            //TODO make copy
+            GuideWidget icon = link.getIcon();
 
-			linkElement.add(icon, d -> d.setSize(Size.pixels(16)));
-			LabelWidget label = new LabelWidget(new FormattedTextNode(link.name, 0x000000), Alignment.CENTER, Alignment.CENTER, 1.0F);
-			label.margin().setLeft(1);
-			linkElement.add(label);
-			return linkElement;
-		}
-		case ICON_WITH_TOOLTIP:
-		{
-			GuideWidget linkElement = link.getIcon();
-			linkElement.attach(new Tooltip(tooltip -> tooltip.accept(link.name)));
-			return linkElement;
-		}
-		case TEXT:
-			return new LabelWidget(new FormattedTextNode(link.name, 0x000000), Alignment.LEADING, Alignment.CENTER, 1.0F);
-		default:
-			throw new IllegalArgumentException("Unknown link style " + link.style);
-		}
-	}
+            linkElement.add(icon, d -> d.setSize(Size.pixels(16)));
+            LabelWidget label = new LabelWidget(new FormattedTextNode(link.name, 0x000000), Alignment.CENTER, Alignment.CENTER, 1.0F);
+            label.margin().setLeft(1);
+            linkElement.add(label);
+            return linkElement;
+        }
+        case ICON_WITH_TOOLTIP:
+        {
+            GuideWidget linkElement = link.getIcon();
+            linkElement.attach(new Tooltip(tooltip -> tooltip.accept(link.name)));
+            return linkElement;
+        }
+        case TEXT:
+            return new LabelWidget(new FormattedTextNode(link.name, 0x000000), Alignment.LEADING, Alignment.CENTER, 1.0F);
+        default:
+            throw new IllegalArgumentException("Unknown link style " + link.style);
+        }
+    }
 
-	@Override
-	public void render(int mouseX, int mouseY, float lastFrameDuration)
-	{
-	    root.render(mouseX, mouseY, lastFrameDuration);
-	}
+    @Override
+    public void render(int mouseX, int mouseY, float lastFrameDuration)
+    {
+        root.render(mouseX, mouseY, lastFrameDuration);
+    }
 
-	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button)
-	{
-	    root.mouseClicked(mouseX, mouseY, button);
-	    return VisibleContent.super.mouseClicked(mouseX, mouseY, button);
-	}
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
+    {
+        root.mouseClicked(mouseX, mouseY, button);
+        return VisibleContent.super.mouseClicked(mouseX, mouseY, button);
+    }
 }

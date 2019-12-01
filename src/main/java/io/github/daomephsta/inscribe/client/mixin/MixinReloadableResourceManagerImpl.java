@@ -23,15 +23,15 @@ public abstract class MixinReloadableResourceManagerImpl implements ReloadableRe
     @Unique
     private MixinImplReloadableResourceManagerImpl impl;
 
-	@Inject(method = "<init>", at = @At("RETURN"))
-	private void init(ResourceType type, Thread thread, CallbackInfo info)
-	{
-	    this.impl = new MixinImplReloadableResourceManagerImpl(type);
-	}
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void init(ResourceType type, Thread thread, CallbackInfo info)
+    {
+        this.impl = new MixinImplReloadableResourceManagerImpl(type);
+    }
 
-	@Inject(method = "beginReloadInner(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/List;Ljava/util/concurrent/CompletableFuture;)Lnet/minecraft/resource/ResourceReloadMonitor;", at = @At("HEAD"))
-	public void inscribe_beginReloadInner(Executor loadExecutor, Executor applyExecutor, List<ResourceReloadListener> listeners, CompletableFuture<Void> future, CallbackInfoReturnable<CompletableFuture<Void>> info)
-	{
-	    impl.inscribe_beginReloadInner(loadExecutor, applyExecutor, listeners, future, info);
-	}
+    @Inject(method = "beginReloadInner(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/List;Ljava/util/concurrent/CompletableFuture;)Lnet/minecraft/resource/ResourceReloadMonitor;", at = @At("HEAD"))
+    public void inscribe_beginReloadInner(Executor loadExecutor, Executor applyExecutor, List<ResourceReloadListener> listeners, CompletableFuture<Void> future, CallbackInfoReturnable<CompletableFuture<Void>> info)
+    {
+        impl.inscribe_beginReloadInner(loadExecutor, applyExecutor, listeners, future, info);
+    }
 }

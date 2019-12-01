@@ -17,10 +17,10 @@ import net.minecraft.util.ActionResult;
 
 public class MixinImplReloadableResourceManagerImpl
 {
-	private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private final ResourceType type;
 
-	public MixinImplReloadableResourceManagerImpl(ResourceType type)
+    public MixinImplReloadableResourceManagerImpl(ResourceType type)
     {
         this.type = type;
     }
@@ -38,30 +38,30 @@ public class MixinImplReloadableResourceManagerImpl
     }
 
     private ActionResult injectListenerBefore(List<ResourceReloadListener> listeners, ResourceReloadListener listener, Class<? extends ResourceReloadListener> targetClass)
-	{
-		int targetIndex = -1;
-		int i = 0;
-		Iterator<ResourceReloadListener> iter = listeners.iterator();
-		while(iter.hasNext())
-		{
-		    ResourceReloadListener current = iter.next();
-			if (current == listener)
-				return ActionResult.PASS;
-			else if (targetClass.isInstance(current))
-			{
-				if (targetIndex < 0)
-					targetIndex = i;
-				else
-					throw new IllegalStateException("[Inscribe] Did not expect multiple instances of " + targetClass.getName() + " in resource reload listener list");
-			}
-			i++;
-		}
-		if (targetIndex < 0)
-			return ActionResult.FAIL;
-		else
-		{
-			listeners.add(targetIndex, listener);
-			return ActionResult.SUCCESS;
-		}
-	}
+    {
+        int targetIndex = -1;
+        int i = 0;
+        Iterator<ResourceReloadListener> iter = listeners.iterator();
+        while(iter.hasNext())
+        {
+            ResourceReloadListener current = iter.next();
+            if (current == listener)
+                return ActionResult.PASS;
+            else if (targetClass.isInstance(current))
+            {
+                if (targetIndex < 0)
+                    targetIndex = i;
+                else
+                    throw new IllegalStateException("[Inscribe] Did not expect multiple instances of " + targetClass.getName() + " in resource reload listener list");
+            }
+            i++;
+        }
+        if (targetIndex < 0)
+            return ActionResult.FAIL;
+        else
+        {
+            listeners.add(targetIndex, listener);
+            return ActionResult.SUCCESS;
+        }
+    }
 }

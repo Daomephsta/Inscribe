@@ -13,59 +13,59 @@ import net.minecraft.util.Identifier;
 
 public class Guide
 {
-	public static final Identifier INVALID_GUIDE_ID = new Identifier(Inscribe.MOD_ID, "invalid");
-	private final GuideDefinition definition;
-	private final Map<Identifier, XmlEntry> entries;
+    public static final Identifier INVALID_GUIDE_ID = new Identifier(Inscribe.MOD_ID, "invalid");
+    private final GuideDefinition definition;
+    private final Map<Identifier, XmlEntry> entries;
 
-	public Guide(GuideDefinition definition, Map<Identifier, XmlEntry> entries)
-	{
-		this.definition = definition;
-		this.entries = entries;
-	}
+    public Guide(GuideDefinition definition, Map<Identifier, XmlEntry> entries)
+    {
+        this.definition = definition;
+        this.entries = entries;
+    }
 
-	public XmlEntry getEntry(Identifier entryId)
-	{
-	    return entries.get(entryId);
-	}
+    public XmlEntry getEntry(Identifier entryId)
+    {
+        return entries.get(entryId);
+    }
 
-	void replaceEntry(Identifier entryId, XmlEntry entry)
-	{
-	    if (entries.computeIfPresent(entryId, (k, v) -> entry) == null)
-	        throw new UnsupportedOperationException("Only replacement of entries is allowed");
-	}
+    void replaceEntry(Identifier entryId, XmlEntry entry)
+    {
+        if (entries.computeIfPresent(entryId, (k, v) -> entry) == null)
+            throw new UnsupportedOperationException("Only replacement of entries is allowed");
+    }
 
-	public Stream<Identifier> getEntryIds()
-	{
-	    return entries.keySet().stream();
-	}
+    public Stream<Identifier> getEntryIds()
+    {
+        return entries.keySet().stream();
+    }
 
-	public Identifier getIdentifier()
-	{
-		return definition.getGuideId();
-	}
+    public Identifier getIdentifier()
+    {
+        return definition.getGuideId();
+    }
 
-	public String getTranslationKey()
-	{
-		return definition.getTranslationKey();
-	}
+    public String getTranslationKey()
+    {
+        return definition.getTranslationKey();
+    }
 
-	public GuideAccessMethod getAccessMethod()
-	{
-		return definition.getAccessMethod();
-	}
+    public GuideAccessMethod getAccessMethod()
+    {
+        return definition.getAccessMethod();
+    }
 
-	public TableOfContents getMainTableOfContents()
+    public TableOfContents getMainTableOfContents()
     {
         return definition.getMainTableOfContents();
     }
 
     public Theme getTheme()
-	{
-		return definition.getTheme();
-	}
+    {
+        return definition.getTheme();
+    }
 
-	public boolean isValid()
-	{
-		return !definition.getGuideId().equals(INVALID_GUIDE_ID);
-	}
+    public boolean isValid()
+    {
+        return !definition.getGuideId().equals(INVALID_GUIDE_ID);
+    }
 }

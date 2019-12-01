@@ -7,15 +7,15 @@ import net.minecraft.client.util.InputUtil.KeyCode;
 
 public interface InputCallback
 {
-	public static final Event<InputCallback> EVENT =
-		EventFactory.createArrayBacked(InputCallback.class,
-		callbacks -> (client, keyCode, action, modifiers) ->
-		{
-			for (InputCallback callback : callbacks)
-			{
-				callback.processInput(client, keyCode, action, modifiers);
-			}
-		});
+    public static final Event<InputCallback> EVENT =
+        EventFactory.createArrayBacked(InputCallback.class,
+        callbacks -> (client, keyCode, action, modifiers) ->
+        {
+            for (InputCallback callback : callbacks)
+            {
+                callback.processInput(client, keyCode, action, modifiers);
+            }
+        });
 
-	public void processInput(MinecraftClient client, KeyCode keyCode, int action, int modifiers);
+    public void processInput(MinecraftClient client, KeyCode keyCode, int action, int modifiers);
 }

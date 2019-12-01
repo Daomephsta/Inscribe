@@ -11,9 +11,9 @@ import net.minecraft.client.MinecraftClient;
 @Mixin(MinecraftClient.class)
 public class MixinMinecraftClient
 {
-	@Inject(method = "init()V", at = @At("RETURN"))
-	private void onClientStart(CallbackInfo info)
-	{
-		ClientStartCallback.EVENT.invoker().invoke((MinecraftClient)(Object)this);
-	}
+    @Inject(method = "init()V", at = @At("RETURN"))
+    private void onClientStart(CallbackInfo info)
+    {
+        ClientStartCallback.EVENT.invoker().invoke((MinecraftClient)(Object)this);
+    }
 }

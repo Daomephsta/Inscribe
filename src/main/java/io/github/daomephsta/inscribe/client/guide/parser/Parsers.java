@@ -24,29 +24,29 @@ import net.minecraft.util.Identifier;
 
 public class Parsers
 {
-	private static final Map<ParserVersion, Parser> PARSERS = ImmutableMap.<ParserVersion, Parser>builder()
-			.put(new ParserVersion(1, 0, 0), V100Parser.INSTANCE)
-			.build();
-	private static final ThreadLocal<String> lastVersion = ThreadLocal.withInitial(() -> "");
-	private static final ThreadLocal<Parser> lastParser = new ThreadLocal<>();
-	private static final SAXBuilder guideDefinitionBuilder,
-	                                entryBuilder;
-	static
-	{
-	    guideDefinitionBuilder = new SAXBuilder();
-	    entryBuilder = new SAXBuilder();
-	}
+    private static final Map<ParserVersion, Parser> PARSERS = ImmutableMap.<ParserVersion, Parser>builder()
+            .put(new ParserVersion(1, 0, 0), V100Parser.INSTANCE)
+            .build();
+    private static final ThreadLocal<String> lastVersion = ThreadLocal.withInitial(() -> "");
+    private static final ThreadLocal<Parser> lastParser = new ThreadLocal<>();
+    private static final SAXBuilder guideDefinitionBuilder,
+                                    entryBuilder;
+    static
+    {
+        guideDefinitionBuilder = new SAXBuilder();
+        entryBuilder = new SAXBuilder();
+    }
 
-	public static GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
-	{
+    public static GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    {
         Element root = XmlResources.readDocument(guideDefinitionBuilder, resourceManager, path).getRootElement();
-		return getParser(root).loadGuideDefinition(root, resourceManager, path);
-	}
+        return getParser(root).loadGuideDefinition(root, resourceManager, path);
+    }
 
-	private static final Pattern ENTRY_PATH_TO_ID = Pattern.compile("inscribe_guides\\/(?<guideName>[a-z0-9\\/._-]+)\\/entries\\/(?<entryName>[a-z0-9\\/._-]+)\\.xml");
-	public static XmlEntry loadEntry(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
-	{
-	    Matcher pathMatcher = ENTRY_PATH_TO_ID.matcher(path.getPath());
+    private static final Pattern ENTRY_PATH_TO_ID = Pattern.compile("inscribe_guides\\/(?<guideName>[a-z0-9\\/._-]+)\\/entries\\/(?<entryName>[a-z0-9\\/._-]+)\\.xml");
+    public static XmlEntry loadEntry(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    {
+        Matcher pathMatcher = ENTRY_PATH_TO_ID.matcher(path.getPath());
         if (!pathMatcher.matches())
         {
             throw new GuideLoadingException(String.format("Expected %s to match regex %s. Please report this error to the Inscribe author.",
@@ -54,104 +54,104 @@ public class Parsers
         }
         Identifier id = new Identifier(path.getNamespace(), pathMatcher.group("guideName") + "/" + pathMatcher.group("entryName"));
         Element root = XmlResources.readDocument(entryBuilder, resourceManager, path).getRootElement();
-		XmlEntry loadEntry = getParser(root).loadEntry(root, resourceManager, id);
+        XmlEntry loadEntry = getParser(root).loadEntry(root, resourceManager, id);
         return loadEntry;
-	}
+    }
 
-	private static Parser getParser(Element root) throws InscribeSyntaxException
-	{
-		Attribute versionAttribute = root.getAttribute("parser_version");
-		if (versionAttribute == null)
-			throw new InscribeSyntaxException("Missing parser version attribute");
-		if (lastVersion.get().equals(versionAttribute.getValue()))
-			return lastParser.get();
-		try
-		{
-			ParserVersion version = ParserVersion.parse(versionAttribute.getValue());
-			Parser parser = PARSERS.get(version);
-			if (parser == null)
-				throw invalidVersionException(versionAttribute.getValue());
-			lastVersion.set(versionAttribute.getValue());
-			lastParser.set(parser);
-			return parser;
-		}
-		catch (ParserVersion.InvalidVersionException e)
-		{
-			throw invalidVersionException(e.versionString);
-		}
-	}
+    private static Parser getParser(Element root) throws InscribeSyntaxException
+    {
+        Attribute versionAttribute = root.getAttribute("parser_version");
+        if (versionAttribute == null)
+            throw new InscribeSyntaxException("Missing parser version attribute");
+        if (lastVersion.get().equals(versionAttribute.getValue()))
+            return lastParser.get();
+        try
+        {
+            ParserVersion version = ParserVersion.parse(versionAttribute.getValue());
+            Parser parser = PARSERS.get(version);
+            if (parser == null)
+                throw invalidVersionException(versionAttribute.getValue());
+            lastVersion.set(versionAttribute.getValue());
+            lastParser.set(parser);
+            return parser;
+        }
+        catch (ParserVersion.InvalidVersionException e)
+        {
+            throw invalidVersionException(e.versionString);
+        }
+    }
 
-	private static InscribeSyntaxException invalidVersionException(String versionString)
-	{
-		return new InscribeSyntaxException(String.format(
-				"Invalid parser version '%s'. Valid versions: %s", versionString,
-				PARSERS.keySet().stream()
-					.map(Object::toString)
-					.collect(Collectors.joining(", "))));
-	}
+    private static InscribeSyntaxException invalidVersionException(String versionString)
+    {
+        return new InscribeSyntaxException(String.format(
+                "Invalid parser version '%s'. Valid versions: %s", versionString,
+                PARSERS.keySet().stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(", "))));
+    }
 
-	private static class ParserVersion
-	{
-		private static final Pattern VERSION_PATTERN = Pattern.compile("(?<major>\\d+).(?<minor>\\d+).(?<patch>\\d+)");
-		private final int major,
-						  minor,
-						  patch;
-		private final String versionString;
+    private static class ParserVersion
+    {
+        private static final Pattern VERSION_PATTERN = Pattern.compile("(?<major>\\d+).(?<minor>\\d+).(?<patch>\\d+)");
+        private final int major,
+                          minor,
+                          patch;
+        private final String versionString;
 
-		public ParserVersion(int major, int minor, int patch)
-		{
-			this.major = major;
-			this.minor = minor;
-			this.patch = patch;
-			this.versionString = major + "." + minor + "." + patch;
-		}
+        public ParserVersion(int major, int minor, int patch)
+        {
+            this.major = major;
+            this.minor = minor;
+            this.patch = patch;
+            this.versionString = major + "." + minor + "." + patch;
+        }
 
-		public static ParserVersion parse(String versionString) throws InvalidVersionException
-		{
-			Matcher versionMatcher = VERSION_PATTERN.matcher(versionString);
-			if (!versionMatcher.matches())
-				throw new InvalidVersionException(versionString);
-			int major = Ints.tryParse(versionMatcher.group("major")),
-				minor = Ints.tryParse(versionMatcher.group("minor")),
-				patch = Ints.tryParse(versionMatcher.group("patch"));
-			return new ParserVersion(major, minor, patch);
-		}
+        public static ParserVersion parse(String versionString) throws InvalidVersionException
+        {
+            Matcher versionMatcher = VERSION_PATTERN.matcher(versionString);
+            if (!versionMatcher.matches())
+                throw new InvalidVersionException(versionString);
+            int major = Ints.tryParse(versionMatcher.group("major")),
+                minor = Ints.tryParse(versionMatcher.group("minor")),
+                patch = Ints.tryParse(versionMatcher.group("patch"));
+            return new ParserVersion(major, minor, patch);
+        }
 
-		@Override
-		public int hashCode()
-		{
-			return Objects.hash(major, minor, patch);
-		}
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(major, minor, patch);
+        }
 
-		@Override
-		public boolean equals(Object obj)
-		{
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			ParserVersion other = (ParserVersion) obj;
-			return major == other.major
-				&& minor == other.minor
-				&& patch == other.patch;
-		}
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ParserVersion other = (ParserVersion) obj;
+            return major == other.major
+                && minor == other.minor
+                && patch == other.patch;
+        }
 
-		@Override
-		public String toString()
-		{
-			return versionString;
-		}
+        @Override
+        public String toString()
+        {
+            return versionString;
+        }
 
-		private static class InvalidVersionException extends Exception
-		{
-			private final String versionString;
+        private static class InvalidVersionException extends Exception
+        {
+            private final String versionString;
 
-			private InvalidVersionException(String versionString)
-			{
-				this.versionString = versionString;
-			}
-		}
-	}
+            private InvalidVersionException(String versionString)
+            {
+                this.versionString = versionString;
+            }
+        }
+    }
 }

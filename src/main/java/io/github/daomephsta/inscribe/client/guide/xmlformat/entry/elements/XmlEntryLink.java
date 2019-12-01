@@ -7,23 +7,23 @@ import net.minecraft.util.Identifier;
 
 public class XmlEntryLink extends XmlMixedContent
 {
-	private final Identifier entryId;
-	private final String anchor;
+    private final Identifier entryId;
+    private final String anchor;
 
-	public XmlEntryLink(List<Object> content, Identifier entryId, String anchor)
-	{
-		super(content);
-		this.entryId = entryId;
-		this.anchor = anchor;
-	}
+    public XmlEntryLink(List<Object> content, Identifier entryId, String anchor)
+    {
+        super(content);
+        this.entryId = entryId;
+        this.anchor = anchor;
+    }
 
-	public Identifier getEntryId()
-	{
-		return entryId;
-	}
+    public Identifier getEntryId()
+    {
+        return entryId;
+    }
 
-	public String getAnchor()
-	{
-		return anchor;
-	}
+    public String getAnchor()
+    {
+        return anchor;
+    }
 }
