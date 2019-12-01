@@ -128,7 +128,7 @@ public class V100Parser implements Parser
 	@Override
 	public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier id) throws GuideLoadingException
 	{
-        List<String> tags = XmlElements.asStringList(root, "tags", () -> Collections.emptyList());
+        List<String> tags = XmlAttributes.asStringList(root, "tags", Collections::emptyList);
         List<XmlPage> pages = readPages(root, id);
 		return new XmlEntry(id, tags, pages);
 	}
