@@ -1,5 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -19,6 +20,50 @@ import net.minecraft.util.InvalidIdentifierException;
 
 public class XmlAttributes
 {
+    /**
+     * Gets an xml attribute as a boolean
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws
+     * InscribeSyntaxException if the attribute does not exist
+     * or its value cannot be parsed as a boolean
+     * @return the value of the attribute as a boolean
+     */
+    public static boolean asBoolean(Element xml, String attributeName) throws InscribeSyntaxException
+    {
+        Attribute attribute = get(xml, attributeName);
+        try
+        {
+            return attribute.getBooleanValue();
+        }
+        catch (DataConversionException e)
+        {
+            throw wrappedDataConversionException(attributeName, e);
+        }
+    }
+
+    /**
+     * Gets an xml attribute as a boolean
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws InscribeSyntaxException if the attribute's value cannot be parsed as a boolean
+     * @return the value of the attribute as a boolean or {@code fallback} if it does not exist
+     */
+    public static boolean asBoolean(Element xml, String attributeName, boolean fallback) throws InscribeSyntaxException
+    {
+        Attribute attribute = xml.getAttribute(attributeName);
+        if (attribute == null)
+            return fallback;
+        try
+        {
+            return attribute.getBooleanValue();
+        }
+        catch (DataConversionException e)
+        {
+            throw wrappedDataConversionException(attributeName, e);
+        }
+    }
+
 	/**
 	 * Gets an xml attribute as an integer
 	 * @param xml the element with the attribute
@@ -40,6 +85,28 @@ public class XmlAttributes
 			throw wrappedDataConversionException(attributeName, e);
 		}
 	}
+
+    /**
+     * Gets an xml attribute as an integer
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws InscribeSyntaxException if the attribute's value cannot be parsed as an integer
+     * @return the value of the attribute as an integer or {@code fallback} if it does not exist
+     */
+    public static int asInt(Element xml, String attributeName, int fallback) throws InscribeSyntaxException
+    {
+        Attribute attribute = xml.getAttribute(attributeName);
+        if (attribute == null)
+            return fallback;
+        try
+        {
+            return attribute.getIntValue();
+        }
+        catch (DataConversionException e)
+        {
+            throw wrappedDataConversionException(attributeName, e);
+        }
+    }
 
 	/**
 	 * Gets an xml attribute as an OptionalInt
@@ -64,6 +131,138 @@ public class XmlAttributes
 			throw wrappedDataConversionException(attributeName, e);
 		}
 	}
+
+    /**
+     * Gets an xml attribute as a long
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws
+     * InscribeSyntaxException if the attribute does not exist
+     * or its value cannot be parsed as a long
+     * @return the value of the attribute as a long
+     */
+    public static long asLong(Element xml, String attributeName) throws InscribeSyntaxException
+    {
+        Attribute attribute = get(xml, attributeName);
+        try
+        {
+            return attribute.getLongValue();
+        }
+        catch (DataConversionException e)
+        {
+            throw wrappedDataConversionException(attributeName, e);
+        }
+    }
+
+    /**
+     * Gets an xml attribute as a long
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws InscribeSyntaxException if the attribute's value cannot be parsed as a long
+     * @return the value of the attribute as a long or {@code fallback} if it does not exist
+     */
+    public static long asLong(Element xml, String attributeName, long fallback) throws InscribeSyntaxException
+    {
+        Attribute attribute = xml.getAttribute(attributeName);
+        if (attribute == null)
+            return fallback;
+        try
+        {
+            return attribute.getLongValue();
+        }
+        catch (DataConversionException e)
+        {
+            throw wrappedDataConversionException(attributeName, e);
+        }
+    }
+
+    /**
+     * Gets an xml attribute as a float
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws
+     * InscribeSyntaxException if the attribute does not exist
+     * or its value cannot be parsed as a float
+     * @return the value of the attribute as a float
+     */
+    public static float asFloat(Element xml, String attributeName) throws InscribeSyntaxException
+    {
+        Attribute attribute = get(xml, attributeName);
+        try
+        {
+            return attribute.getFloatValue();
+        }
+        catch (DataConversionException e)
+        {
+            throw wrappedDataConversionException(attributeName, e);
+        }
+    }
+
+    /**
+     * Gets an xml attribute as a float
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws InscribeSyntaxException if the attribute's value cannot be parsed as a float
+     * @return the value of the attribute as a float or {@code fallback} if it does not exist
+     */
+    public static float asFloat(Element xml, String attributeName, float fallback) throws InscribeSyntaxException
+    {
+        Attribute attribute = xml.getAttribute(attributeName);
+        if (attribute == null)
+            return fallback;
+        try
+        {
+            return attribute.getFloatValue();
+        }
+        catch (DataConversionException e)
+        {
+            throw wrappedDataConversionException(attributeName, e);
+        }
+    }
+
+    /**
+     * Gets an xml attribute as a double
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws
+     * InscribeSyntaxException if the attribute does not exist
+     * or its value cannot be parsed as a double
+     * @return the value of the attribute as a double
+     */
+    public static double asDouble(Element xml, String attributeName) throws InscribeSyntaxException
+    {
+        Attribute attribute = get(xml, attributeName);
+        try
+        {
+            return attribute.getDoubleValue();
+        }
+        catch (DataConversionException e)
+        {
+            throw wrappedDataConversionException(attributeName, e);
+        }
+    }
+
+    /**
+     * Gets an xml attribute as a double
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws InscribeSyntaxException if the attribute's value cannot be parsed as a double
+     * @return the value of the attribute as a double or {@code fallback} if it does not exist
+     */
+    public static double asDouble(Element xml, String attributeName, double fallback) throws InscribeSyntaxException
+    {
+        Attribute attribute = xml.getAttribute(attributeName);
+        if (attribute == null)
+            return fallback;
+        try
+        {
+            return attribute.getDoubleValue();
+        }
+        catch (DataConversionException e)
+        {
+            throw wrappedDataConversionException(attributeName, e);
+        }
+    }
 
     /**
      * Gets an xml attribute as an Optional<String>
@@ -170,6 +369,15 @@ public class XmlAttributes
 	public static String getValue(Element xml, String attributeName) throws InscribeSyntaxException
 	{
 		return get(xml, attributeName).getValue();
+	}
+
+	public static void requireAttributes(Element xml, String... required) throws InscribeSyntaxException
+	{
+	    String missing = Arrays.stream(required)
+	        .filter(a -> xml.getAttribute(a) == null)
+	        .collect(Collectors.joining(", "));
+	    if (!missing.isEmpty())
+	        throw new InscribeSyntaxException("Missing required attributes for " + xml + ": " + missing);
 	}
 
 	public static Preconditions preconditions()
