@@ -33,9 +33,9 @@ final class XmlItemStackElementType extends XmlElementType<XmlItemStack>
 		try
 		{
 			String itemId = XmlAttributes.getValue(xml, "item");
-			String itemString = itemId + XmlAttributes.asOptionalString(xml, "tag").orElse("");
+			String itemString = itemId + XmlAttributes.getValue(xml, "tag", "");
 			ItemStringReader itemStringReader = new ItemStringReader(new StringReader(itemString), false).consume();
-			int amount = XmlAttributes.asOptionalInt(xml, "amount").orElse(1);
+			int amount = XmlAttributes.asInt(xml, "amount", 1);
 			ItemStack stack = new ItemStack(itemStringReader.getItem(), amount);
 			stack.setTag(itemStringReader.getTag());
 			return new XmlItemStack(stack);

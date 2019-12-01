@@ -3,8 +3,6 @@ package io.github.daomephsta.inscribe.client.guide.xmlformat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -107,30 +105,6 @@ public class XmlAttributes
             throw wrappedDataConversionException(attributeName, e);
         }
     }
-
-	/**
-	 * Gets an xml attribute as an OptionalInt
-	 * @param xml the element with the attribute
-	 * @param attributeName the name of the attribute
-	 * @throws
-	 * InscribeSyntaxException if the attribute's value cannot be parsed as an integer
-	 * @return the value of the attribute as an OptionalInt, or {@link OptionalInt#empty()}
-	 * if the attribute does not exist.
-	 */
-	public static OptionalInt asOptionalInt(Element xml, String attributeName)
-	{
-		Attribute attribute = xml.getAttribute(attributeName);
-		if (attribute == null)
-			return OptionalInt.empty();
-		try
-		{
-			return OptionalInt.of(attribute.getIntValue());
-		}
-		catch (DataConversionException e)
-		{
-			throw wrappedDataConversionException(attributeName, e);
-		}
-	}
 
     /**
      * Gets an xml attribute as a long
@@ -264,21 +238,6 @@ public class XmlAttributes
         }
     }
 
-    /**
-     * Gets an xml attribute as an Optional<String>
-     * @param xml the element with the attribute
-     * @param attributeName the name of the attribute
-     * @return the value of the attribute as an Optional<String>, or {@link Optional#empty()}
-     * if the attribute does not exist.
-     */
-    public static Optional<String> asOptionalString(Element xml, String attributeName)
-    {
-        Attribute attribute = xml.getAttribute(attributeName);
-        if (attribute == null)
-            return Optional.empty();
-        return Optional.of(attribute.getValue());
-    }
-
 	/**
 	 * Gets an xml attribute as a ModelIdentifier
 	 * @param xml the element with the attribute
@@ -356,6 +315,18 @@ public class XmlAttributes
 		if (attribute == null)
 			throw noAttributeException(xml, attributeName);
 		return attribute;
+	}
+
+	/**
+	 * Gets the value of the attribute named {@code attributeName}.
+	 * @param xml the parent element
+	 * @param attributeName the name of the child element
+	 * @return the value of the attribute or {@code fallback} if it does not exist
+	 */
+	public static String getValue(Element xml, String attributeName, String fallback)
+	{
+	    Attribute attribute = xml.getAttribute(attributeName);
+	    return attribute != null ? attribute.getValue() : fallback;
 	}
 
 	/**
