@@ -282,6 +282,29 @@ public class XmlAttributes
 		}
 	}
 
+	   /**
+     * Gets an xml attribute as an Identifier
+     * @param xml the element with the attribute
+     * @param attributeName the name of the attribute
+     * @throws
+     * InscribeSyntaxException if the attribute's value cannot be parsed as an Identifier
+     * @return the value of the attribute as an Identifier or {@code fallback} if it does not exist
+     */
+    public static Identifier asIdentifier(Element xml, String attributeName, Identifier fallback) throws InscribeSyntaxException
+    {
+        Attribute attribute = xml.getAttribute(attributeName);
+        if (attribute == null)
+        	return fallback;
+        try
+        {
+            return new Identifier(attribute.getValue());
+        }
+        catch (InvalidIdentifierException e)
+        {
+            throw new InscribeSyntaxException(e.getMessage());
+        }
+    }
+
     /**
      * Gets an xml attribute as an enum constant
      * @param xml the element with the attribute
