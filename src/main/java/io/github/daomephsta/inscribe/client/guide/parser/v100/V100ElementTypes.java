@@ -20,6 +20,7 @@ public class V100ElementTypes
 	static final XmlElementType<XmlItalics> ITALICS = new TextFormattingXmlElementType<>("i", XmlItalics.class, XmlItalics::new);
 	static final XmlElementType<XmlParagraph> PARAGRAPH = new XmlParagraphElementType();
 	static final XmlElementType<XmlItemStack> ITEMSTACK = new XmlItemStackElementType();
+    static final XmlElementType<XmlEntityDisplay> ENTITY_DISPLAY = new XmlEntityDisplayElementType();
 
 	static final XmlElementType<GuideItemAccessMethod> GUIDE_ITEM_ACCESS_METHOD = new GuideItemAccessMethodElementType();
 	static final XmlElementType<NoGuideAccessMethod> NO_GUIDE_ACCESS_METHOD = new SimpleXmlElementType<>("none", NoGuideAccessMethod.class, NoGuideAccessMethod::new);

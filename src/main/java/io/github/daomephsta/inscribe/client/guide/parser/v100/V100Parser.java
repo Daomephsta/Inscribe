@@ -47,7 +47,8 @@ public class V100Parser implements Parser
 				.registerDeserialiser(V100ElementTypes.GUIDE_ITEM_ACCESS_METHOD);
 	private static final SubtypeDeserialiser<XmlGuideGuiElement> GUIDE_GUI_ELEMENT_DESERIALISER = new Impl<>(XmlGuideGuiElement.class)
         .registerDeserialiser(V100ElementTypes.IMAGE)
-	    .registerDeserialiser(V100ElementTypes.ITEMSTACK);
+	    .registerDeserialiser(V100ElementTypes.ITEMSTACK)
+	    .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
 	private static final ContentDeserialiser ENTRY_DESERIALISER = new ContentDeserialiser.Impl()
 			.registerDeserialiser(V100ElementTypes.PARAGRAPH)
 			.registerDeserialiser(V100ElementTypes.ITALICS)
@@ -60,7 +61,8 @@ public class V100Parser implements Parser
 			.registerDeserialiser(V100ElementTypes.ENTRY_LINK)
 			.registerDeserialiser(V100ElementTypes.ANCHOR)
 			.registerDeserialiser(V100ElementTypes.IMAGE)
-	        .registerDeserialiser(V100ElementTypes.ITEMSTACK);
+	        .registerDeserialiser(V100ElementTypes.ITEMSTACK)
+	        .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
 
 	private V100Parser() {}
 
