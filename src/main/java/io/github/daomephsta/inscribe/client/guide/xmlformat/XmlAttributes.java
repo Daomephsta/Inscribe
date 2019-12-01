@@ -342,6 +342,12 @@ public class XmlAttributes
 		return get(xml, attributeName).getValue();
 	}
 
+	/**
+	 * Ensures that certain attributes are specified
+	 * @param xml the parent element
+	 * @param required an array of attribute names that are required to be specified
+	 * @throws InscribeSyntaxException if any of the specified attributes do not exist
+	 */
 	public static void requireAttributes(Element xml, String... required) throws InscribeSyntaxException
 	{
 	    String missing = Arrays.stream(required)
