@@ -96,6 +96,7 @@ shadowJar {
     relocate 'io.github.daomephsta.mosaic', 'io.github.daomephsta.inscribe.shadow.mosaic'
     relocate 'com.pivovarit.function', 'io.github.daomephsta.inscribe.shadow.com.pivovarit.function'
     relocate 'org.commonmark', 'io.github.daomephsta.inscribe.shadow.org.commonmark'
+    exclude 'META-INF/**'
 	minimize()
 }
 
