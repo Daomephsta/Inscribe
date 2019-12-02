@@ -5,6 +5,7 @@ plugins {
 	id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '4.0.2'
     id 'de.undercouch.download' version '4.0.1'
+    id 'checkstyle'
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -105,6 +106,10 @@ task remapShadowJar(type: RemapJarTask) {
 
 build {
 	dependsOn remapShadowJar
+}
+
+checkstyle {
+	toolVersion '8.27'
 }
 
 // configure the maven publication
