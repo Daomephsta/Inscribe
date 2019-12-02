@@ -1,6 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat.theme;
 
-import org.jdom2.Element;
+import org.w3c.dom.Element;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;

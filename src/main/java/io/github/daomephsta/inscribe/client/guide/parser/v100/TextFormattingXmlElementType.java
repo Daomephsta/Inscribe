@@ -3,7 +3,7 @@ package io.github.daomephsta.inscribe.client.guide.parser.v100;
 import java.util.List;
 import java.util.function.Function;
 
-import org.jdom2.Element;
+import org.w3c.dom.Element;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
@@ -34,6 +34,6 @@ public class TextFormattingXmlElementType<T extends XmlMixedContent> extends Xml
     @Override
     public T fromXml(Element xml) throws GuideLoadingException
     {
-        return constructorHandle.apply(contentDeserialiser.get().deserialise(xml.getContent()));
+        return constructorHandle.apply(contentDeserialiser.get().deserialise(xml.getChildNodes()));
     }
 }

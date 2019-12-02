@@ -1,6 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
-import org.jdom2.Element;
+import org.w3c.dom.Element;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;

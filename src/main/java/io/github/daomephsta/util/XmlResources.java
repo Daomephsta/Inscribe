@@ -2,9 +2,10 @@ package io.github.daomephsta.util;
 
 import java.io.IOException;
 
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
+import javax.xml.parsers.DocumentBuilder;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException.Severity;
@@ -15,13 +16,13 @@ public class XmlResources
 {
     private XmlResources() {}
 
-    public static Document readDocument(SAXBuilder builder, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    public static Document readDocument(DocumentBuilder builder, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
     {
         try
         {
-            return builder.build(resourceManager.getResource(path).getInputStream());
+            return builder.parse(resourceManager.getResource(path).getInputStream());
         }
-        catch (JDOMException e)
+        catch (SAXException e)
         {
             throw new GuideLoadingException(e, Severity.NON_FATAL);
         }

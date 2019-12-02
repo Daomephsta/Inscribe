@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.jdom2.Element;
+import org.w3c.dom.Element;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
@@ -32,11 +32,11 @@ final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAcc
     public GuideItemAccessMethod fromXml(Element xml) throws GuideLoadingException
     {
         XmlAttributes.requireAttributes(xml, ITEM_GROUP, MODEL);
-        String itemGroupId = xml.getAttributeValue(ITEM_GROUP);
+        String itemGroupId = xml.getAttribute(ITEM_GROUP);
         ItemGroup itemGroup = ID_TO_GROUP.get().get(itemGroupId);
         if (itemGroup == null)
             throw new InscribeSyntaxException(itemGroupId + " is not a valid item group id");
-        Identifier modelId = xml.getAttributeValue(MODEL).contains("#")
+        Identifier modelId = xml.getAttribute(MODEL).contains("#")
                 ? XmlAttributes.asModelIdentifier(xml, MODEL)
                 : XmlAttributes.asIdentifier(xml, MODEL);
         return new GuideItemAccessMethod(itemGroup, modelId);

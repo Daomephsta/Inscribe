@@ -1,7 +1,7 @@
 package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
-import org.jdom2.Attribute;
-import org.jdom2.Element;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -34,12 +34,12 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
             Identifier entityId = XmlAttributes.asIdentifier(xml, "entity");
             if (!Registry.ENTITY_TYPE.containsId(entityId))
                 throw new InscribeSyntaxException("Unknown entity id " + entityId);
-            Attribute tagAttr = xml.getAttribute("tag");
+            Attr tagAttr = xml.getAttributeNode("tag");
             CompoundTag nbt = tagAttr != null
                 ? StringNbtReader.parse(tagAttr.getValue())
                 : new CompoundTag();
-            Transform transform = readTransform(xml.getChild("transform"));
-            Animation animation = readAnimation(xml.getChild("animation"));
+            Transform transform = readTransform(XmlElements.getChildNullable(xml, "transform"));
+            Animation animation = readAnimation(XmlElements.getChildNullable(xml, "animation"));
             boolean lighting = XmlAttributes.asBoolean(xml, "lighting", true);
             return new XmlEntityDisplay(entityId, nbt, transform, animation, lighting);
         }
@@ -63,11 +63,11 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
     {
         if (xml == null)
             return Animation.NONE;
-        Element element = xml.getChild("rotate_around");
+        Element element = XmlElements.getChildNullable(xml, "rotate_around");
         if (element != null)
         {
             XmlAttributes.requireAttributes(element, "axis", "speed");
-            String axis = element.getAttributeValue("axis");
+            String axis = element.getAttribute("axis");
             Vector3f axisVector;
             if (axis.equals("x"))
                 axisVector = new Vector3f(1.0F, 0.0F, 0.0F);

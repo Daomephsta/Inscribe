@@ -3,12 +3,13 @@ package io.github.daomephsta.inscribe.client.guide.parser.v100;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.jdom2.Element;
+import org.w3c.dom.Element;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException.Severity;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.*;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlWebLink;
 import net.minecraft.util.Lazy;
 
@@ -38,7 +39,7 @@ class XmlWebLinkElementType extends XmlElementType<XmlWebLink>
         try
         {
             URL targetUrl = new URL(url);
-            return new XmlWebLink(contentDeserialiser.get().deserialise(xml.getContent()), targetUrl);
+            return new XmlWebLink(contentDeserialiser.get().deserialise(xml.getChildNodes()), targetUrl);
         }
         catch (MalformedURLException e)
         {

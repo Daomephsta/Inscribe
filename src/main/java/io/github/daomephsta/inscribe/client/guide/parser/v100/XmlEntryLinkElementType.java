@@ -1,10 +1,11 @@
 package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
-import org.jdom2.Element;
+import org.w3c.dom.Element;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.*;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntryLink;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Lazy;
@@ -32,7 +33,7 @@ class XmlEntryLinkElementType extends XmlElementType<XmlEntryLink>
     public XmlEntryLink fromXml(Element xml) throws GuideLoadingException
     {
         Identifier entryId = XmlAttributes.asIdentifier(xml, "entry");
-        String anchorId = xml.getAttributeValue("anchor");
-        return new XmlEntryLink(contentDeserialiser.get().deserialise(xml.getContent()), entryId, anchorId);
+        String anchorId = xml.getAttribute("anchor");
+        return new XmlEntryLink(contentDeserialiser.get().deserialise(xml.getChildNodes()), entryId, anchorId);
     }
 }

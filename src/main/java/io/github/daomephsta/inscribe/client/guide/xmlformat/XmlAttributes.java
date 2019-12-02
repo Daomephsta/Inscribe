@@ -6,11 +6,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
 
 import com.google.common.base.Splitter;
+
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -28,15 +28,13 @@ public class XmlAttributes
      */
     public static boolean asBoolean(Element xml, String attributeName) throws InscribeSyntaxException
     {
-        Attribute attribute = get(xml, attributeName);
-        try
-        {
-            return attribute.getBooleanValue();
-        }
-        catch (DataConversionException e)
-        {
-            throw wrappedDataConversionException(attributeName, e);
-        }
+        String attributeValue = getValue(xml, attributeName);
+        if (attributeValue.equals("true"))
+            return true;
+        else if (attributeValue.equals("false"))
+            return false;
+        else
+            throw new InscribeSyntaxException("Boolean values must be either 'true' or 'false'");
     }
 
     /**
@@ -48,17 +46,15 @@ public class XmlAttributes
      */
     public static boolean asBoolean(Element xml, String attributeName, boolean fallback) throws InscribeSyntaxException
     {
-        Attribute attribute = xml.getAttribute(attributeName);
+        Attr attribute = xml.getAttributeNode(attributeName);
         if (attribute == null)
             return fallback;
-        try
-        {
-            return attribute.getBooleanValue();
-        }
-        catch (DataConversionException e)
-        {
-            throw wrappedDataConversionException(attributeName, e);
-        }
+        if (attribute.getValue().equals("true"))
+            return true;
+        else if (attribute.getValue().equals("false"))
+            return false;
+        else
+            throw new InscribeSyntaxException("Boolean values must be either 'true' or 'false'");
     }
 
     /**
@@ -72,14 +68,14 @@ public class XmlAttributes
      */
     public static int asInt(Element xml, String attributeName) throws InscribeSyntaxException
     {
-        Attribute attribute = get(xml, attributeName);
+        Attr attribute = get(xml, attributeName);
         try
         {
-            return attribute.getIntValue();
+            return Integer.parseInt(attribute.getValue());
         }
-        catch (DataConversionException e)
+        catch (NumberFormatException e)
         {
-            throw wrappedDataConversionException(attributeName, e);
+            throw wrappedNumberFormatException(attributeName, e);
         }
     }
 
@@ -92,16 +88,16 @@ public class XmlAttributes
      */
     public static int asInt(Element xml, String attributeName, int fallback) throws InscribeSyntaxException
     {
-        Attribute attribute = xml.getAttribute(attributeName);
+        Attr attribute = xml.getAttributeNode(attributeName);
         if (attribute == null)
             return fallback;
         try
         {
-            return attribute.getIntValue();
+            return Integer.parseInt(attribute.getValue());
         }
-        catch (DataConversionException e)
+        catch (NumberFormatException e)
         {
-            throw wrappedDataConversionException(attributeName, e);
+            throw wrappedNumberFormatException(attributeName, e);
         }
     }
 
@@ -116,14 +112,14 @@ public class XmlAttributes
      */
     public static long asLong(Element xml, String attributeName) throws InscribeSyntaxException
     {
-        Attribute attribute = get(xml, attributeName);
+        Attr attribute = get(xml, attributeName);
         try
         {
-            return attribute.getLongValue();
+            return Long.parseLong(attribute.getValue());
         }
-        catch (DataConversionException e)
+        catch (NumberFormatException e)
         {
-            throw wrappedDataConversionException(attributeName, e);
+            throw wrappedNumberFormatException(attributeName, e);
         }
     }
 
@@ -136,16 +132,16 @@ public class XmlAttributes
      */
     public static long asLong(Element xml, String attributeName, long fallback) throws InscribeSyntaxException
     {
-        Attribute attribute = xml.getAttribute(attributeName);
+        Attr attribute = xml.getAttributeNode(attributeName);
         if (attribute == null)
             return fallback;
         try
         {
-            return attribute.getLongValue();
+            return Long.parseLong(attribute.getValue());
         }
-        catch (DataConversionException e)
+        catch (NumberFormatException e)
         {
-            throw wrappedDataConversionException(attributeName, e);
+            throw wrappedNumberFormatException(attributeName, e);
         }
     }
 
@@ -160,14 +156,14 @@ public class XmlAttributes
      */
     public static float asFloat(Element xml, String attributeName) throws InscribeSyntaxException
     {
-        Attribute attribute = get(xml, attributeName);
+        Attr attribute = get(xml, attributeName);
         try
         {
-            return attribute.getFloatValue();
+            return Float.parseFloat(attribute.getValue());
         }
-        catch (DataConversionException e)
+        catch (NumberFormatException e)
         {
-            throw wrappedDataConversionException(attributeName, e);
+            throw wrappedNumberFormatException(attributeName, e);
         }
     }
 
@@ -180,16 +176,16 @@ public class XmlAttributes
      */
     public static float asFloat(Element xml, String attributeName, float fallback) throws InscribeSyntaxException
     {
-        Attribute attribute = xml.getAttribute(attributeName);
+        Attr attribute = xml.getAttributeNode(attributeName);
         if (attribute == null)
             return fallback;
         try
         {
-            return attribute.getFloatValue();
+            return Float.parseFloat(attribute.getValue());
         }
-        catch (DataConversionException e)
+        catch (NumberFormatException e)
         {
-            throw wrappedDataConversionException(attributeName, e);
+            throw wrappedNumberFormatException(attributeName, e);
         }
     }
 
@@ -204,14 +200,14 @@ public class XmlAttributes
      */
     public static double asDouble(Element xml, String attributeName) throws InscribeSyntaxException
     {
-        Attribute attribute = get(xml, attributeName);
+        Attr attribute = get(xml, attributeName);
         try
         {
-            return attribute.getDoubleValue();
+            return Double.parseDouble(attribute.getValue());
         }
-        catch (DataConversionException e)
+        catch (NumberFormatException e)
         {
-            throw wrappedDataConversionException(attributeName, e);
+            throw wrappedNumberFormatException(attributeName, e);
         }
     }
 
@@ -224,16 +220,16 @@ public class XmlAttributes
      */
     public static double asDouble(Element xml, String attributeName, double fallback) throws InscribeSyntaxException
     {
-        Attribute attribute = xml.getAttribute(attributeName);
+        Attr attribute = xml.getAttributeNode(attributeName);
         if (attribute == null)
             return fallback;
         try
         {
-            return attribute.getDoubleValue();
+            return Double.parseDouble(attribute.getValue());
         }
-        catch (DataConversionException e)
+        catch (NumberFormatException e)
         {
-            throw wrappedDataConversionException(attributeName, e);
+            throw wrappedNumberFormatException(attributeName, e);
         }
     }
 
@@ -291,7 +287,7 @@ public class XmlAttributes
      */
     public static Identifier asIdentifier(Element xml, String attributeName, Identifier fallback) throws InscribeSyntaxException
     {
-        Attribute attribute = xml.getAttribute(attributeName);
+        Attr attribute = xml.getAttributeNode(attributeName);
         if (attribute == null)
             return fallback;
         try
@@ -333,10 +329,10 @@ public class XmlAttributes
      */
     public static List<String> asStringList(Element xml, String attributeName, Supplier<List<String>> fallback)
     {
-        Element child = xml.getChild(attributeName);
-        if (child == null)
+        Attr attribute = xml.getAttributeNode(attributeName);
+        if (attribute == null)
             return fallback.get();
-        return toStringList(child.getText());
+        return toStringList(attribute.getValue());
     }
 
     /**
@@ -366,9 +362,9 @@ public class XmlAttributes
      * InscribeSyntaxException if the attribute does not exist
      * @return the attribute
      */
-    public static Attribute get(Element xml, String attributeName) throws InscribeSyntaxException
+    public static Attr get(Element xml, String attributeName) throws InscribeSyntaxException
     {
-        Attribute attribute = xml.getAttribute(attributeName);
+        Attr attribute = xml.getAttributeNode(attributeName);
         if (attribute == null)
             throw noAttributeException(xml, attributeName);
         return attribute;
@@ -382,7 +378,7 @@ public class XmlAttributes
      */
     public static String getValue(Element xml, String attributeName, String fallback)
     {
-        Attribute attribute = xml.getAttribute(attributeName);
+        Attr attribute = xml.getAttributeNode(attributeName);
         return attribute != null ? attribute.getValue() : fallback;
     }
 
@@ -408,7 +404,7 @@ public class XmlAttributes
     public static void requireAttributes(Element xml, String... required) throws InscribeSyntaxException
     {
         String missing = Arrays.stream(required)
-            .filter(a -> xml.getAttribute(a) == null)
+            .filter(a -> xml.getAttributeNode(a) == null)
             .collect(Collectors.joining(", "));
         if (!missing.isEmpty())
             throw new InscribeSyntaxException("Missing required attributes for " + xml + ": " + missing);
@@ -416,10 +412,10 @@ public class XmlAttributes
 
     private static InscribeSyntaxException noAttributeException(Element xml, String attributeName)
     {
-        return new InscribeSyntaxException(String.format("No attribute named '%s' found in element of type %s", attributeName, xml.getQualifiedName()));
+        return new InscribeSyntaxException(String.format("No attribute named '%s' found in element of type %s", attributeName, xml.getTagName()));
     }
 
-    private static RuntimeException wrappedDataConversionException(String attributeName, DataConversionException e)
+    private static RuntimeException wrappedNumberFormatException(String attributeName, NumberFormatException e)
     {
         return new InscribeXmlParseException(String.format("Could not parse value of attribute '%s' as an integer", attributeName), e);
     }

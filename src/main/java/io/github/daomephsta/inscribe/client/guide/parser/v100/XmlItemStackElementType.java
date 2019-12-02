@@ -1,6 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
-import org.jdom2.Element;
+import org.w3c.dom.Element;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;

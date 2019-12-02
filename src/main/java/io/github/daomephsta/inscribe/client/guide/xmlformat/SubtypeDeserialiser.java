@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.Element;
+import org.w3c.dom.Element;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
@@ -40,7 +40,7 @@ public interface SubtypeDeserialiser<T extends IXmlRepresentation>
             Object subtype = null;
             for (Entry<String, XmlElementType<? extends T>> deserialiser : deserialisers.entrySet())
             {
-                Element element = root.getChild(deserialiser.getKey());
+                Element element = XmlElements.getChildNullable(root, deserialiser.getKey());
                 if (element == null)
                     continue;
                 T deserialised = deserialiser.getValue().fromXml(element);

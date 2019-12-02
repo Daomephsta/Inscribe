@@ -6,9 +6,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.jdom2.Attribute;
-import org.jdom2.Element;
-import org.jdom2.input.SAXBuilder;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Ints;
 
@@ -29,17 +33,24 @@ public class Parsers
             .build();
     private static final ThreadLocal<String> lastVersion = ThreadLocal.withInitial(() -> "");
     private static final ThreadLocal<Parser> lastParser = new ThreadLocal<>();
-    private static final SAXBuilder guideDefinitionBuilder,
-                                    entryBuilder;
+    private static final DocumentBuilder guideDefinitionBuilder,
+                                         entryBuilder;
     static
     {
-        guideDefinitionBuilder = new SAXBuilder();
-        entryBuilder = new SAXBuilder();
+        try
+        {
+            guideDefinitionBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            entryBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        }
+        catch (ParserConfigurationException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     public static GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
     {
-        Element root = XmlResources.readDocument(guideDefinitionBuilder, resourceManager, path).getRootElement();
+        Element root = XmlResources.readDocument(guideDefinitionBuilder, resourceManager, path).getDocumentElement();
         return getParser(root).loadGuideDefinition(root, resourceManager, path);
     }
 
@@ -53,14 +64,14 @@ public class Parsers
                 path.getPath(), ENTRY_PATH_TO_ID), Severity.NON_FATAL);
         }
         Identifier id = new Identifier(path.getNamespace(), pathMatcher.group("guideName") + "/" + pathMatcher.group("entryName"));
-        Element root = XmlResources.readDocument(entryBuilder, resourceManager, path).getRootElement();
+        Element root = XmlResources.readDocument(entryBuilder, resourceManager, path).getDocumentElement();
         XmlEntry loadEntry = getParser(root).loadEntry(root, resourceManager, id);
         return loadEntry;
     }
 
     private static Parser getParser(Element root) throws InscribeSyntaxException
     {
-        Attribute versionAttribute = root.getAttribute("parser_version");
+        Attr versionAttribute = root.getAttributeNode("parser_version");
         if (versionAttribute == null)
             throw new InscribeSyntaxException("Missing parser version attribute");
         if (lastVersion.get().equals(versionAttribute.getValue()))

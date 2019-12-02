@@ -29,10 +29,6 @@ dependencies {
     //Mosaic for layout
     implementation project(':mosaic')
     shadow project(':mosaic')
-	
-	//Shade JDOM, for a nice XML parser 
-	implementation "org.jdom:jdom2:${project.jdom_version}"
-    shadow "org.jdom:jdom2:${project.jdom_version}"
     
     def throwingFunction = "com.pivovarit:throwing-function:${project.throwing_function_version}"
     implementation throwingFunction
@@ -74,11 +70,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 tasks.jar.enabled = false
 tasks.remapJar.enabled = false
 
-task includeJDOM2License(type: Download) {
-    src 'https://raw.githubusercontent.com/hunterhacker/jdom/master/LICENSE.txt'
-    dest "${sourceSets.main.output.resourcesDir.path}/io/github/daomephsta/inscribe/shadow/org/jdom2/LICENSE.txt"
-}
-
 task includeMosaicLicense(type: Copy) {
     from (project(':mosaic').projectDir) {
     	include 'LICENSE'
@@ -98,10 +89,9 @@ task includeCommonMarkLicense(type: Download) {
 }
 
 shadowJar {
- 	dependsOn includeJDOM2License, includeMosaicLicense, includeThrowingFunctionLicense,includeCommonMarkLicense
+ 	dependsOn includeMosaicLicense, includeThrowingFunctionLicense,includeCommonMarkLicense
  	destinationDir = file("${buildDir}/tmp/allJar")
     configurations = [project.configurations.shadow]
-    relocate 'org.jdom2', 'io.github.daomephsta.inscribe.shadow.org.jdom2'
     relocate 'io.github.daomephsta.mosaic', 'io.github.daomephsta.inscribe.shadow.mosaic'
     relocate 'com.pivovarit.function', 'io.github.daomephsta.inscribe.shadow.com.pivovarit.function'
     relocate 'org.commonmark', 'io.github.daomephsta.inscribe.shadow.org.commonmark'

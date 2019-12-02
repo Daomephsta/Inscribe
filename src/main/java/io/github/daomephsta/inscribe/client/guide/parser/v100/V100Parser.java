@@ -5,10 +5,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.Element;
-import org.jdom2.input.SAXBuilder;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.google.common.collect.Lists;
 
@@ -63,8 +68,19 @@ public class V100Parser implements Parser
             .registerDeserialiser(V100ElementTypes.IMAGE)
             .registerDeserialiser(V100ElementTypes.ITEMSTACK)
             .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
+    private final DocumentBuilder tocBuilder;
 
-    private V100Parser() {}
+    private V100Parser()
+    {
+        try
+        {
+            tocBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        }
+        catch (ParserConfigurationException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
@@ -79,8 +95,8 @@ public class V100Parser implements Parser
         try
         {
             TableOfContents mainTableOfContents = loadTableOfContents(resourceManager, mainTocPath);
-            GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(xml.getChild("access_method"));
-            Element themeXml = xml.getChild("theme");
+            GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(XmlElements.getChild(xml, "access_method"));
+            Element themeXml = XmlElements.getChildNullable(xml, "theme");
             Theme theme = themeXml != null ? Theme.fromXml(themeXml) : Theme.DEFAULT;
             return new GuideDefinition(guideId, guideAccess, mainTableOfContents, theme);
         }
@@ -101,14 +117,15 @@ public class V100Parser implements Parser
     {
         if (!resourceManager.containsResource(tableOfContentsPath))
             throw new InscribeSyntaxException("Could not find table of contents at " + tableOfContentsPath);
-        Element tableOfContents = XmlResources.readDocument(new SAXBuilder(), resourceManager, tableOfContentsPath).getRootElement();
+        Element tableOfContents = XmlResources.readDocument(tocBuilder, resourceManager, tableOfContentsPath).getDocumentElement();
         LinkStyle style = XmlAttributes.asEnum(tableOfContents, "link_style", LinkStyle::fromRepresentation);
 
-        List<Element> linkElements = tableOfContents.getChildren("link");
-        List<TableOfContents.Link> links = Lists.newArrayListWithCapacity(linkElements.size());
-        for (Element link : linkElements)
+        NodeList linkElements = tableOfContents.getElementsByTagName("link");
+        List<TableOfContents.Link> links = Lists.newArrayListWithCapacity(linkElements.getLength());
+        for (int i = 0; i < linkElements.getLength(); i++)
         {
-            Element iconXml = link.getChild("icon");
+            Element link = (Element) linkElements.item(i);
+            Element iconXml = XmlElements.getChildNullable(link, "icon");
             if (style.requiresIcon() && iconXml != null)
                 throw new InscribeSyntaxException("Style " + style + " requires that an icon is specified");
             String name = XmlAttributes.getValue(link, "name");
@@ -136,11 +153,14 @@ public class V100Parser implements Parser
     private List<XmlPage> readPages(Element root, Identifier entryId) throws GuideLoadingException
     {
         List<XmlPage> pages = new ArrayList<>();
-        List<Element> pageElements = root.getChildren("page");
-        if (pageElements.isEmpty())
+        NodeList pageElements = root.getElementsByTagName("page");
+        if (pageElements.getLength() == 0)
             LOGGER.warn("Entry '{}' has no pages", entryId);
-        for (Element page : pageElements)
-            pages.add(new XmlPage(ENTRY_DESERIALISER.deserialise(page.getContent())));
+        for (int i = 0; i < pageElements.getLength(); i++)
+        {
+            Node page = pageElements.item(i);
+            pages.add(new XmlPage(ENTRY_DESERIALISER.deserialise(page.getChildNodes())));
+        }
         return pages;
     }
 }
