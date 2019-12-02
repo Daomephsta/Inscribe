@@ -31,16 +31,16 @@ public class Parsers
     private static final Map<ParserVersion, Parser> PARSERS = ImmutableMap.<ParserVersion, Parser>builder()
             .put(new ParserVersion(1, 0, 0), V100Parser.INSTANCE)
             .build();
-    private static final ThreadLocal<String> lastVersion = ThreadLocal.withInitial(() -> "");
-    private static final ThreadLocal<Parser> lastParser = new ThreadLocal<>();
-    private static final DocumentBuilder guideDefinitionBuilder,
-                                         entryBuilder;
+    private static final ThreadLocal<String> LAST_VERSION = ThreadLocal.withInitial(() -> "");
+    private static final ThreadLocal<Parser> LAST_PARSER = new ThreadLocal<>();
+    private static final DocumentBuilder GUIDE_DEFINITION_BUILDER,
+                                         ENTRY_BUILDER;
     static
     {
         try
         {
-            guideDefinitionBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            entryBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            GUIDE_DEFINITION_BUILDER = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            ENTRY_BUILDER = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         }
         catch (ParserConfigurationException e)
         {
@@ -50,7 +50,7 @@ public class Parsers
 
     public static GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
     {
-        Element root = XmlResources.readDocument(guideDefinitionBuilder, resourceManager, path).getDocumentElement();
+        Element root = XmlResources.readDocument(GUIDE_DEFINITION_BUILDER, resourceManager, path).getDocumentElement();
         return getParser(root).loadGuideDefinition(root, resourceManager, path);
     }
 
@@ -64,7 +64,7 @@ public class Parsers
                 path.getPath(), ENTRY_PATH_TO_ID), Severity.NON_FATAL);
         }
         Identifier id = new Identifier(path.getNamespace(), pathMatcher.group("guideName") + "/" + pathMatcher.group("entryName"));
-        Element root = XmlResources.readDocument(entryBuilder, resourceManager, path).getDocumentElement();
+        Element root = XmlResources.readDocument(ENTRY_BUILDER, resourceManager, path).getDocumentElement();
         XmlEntry loadEntry = getParser(root).loadEntry(root, resourceManager, id);
         return loadEntry;
     }
@@ -74,16 +74,16 @@ public class Parsers
         Attr versionAttribute = root.getAttributeNode("parser_version");
         if (versionAttribute == null)
             throw new InscribeSyntaxException("Missing parser version attribute");
-        if (lastVersion.get().equals(versionAttribute.getValue()))
-            return lastParser.get();
+        if (LAST_VERSION.get().equals(versionAttribute.getValue()))
+            return LAST_PARSER.get();
         try
         {
             ParserVersion version = ParserVersion.parse(versionAttribute.getValue());
             Parser parser = PARSERS.get(version);
             if (parser == null)
                 throw invalidVersionException(versionAttribute.getValue());
-            lastVersion.set(versionAttribute.getValue());
-            lastParser.set(parser);
+            LAST_VERSION.set(versionAttribute.getValue());
+            LAST_PARSER.set(parser);
             return parser;
         }
         catch (ParserVersion.InvalidVersionException e)

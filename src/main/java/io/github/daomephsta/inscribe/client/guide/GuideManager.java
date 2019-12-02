@@ -32,9 +32,9 @@ import net.minecraft.util.profiler.Profiler;
 public class GuideManager implements IdentifiableResourceReloadListener
 {
     public static final GuideManager INSTANCE = new GuideManager();
+    public static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
     private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.guide_manager");
     private static final Identifier ID = new Identifier(Inscribe.MOD_ID, "guide_manager");
-    public static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
     private static final String GUIDE_DEFINITION_FILENAME = "guide_definition.xml";
 
     private final Map<Identifier, Guide> guides = new HashMap<>();

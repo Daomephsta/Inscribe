@@ -21,8 +21,7 @@ public class XmlAttributes
      * Gets an xml attribute as a boolean
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
-     * @throws
-     * InscribeSyntaxException if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute does not exist
      * or its value cannot be parsed as a boolean
      * @return the value of the attribute as a boolean
      */
@@ -41,6 +40,7 @@ public class XmlAttributes
      * Gets an xml attribute as a boolean
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
+     * @param fallback the return value if the attribute does not exist
      * @throws InscribeSyntaxException if the attribute's value cannot be parsed as a boolean
      * @return the value of the attribute as a boolean or {@code fallback} if it does not exist
      */
@@ -61,8 +61,7 @@ public class XmlAttributes
      * Gets an xml attribute as an integer
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
-     * @throws
-     * InscribeSyntaxException if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute does not exist
      * or its value cannot be parsed as an integer
      * @return the value of the attribute as an integer
      */
@@ -83,6 +82,7 @@ public class XmlAttributes
      * Gets an xml attribute as an integer
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
+     * @param fallback the return value if the attribute does not exist
      * @throws InscribeSyntaxException if the attribute's value cannot be parsed as an integer
      * @return the value of the attribute as an integer or {@code fallback} if it does not exist
      */
@@ -105,8 +105,7 @@ public class XmlAttributes
      * Gets an xml attribute as a long
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
-     * @throws
-     * InscribeSyntaxException if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute does not exist
      * or its value cannot be parsed as a long
      * @return the value of the attribute as a long
      */
@@ -127,6 +126,7 @@ public class XmlAttributes
      * Gets an xml attribute as a long
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
+     * @param fallback the return value if the attribute does not exist
      * @throws InscribeSyntaxException if the attribute's value cannot be parsed as a long
      * @return the value of the attribute as a long or {@code fallback} if it does not exist
      */
@@ -149,8 +149,7 @@ public class XmlAttributes
      * Gets an xml attribute as a float
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
-     * @throws
-     * InscribeSyntaxException if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute does not exist
      * or its value cannot be parsed as a float
      * @return the value of the attribute as a float
      */
@@ -171,6 +170,7 @@ public class XmlAttributes
      * Gets an xml attribute as a float
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
+     * @param fallback the return value if the attribute does not exist
      * @throws InscribeSyntaxException if the attribute's value cannot be parsed as a float
      * @return the value of the attribute as a float or {@code fallback} if it does not exist
      */
@@ -193,8 +193,7 @@ public class XmlAttributes
      * Gets an xml attribute as a double
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
-     * @throws
-     * InscribeSyntaxException if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute does not exist
      * or its value cannot be parsed as a double
      * @return the value of the attribute as a double
      */
@@ -215,6 +214,7 @@ public class XmlAttributes
      * Gets an xml attribute as a double
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
+     * @param fallback the return value if the attribute does not exist
      * @throws InscribeSyntaxException if the attribute's value cannot be parsed as a double
      * @return the value of the attribute as a double or {@code fallback} if it does not exist
      */
@@ -237,8 +237,7 @@ public class XmlAttributes
      * Gets an xml attribute as a ModelIdentifier
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
-     * @throws
-     * InscribeSyntaxException if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute does not exist
      * or its value cannot be parsed as a ModelIdentifier
      * @return the value of the attribute as a ModelIdentifier
      */
@@ -259,8 +258,7 @@ public class XmlAttributes
      * Gets an xml attribute as an Identifier
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
-     * @throws
-     * InscribeSyntaxException if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute does not exist
      * or its value cannot be parsed as an Identifier
      * @return the value of the attribute as an Identifier
      */
@@ -281,8 +279,8 @@ public class XmlAttributes
      * Gets an xml attribute as an Identifier
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
-     * @throws
-     * InscribeSyntaxException if the attribute's value cannot be parsed as an Identifier
+     * @param fallback the return value if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute's value cannot be parsed as an Identifier
      * @return the value of the attribute as an Identifier or {@code fallback} if it does not exist
      */
     public static Identifier asIdentifier(Element xml, String attributeName, Identifier fallback) throws InscribeSyntaxException
@@ -302,11 +300,11 @@ public class XmlAttributes
 
     /**
      * Gets an xml attribute as an enum constant
+     * @param <E> the enum type
      * @param xml the element with the attribute
      * @param attributeName the name of the attribute
      * @param getter a function to convert a string to an enum constant
-     * @throws
-     * InscribeSyntaxException if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute does not exist
      * or its value cannot be parsed as an enum constant
      * @return the value of the attribute as an enum constant
      */
@@ -338,7 +336,7 @@ public class XmlAttributes
     /**
      * Gets an xml attribute as a String array
      * @param xml the parent element
-     * Gets an xml attribute as a String array
+     * @param attributeName the name of the attribute
      * @throws InscribeSyntaxException if the attribute does not exist
      * @return the value of the attribute as a String array
      */
@@ -358,8 +356,7 @@ public class XmlAttributes
      * Gets the attribute named {@code attributeName}.
      * @param xml the parent element
      * @param attributeName the name of the child element
-     * @throws
-     * InscribeSyntaxException if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute does not exist
      * @return the attribute
      */
     public static Attr get(Element xml, String attributeName) throws InscribeSyntaxException
@@ -374,6 +371,7 @@ public class XmlAttributes
      * Gets the value of the attribute named {@code attributeName}.
      * @param xml the parent element
      * @param attributeName the name of the child element
+     * @param fallback the return value if the attribute does not exist
      * @return the value of the attribute or {@code fallback} if it does not exist
      */
     public static String getValue(Element xml, String attributeName, String fallback)
@@ -386,8 +384,7 @@ public class XmlAttributes
      * Gets the value of the attribute named {@code attributeName}.
      * @param xml the parent element
      * @param attributeName the name of the child element
-     * @throws
-     * InscribeSyntaxException if the attribute does not exist
+     * @throws InscribeSyntaxException if the attribute does not exist
      * @return the value of the attribute
      */
     public static String getValue(Element xml, String attributeName) throws InscribeSyntaxException

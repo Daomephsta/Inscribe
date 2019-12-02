@@ -25,10 +25,10 @@ public class TableOfContents
 
     public static class Link
     {
-        private final Supplier<GuideWidget> iconFactory;
         public final String name;
         public final Identifier destination;
         public final LinkStyle style;
+        private final Supplier<GuideWidget> iconFactory;
 
         public Link(Supplier<GuideWidget> iconFactory, String name, Identifier destination, LinkStyle style)
         {

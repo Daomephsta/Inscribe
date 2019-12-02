@@ -7,13 +7,11 @@ import net.minecraft.client.util.math.Vector3f;
 
 public class XmlElements
 {
-
     /**
      * Gets an xml element as a Vector3f
      * @param xml the parent element
      * @param childName the name of the child element
-     * @throws
-     * InscribeSyntaxException if the child element does not exist or could not be parsed as a Vector3f
+     * @throws InscribeSyntaxException if the child element does not exist or could not be parsed as a Vector3f
      * @return the value of the element as a Vector3f
      */
     public static Vector3f asVector3f(Element xml, String childName) throws InscribeSyntaxException
@@ -32,8 +30,8 @@ public class XmlElements
      * Gets an xml element as a Vector3f
      * @param xml the parent element
      * @param childName the name of the child element
-     * @throws
-     * InscribeSyntaxException if the child element could not be parsed as a Vector3f
+     * @param fallback the return value if the attribute does not exist
+     * @throws InscribeSyntaxException if the child element could not be parsed as a Vector3f
      * @return the value of the element as a Vector3f or {@code fallback} if it does not exist
      */
     public static Vector3f asVector3f(Element xml, String childName, Vector3f fallback) throws InscribeSyntaxException

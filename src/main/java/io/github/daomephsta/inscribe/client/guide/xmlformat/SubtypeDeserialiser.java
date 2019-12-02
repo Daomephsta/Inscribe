@@ -17,11 +17,11 @@ public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 {
     public T deserialise(Element root) throws GuideLoadingException;
 
-    public class Impl<T extends IXmlRepresentation> implements SubtypeDeserialiser<T>
+    public static class Impl<T extends IXmlRepresentation> implements SubtypeDeserialiser<T>
     {
+        private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.subtype_deserialiser.default");
         private final Class<T> parentType;
         private final Map<String, XmlElementType<? extends T>> deserialisers = new HashMap<>();
-        private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.subtype_deserialiser.default");
 
         public Impl(Class<T> parentType)
         {

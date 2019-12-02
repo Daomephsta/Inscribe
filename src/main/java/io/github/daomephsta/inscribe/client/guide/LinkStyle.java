@@ -14,13 +14,13 @@ public enum LinkStyle implements StringIdentifiable
     ICON_WITH_TEXT("icon_with_text", true),
     TEXT("text", false);
 
-    private final String stringRepresentation;
-    private final boolean requiresIcon;
     private static final Map<String, LinkStyle> REPRESENTATION_TO_STYLE;
     static
     {
         REPRESENTATION_TO_STYLE = stream(LinkStyle.values()).collect(ImmutableMap.toImmutableMap(LinkStyle::asString, s -> s));
     }
+    private final String stringRepresentation;
+    private final boolean requiresIcon;
 
     private LinkStyle(String stringRepresentation, boolean requiresIcon)
     {

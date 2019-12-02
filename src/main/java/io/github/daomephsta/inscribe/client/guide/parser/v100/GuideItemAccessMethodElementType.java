@@ -19,14 +19,14 @@ final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAcc
 {
     private static final String ITEM_GROUP = "item_group",
                                 MODEL = "model";
+    //TODO find a less ugly way to do this
+    private static final Lazy<Map<String, ItemGroup>> ID_TO_GROUP =
+            new Lazy<>(() -> Arrays.stream(ItemGroup.GROUPS).collect(Collectors.toMap(ItemGroup::getId, ig -> ig)));
 
     GuideItemAccessMethodElementType()
     {
         super("guide_item", GuideItemAccessMethod.class);
     }
-
-    private static final Lazy<Map<String, ItemGroup>> ID_TO_GROUP =
-            new Lazy<>(() -> Arrays.stream(ItemGroup.GROUPS).collect(Collectors.toMap(ItemGroup::getId, ig -> ig)));
 
     @Override
     public GuideItemAccessMethod fromXml(Element xml) throws GuideLoadingException
