@@ -1,4 +1,4 @@
-package io.github.daomephsta.inscribe.client.guide.parser.v100;
+package io.github.daomephsta.inscribe.client.guide.gui;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

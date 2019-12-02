@@ -1,7 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide.gui;
 
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
-import io.github.daomephsta.inscribe.client.guide.parser.v100.RenderFormatConverter;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import net.minecraft.util.Identifier;

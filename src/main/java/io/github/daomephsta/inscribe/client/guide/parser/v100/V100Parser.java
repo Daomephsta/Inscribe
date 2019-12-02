@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.LinkStyle;
+import io.github.daomephsta.inscribe.client.guide.gui.RenderFormatConverter;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.parser.Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
