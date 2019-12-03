@@ -13,8 +13,20 @@ import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.util.Unindenter;
 
+/**
+ * Deserialises collections of XML nodes.
+ * Primarily used to deserialise child nodes.
+ * @author Daomephsta
+ */
 public interface ContentDeserialiser
 {
+    /**
+     * Deserialises a list of nodes. Tag names not registered with this deserialiser
+     * are ignored.
+     * @param list the nodes to be deserialised
+     * @return a list of the nodes in deserialised form, in encounter order
+     * @throws GuideLoadingException if any error occurs during deserialisation
+     */
     public List<Object> deserialise(NodeList list) throws GuideLoadingException;
 
     public static class Impl implements ContentDeserialiser
@@ -30,6 +42,7 @@ public interface ContentDeserialiser
             return this;
         }
 
+        /**@inheritDoc*/
         @Override
         public List<Object> deserialise(NodeList list) throws GuideLoadingException
         {

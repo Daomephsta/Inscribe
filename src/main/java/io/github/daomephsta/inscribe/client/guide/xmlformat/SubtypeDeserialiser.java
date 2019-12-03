@@ -13,8 +13,22 @@ import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentation;
 
+/**
+ * Deserialises a single child node of a node into a subtype of {@code T}.
+ * @author Daomephsta
+ *
+ * @param <T> the common supertype all the registered deserialisers deserialise to
+ */
 public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 {
+    /**
+     * @param root a node with child nodes. The child nodes will be used
+     * to determine the subtype that is returned.
+     * @return a subtype of {@code parentType}, deserialised from the first matching child node
+     * of {@code root}
+     * @throws GuideLoadingException if any error occurs in the deserialiser,
+     * a matching deserialiser
+     */
     public T deserialise(Element root) throws GuideLoadingException;
 
     public static class Impl<T extends IXmlRepresentation> implements SubtypeDeserialiser<T>
@@ -34,6 +48,7 @@ public interface SubtypeDeserialiser<T extends IXmlRepresentation>
             return this;
         }
 
+        /**{@inheritDoc}*/
         @Override
         public T deserialise(Element root) throws GuideLoadingException
         {
