@@ -43,7 +43,7 @@ public class KeyBindings
                 if (client.currentScreen instanceof GuideGui)
                 {
                     MinecraftClient.getInstance().openScreen(new GuideScreen(
-                        GuideManager.INSTANCE.getGuide(((GuideScreen) client.currentScreen).getGuideId())));
+                        GuideManager.INSTANCE.getGuide(((GuideGui) client.currentScreen).getOpenGuideId())));
                 }
             });
     }

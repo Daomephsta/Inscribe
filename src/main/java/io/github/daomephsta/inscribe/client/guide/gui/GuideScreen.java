@@ -115,7 +115,8 @@ public class GuideScreen extends Screen implements GuideGui
         }
     }
 
-    public Identifier getGuideId()
+    @Override
+    public Identifier getOpenGuideId()
     {
         return guide.getIdentifier();
     }
