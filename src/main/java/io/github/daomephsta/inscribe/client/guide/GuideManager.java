@@ -21,8 +21,8 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItem
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
 import io.github.daomephsta.inscribe.common.Inscribe;
+import io.github.daomephsta.inscribe.common.util.Identifiers;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
-import io.github.daomephsta.util.Identifiers;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.TranslatableText;

@@ -1,4 +1,4 @@
-package io.github.daomephsta.util;
+package io.github.daomephsta.inscribe.common.util;
 
 import java.util.*;
 

@@ -11,7 +11,7 @@ import org.w3c.dom.NodeList;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
-import io.github.daomephsta.util.Unindenter;
+import io.github.daomephsta.inscribe.common.util.Unindenter;
 
 /**
  * Deserialises collections of XML nodes.

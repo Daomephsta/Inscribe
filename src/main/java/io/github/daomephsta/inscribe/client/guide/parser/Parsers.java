@@ -22,7 +22,6 @@ import io.github.daomephsta.inscribe.client.guide.parser.v100.V100Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
-import io.github.daomephsta.util.XmlResources;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
