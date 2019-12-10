@@ -1,0 +1,19 @@
+This file lists assets and code distributed under different licenses from the rest of the project.
+
+
+The following assets are works created by others or derivatives of such works.
+If you are viewing this document in the .jar, all asset paths beginning with / are relative to the root. 
+If you are viewing this as part of the source, all asset paths are relative to src/main/resources.
+	No 3rd party assets
+
+	
+The following packages consist entirely of code and assets created by others. These packages are present only in the JAR distribution.
+
+io.github.daomephsta.inscribe.shadow.com.pivovarit.function
+	Licensed under the Apache 2.0 License (licenses/apache-2.0.txt)
+
+io.github.daomephsta.inscribe.shadow.mosaic
+	Licensed under the MIT License (licenses/mosaic-mit.txt)
+	
+io.github.daomephsta.inscribe.shadow.org.commonmark
+	Licensed under the BSD 2-Clause "Simplified" License (licenses/commonmark-java-bsd-2-clause-simplified.txt)

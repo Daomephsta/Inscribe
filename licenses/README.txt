@@ -1,0 +1,1 @@
+The licenses in this folder apply to specific assets or code as specified in NOTICE.txt.

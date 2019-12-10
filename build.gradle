@@ -37,7 +37,7 @@ dependencies {
     
     def commonMark = "com.atlassian.commonmark:commonmark:${project.common_mark_version}"
     implementation commonMark
-    shadow commonMark 
+    shadow commonMark
 }
 
 processResources {
@@ -71,32 +71,20 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 tasks.jar.enabled = false
 tasks.remapJar.enabled = false
 
-task includeMosaicLicense(type: Copy) {
-    from (project(':mosaic').projectDir) {
-    	include 'LICENSE'
-    	rename 'LICENSE', 'LICENSE.txt'
-    }
-    into ("${sourceSets.main.output.resourcesDir.path}/io/github/daomephsta/inscribe/shadow/mosaic")
-}
-
-task includeThrowingFunctionLicense(type: Download) {
-    src 'https://raw.githubusercontent.com/pivovarit/throwing-function/master/LICENSE'
-    dest "${sourceSets.main.output.resourcesDir.path}/io/github/daomephsta/inscribe/shadow/com/pivovarit/function/LICENSE.txt"
-}
-
-task includeCommonMarkLicense(type: Download) {
-    src 'https://raw.githubusercontent.com/atlassian/commonmark-java/master/LICENSE.txt'
-    dest "${sourceSets.main.output.resourcesDir.path}/io/github/daomephsta/inscribe/shadow/org/commonmark/LICENSE.txt"
-}
-
 shadowJar {
- 	dependsOn includeMosaicLicense, includeThrowingFunctionLicense,includeCommonMarkLicense
  	destinationDir = file("${buildDir}/tmp/allJar")
     configurations = [project.configurations.shadow]
-    relocate 'io.github.daomephsta.mosaic', 'io.github.daomephsta.inscribe.shadow.mosaic'
     relocate 'com.pivovarit.function', 'io.github.daomephsta.inscribe.shadow.com.pivovarit.function'
+    relocate 'io.github.daomephsta.mosaic', 'io.github.daomephsta.inscribe.shadow.mosaic'
     relocate 'org.commonmark', 'io.github.daomephsta.inscribe.shadow.org.commonmark'
+
+    //Exclude META-INF entries of shaded deps
     exclude 'META-INF/**'
+    from('.') {
+        include 'LICENSE.md'
+		include 'NOTICE.txt'
+		include 'licenses/**'
+    }
 	minimize()
 }
 
