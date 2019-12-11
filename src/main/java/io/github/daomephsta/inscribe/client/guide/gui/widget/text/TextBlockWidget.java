@@ -47,11 +47,15 @@ public class TextBlockWidget extends GuideWidget
 
     public void append(TextNode content)
     {
+        heightHint += 1;
         Preconditions.checkNotNull(content);
         if (contentHead == null)
             contentHead = contentTail = content;
-        contentTail.next = content;
-        contentTail = content;
+        else
+        {
+            contentTail.next = content;
+            contentTail = content;
+        }
         nodeCount += 1;
     }
 
