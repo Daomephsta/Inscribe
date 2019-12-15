@@ -116,6 +116,13 @@ public class GuideScreen extends Screen implements GuideGui
     }
 
     @Override
+    public void onClose()
+    {
+        visibleContent.onClose();
+        super.onClose();
+    }
+
+    @Override
     public Identifier getOpenGuideId()
     {
         return guide.getIdentifier();

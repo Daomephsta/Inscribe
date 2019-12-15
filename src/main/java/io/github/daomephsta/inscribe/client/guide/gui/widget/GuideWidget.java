@@ -77,6 +77,9 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
 
     protected abstract void renderWidget(int mouseX, int mouseY, float lastFrameDuration);
 
+    /**Called when the widget is no longer needed, to allow it to cleanup (e.g mark entities created solely for rendering as removed)*/
+    public void dispose() {}
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {

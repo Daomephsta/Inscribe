@@ -37,6 +37,12 @@ public class OpenEntry implements VisibleContent
         root.render(mouseX, mouseY, lastFrameDuration);
     }
 
+    @Override
+    public void onClose()
+    {
+        root.dispose();
+    }
+
     Identifier getEntryId()
     {
         return entry.getId();

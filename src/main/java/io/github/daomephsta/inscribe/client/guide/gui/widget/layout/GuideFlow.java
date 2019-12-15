@@ -31,6 +31,13 @@ public class GuideFlow extends GuideWidget implements ParentWidget
     }
 
     @Override
+    public void dispose()
+    {
+        for (GuideWidget widget : elements.getChildren())
+            widget.dispose();
+    }
+
+    @Override
     protected void renderWidget(int mouseX, int mouseY, float lastFrameDuration)
     {
         for (GuideWidget child : elements.getChildren())

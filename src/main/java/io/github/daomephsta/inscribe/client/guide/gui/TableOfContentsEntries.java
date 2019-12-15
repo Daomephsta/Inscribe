@@ -79,4 +79,10 @@ public class TableOfContentsEntries implements VisibleContent
         root.mouseClicked(mouseX, mouseY, button);
         return VisibleContent.super.mouseClicked(mouseX, mouseY, button);
     }
+
+    @Override
+    public void onClose()
+    {
+        root.dispose();
+    }
 }
