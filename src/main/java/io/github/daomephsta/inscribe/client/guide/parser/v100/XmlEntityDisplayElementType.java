@@ -17,6 +17,7 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.registry.Registry;
 
 final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
@@ -39,9 +40,8 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
                 ? StringNbtReader.parse(tagAttr.getValue())
                 : new CompoundTag();
             Transform transform = readTransform(XmlElements.getChildNullable(xml, "transform"));
-            Animation animation = readAnimation(XmlElements.getChildNullable(xml, "animation"));
-            boolean lighting = XmlAttributes.asBoolean(xml, "lighting", true);
-            return new XmlEntityDisplay(entityId, nbt, transform, animation, lighting);
+            Animation animation = readAnimation(XmlElements.getChildNullable(xml, "animate"));
+            return new XmlEntityDisplay(entityId, nbt, transform, animation);
         }
         catch (CommandSyntaxException e)
         {
@@ -54,9 +54,27 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
         if (xml == null)
             return Transform.NONE;
         Vector3f translation = XmlElements.asVector3f(xml, "translate", Transform.NONE.translation);
-        Vector3f rotation = XmlElements.asVector3f(xml, "rotate", Transform.NONE.rotation);
-        float scale = XmlAttributes.asFloat(XmlElements.getChild(xml, "scale"), "s", 1.0F);
+        Quaternion rotation = readRotation(xml, Transform.NONE.rotation);
+        Element scaleXml = XmlElements.getChildNullable(xml, "scale");
+        float scale = scaleXml != null
+            ? XmlAttributes.asFloat(scaleXml, "s", 1.0F)
+            : 1.0F;
         return new Transform(translation, rotation, scale);
+    }
+
+    private Quaternion readRotation(Element xml, Quaternion fallback) throws InscribeSyntaxException
+    {
+        Element child = XmlElements.getChildNullable(xml, "rotate");
+        if (child != null)
+        {
+            Quaternion rotation = Vector3f.POSITIVE_X.getDegreesQuaternion(XmlAttributes.asFloat(child, "x", 0));
+            rotation.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(XmlAttributes.asFloat(child, "y", 0)));
+            //180.0F == Flip Z axis
+            rotation.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(XmlAttributes.asFloat(child, "z", 0)));
+            return rotation;
+        }
+        else
+            return fallback;
     }
 
     private Animation readAnimation(Element xml) throws InscribeSyntaxException
@@ -70,11 +88,11 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
             String axis = element.getAttribute("axis");
             Vector3f axisVector;
             if (axis.equals("x"))
-                axisVector = new Vector3f(1.0F, 0.0F, 0.0F);
+                axisVector = Vector3f.POSITIVE_X;
             else if (axis.equals("y"))
-                axisVector = new Vector3f(0.0F, 1.0F, 0.0F);
+                axisVector = Vector3f.POSITIVE_Y;
             else if (axis.equals("z"))
-                axisVector = new Vector3f(0.0F, 0.0F, 1.0F);
+                axisVector = Vector3f.POSITIVE_Z;
             else
                 throw new InscribeSyntaxException("Axis must be x, y, or z");
             return new XmlEntityDisplay.Revolve(axisVector, XmlAttributes.asFloat(element, "speed"));

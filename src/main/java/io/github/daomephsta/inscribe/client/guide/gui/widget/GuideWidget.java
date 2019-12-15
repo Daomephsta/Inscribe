@@ -62,7 +62,7 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
     private void drawBox(double z, int left, int top, int right, int bottom, int color)
     {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder boxBuilder = tessellator.getBufferBuilder();
+        BufferBuilder boxBuilder = tessellator.getBuffer();
         boxBuilder.begin(GL11.GL_LINE_LOOP, VertexFormats.POSITION_COLOR);
         int r = (color & 0xFF000000) >> 24;
         int g = (color & 0x00FF0000) >> 16;

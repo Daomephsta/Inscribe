@@ -2,7 +2,6 @@ package io.github.daomephsta.inscribe.client.guide;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +9,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+
+import com.mojang.datafixers.util.Pair;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
@@ -27,6 +28,7 @@ import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -56,7 +58,7 @@ public class GuideModel
         }
 
         @Override
-        public Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> modelGetter, Set<String> errors)
+        public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> modelGetter, Set<Pair<String, String>> errors)
         {
             return GuideManager.INSTANCE.streamGuideModelIds()
                 .flatMap(model -> modelGetter.apply(model).getTextureDependencies(modelGetter, errors).stream())
@@ -64,7 +66,7 @@ public class GuideModel
         }
 
         @Override
-        public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> spriteGetter, ModelBakeSettings bakeSettings)
+        public BakedModel bake(ModelLoader modelLoader, Function<SpriteIdentifier, Sprite> spriteGetter, ModelBakeSettings bakeSettings, Identifier var4)
         {
             Map<Identifier, BakedModel> modelMap = GuideManager.INSTANCE.streamGuideModelIds()
                 .collect(toMap(id -> id, id -> modelLoader.bake(id, bakeSettings)));

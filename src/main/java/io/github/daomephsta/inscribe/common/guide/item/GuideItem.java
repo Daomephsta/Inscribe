@@ -78,7 +78,7 @@ public class GuideItem extends Item
 
     private Identifier getGuideId(ItemStack guideStack)
     {
-        if (!guideStack.hasTag() || (guideStack.hasTag() && !guideStack.getTag().containsKey(GUIDE_ID_TAG)))
+        if (!guideStack.hasTag() || (guideStack.hasTag() && !guideStack.getTag().contains(GUIDE_ID_TAG)))
             return Guide.INVALID_GUIDE_ID;
         return new Identifier(guideStack.getTag().getString(GUIDE_ID_TAG));
     }

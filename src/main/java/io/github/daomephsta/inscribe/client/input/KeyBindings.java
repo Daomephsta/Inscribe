@@ -5,14 +5,14 @@ import java.util.concurrent.CompletableFuture;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.GuideGui;
 import io.github.daomephsta.inscribe.client.guide.gui.GuideScreen;
-import io.github.daomephsta.inscribe.client.input.WatchedKeyBinding.Modifier;
 import io.github.daomephsta.inscribe.client.input.KeyWatcher.KeyAction;
+import io.github.daomephsta.inscribe.client.input.WatchedKeyBinding.Modifier;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DummyProfiler;
 
 public class KeyBindings
@@ -37,7 +37,7 @@ public class KeyBindings
             return;
         //Reload all guides
         GuideManager.INSTANCE.reload(CompletableFuture::completedFuture, client.getResourceManager(),
-            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, SystemUtil.getServerWorkerExecutor(), client)
+            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getServerWorkerExecutor(), client)
             .thenRun(() ->
             {
                 if (client.currentScreen instanceof GuideGui)

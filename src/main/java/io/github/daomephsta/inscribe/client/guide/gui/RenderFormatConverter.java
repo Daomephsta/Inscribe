@@ -45,7 +45,7 @@ public class RenderFormatConverter
                 if (entity != null) //EntityType.create(World) is nullable
                 {
                     entity.fromTag(xed.nbt);
-                    return new EntityDisplayWidget(entity, xed.transform, xed.animation, xed.lighting);
+                    return new EntityDisplayWidget(entity, xed.transform, xed.animation);
                 }
             }
             catch (Exception e)

@@ -28,12 +28,12 @@ public class ImageWidget extends GuideWidget
     {
         MinecraftClient.getInstance().getTextureManager().bindTexture(src);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vertexBuf = tessellator.getBufferBuilder();
-        vertexBuf.begin(GL11.GL_QUADS, VertexFormats.POSITION_UV);
-        vertexBuf.vertex(left(), bottom(), 0).texture(0.0D, 1.0D).next();
-        vertexBuf.vertex(right(), bottom(), 0).texture(1.0D, 1.0D).next();
-        vertexBuf.vertex(right(), top(), 0).texture(1.0D, 0.0D).next();
-        vertexBuf.vertex(left(), top(), 0).texture(0.0D, 0.0D).next();
+        BufferBuilder vertexBuf = tessellator.getBuffer();
+        vertexBuf.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
+        vertexBuf.vertex(left(), bottom(), 0).texture(0.0F, 1.0F).next();
+        vertexBuf.vertex(right(), bottom(), 0).texture(1.0F, 1.0F).next();
+        vertexBuf.vertex(right(), top(), 0).texture(1.0F, 0.0F).next();
+        vertexBuf.vertex(left(), top(), 0).texture(0.0F, 0.0F).next();
         tessellator.draw();
     }
 

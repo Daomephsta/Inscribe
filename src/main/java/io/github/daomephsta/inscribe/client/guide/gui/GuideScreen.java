@@ -15,7 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DummyProfiler;
 
 public class GuideScreen extends Screen implements GuideGui
@@ -74,7 +74,7 @@ public class GuideScreen extends Screen implements GuideGui
         {
             MinecraftClient mc = MinecraftClient.getInstance();
             GuideManager.INSTANCE.reloadGuide(guide.getIdentifier(), CompletableFuture::completedFuture, mc.getResourceManager(),
-                DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, SystemUtil.getServerWorkerExecutor(), mc)
+                DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getServerWorkerExecutor(), mc)
                 .thenAccept(guide ->
                 {
                     if (visibleContent instanceof OpenEntry)
@@ -101,7 +101,7 @@ public class GuideScreen extends Screen implements GuideGui
                 MinecraftClient mc = MinecraftClient.getInstance();
                 GuideManager.INSTANCE.reloadEntry(guide.getIdentifier(), ((OpenEntry) visibleContent).getEntryId(),
                     CompletableFuture::completedFuture, mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
-                    SystemUtil.getServerWorkerExecutor(), mc)
+                    Util.getServerWorkerExecutor(), mc)
                     .thenAccept(entry ->
                     {
                         visibleContent = new OpenEntry(entry);
