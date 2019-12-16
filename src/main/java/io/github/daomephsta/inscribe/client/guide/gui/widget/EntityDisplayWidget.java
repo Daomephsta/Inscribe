@@ -75,4 +75,11 @@ public class EntityDisplayWidget extends GuideWidget
     {
         return (int) Math.ceil(32 * entity.getWidth() * transform.scale);
     }
+
+    @Override
+    public void dispose()
+    {
+        //Kill the entity, just in case
+        entity.remove();
+    }
 }
