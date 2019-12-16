@@ -1,6 +1,8 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlGuideGuiElement;
+import io.github.daomephsta.mosaic.EdgeSpacing;
+import io.github.daomephsta.mosaic.Size;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
@@ -12,13 +14,19 @@ public class XmlEntityDisplay implements XmlGuideGuiElement
     public final CompoundTag nbt;
     public final Transform transform;
     public final Animation animation;
+    public final EdgeSpacing padding,
+                              margin;
+    public final Size size;
 
-    public XmlEntityDisplay(Identifier entityId, CompoundTag nbt, Transform transform, Animation animation)
+    public XmlEntityDisplay(Identifier entityId, CompoundTag nbt, Transform transform, Animation animation, EdgeSpacing padding, EdgeSpacing margin, Size size)
     {
         this.entityId = entityId;
         this.nbt = nbt;
         this.transform = transform;
         this.animation = animation;
+        this.padding = padding;
+        this.margin = margin;
+        this.size = size;
     }
 
     public static class Transform

@@ -1,12 +1,11 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat.definition;
 
 import java.util.List;
-import java.util.function.Supplier;
-
+import java.util.function.Consumer;
 import com.google.common.collect.ImmutableList;
 
 import io.github.daomephsta.inscribe.client.guide.LinkStyle;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import net.minecraft.util.Identifier;
 
 public class TableOfContents
@@ -28,9 +27,9 @@ public class TableOfContents
         public final String name;
         public final Identifier destination;
         public final LinkStyle style;
-        private final Supplier<GuideWidget> iconFactory;
+        private final Consumer<GuideFlow> iconFactory;
 
-        public Link(Supplier<GuideWidget> iconFactory, String name, Identifier destination, LinkStyle style)
+        public Link(Consumer<GuideFlow> iconFactory, String name, Identifier destination, LinkStyle style)
         {
             this.iconFactory = iconFactory;
             this.name = name;
@@ -38,11 +37,11 @@ public class TableOfContents
             this.style = style;
         }
 
-        public GuideWidget getIcon()
+        public void addIcon(GuideFlow output)
         {
             if (iconFactory == null)
                 throw new NullPointerException("Icon not present");
-            return iconFactory.get();
+            iconFactory.accept(output);
         }
     }
 }

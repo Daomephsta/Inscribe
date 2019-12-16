@@ -6,6 +6,7 @@ import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlImage;
+import io.github.daomephsta.mosaic.EdgeSpacing;
 import net.minecraft.util.Identifier;
 
 final class XmlImageElementType extends XmlElementType<XmlImage>
@@ -23,6 +24,8 @@ final class XmlImageElementType extends XmlElementType<XmlImage>
         String alt_text = XmlAttributes.getValue(xml, "alt_text");
         int width = XmlAttributes.asInt(xml, "width"),
             height = XmlAttributes.asInt(xml, "height");
-        return new XmlImage(src, alt_text, width, height);
+        EdgeSpacing padding = LayoutParameters.readPadding(xml);
+        EdgeSpacing margin = LayoutParameters.readMargin(xml);
+        return new XmlImage(src, alt_text, width, height, padding, margin, LayoutParameters.readSize(xml));
     }
 }

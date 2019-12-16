@@ -20,7 +20,7 @@ public class OpenEntry implements VisibleContent
         if (!entry.getPages().isEmpty())
         {
             for (Object content : entry.getPages().get(0).getContent())
-                root.add(RenderFormatConverter.convert(content));
+                RenderFormatConverter.convert(root, content);
         }
     }
 

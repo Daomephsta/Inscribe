@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.commonmark.node.Node;
 
 import io.github.daomephsta.inscribe.client.guide.gui.widget.EntityDisplayWidget;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.ImageWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.StackDisplayWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
@@ -16,6 +15,7 @@ import io.github.daomephsta.inscribe.client.guide.parser.markdown.InscribeMarkdo
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlImage;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
+import io.github.daomephsta.mosaic.flow.FlowLayoutData;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -25,27 +25,34 @@ public class RenderFormatConverter
 {
     private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.render_format_converter");
 
-    public static GuideWidget convert(Object xmlForm)
+    public static void convert(GuideFlow output, Object intermediateForm)
     {
-        if (xmlForm instanceof XmlImage)
+        if (intermediateForm instanceof XmlImage)
         {
-            XmlImage xmlImage = (XmlImage) xmlForm;
-            return new ImageWidget(xmlImage.getSrc(), xmlImage.getAltText(), xmlImage.getWidth(), xmlImage.getHeight());
+            XmlImage intermediate = (XmlImage) intermediateForm;
+            ImageWidget widget = new ImageWidget(intermediate.getSrc(), intermediate.getAltText(), intermediate.getWidth(), intermediate.getHeight());
+            widget.setPadding(intermediate.padding);
+            widget.setMargin(intermediate.margin);
+            output.add(widget, new FlowLayoutData(intermediate.size));
         }
-        else if (xmlForm instanceof XmlItemStack)
+        else if (intermediateForm instanceof XmlItemStack)
         {
-            return new StackDisplayWidget(((XmlItemStack) xmlForm).stack);
+            XmlItemStack intermediate = (XmlItemStack) intermediateForm;
+            output.add(new StackDisplayWidget(intermediate.stack), new FlowLayoutData(intermediate.size));
         }
-        else if (xmlForm instanceof XmlEntityDisplay)
+        else if (intermediateForm instanceof XmlEntityDisplay)
         {
-            XmlEntityDisplay xed = (XmlEntityDisplay) xmlForm;
+            XmlEntityDisplay intermediate = (XmlEntityDisplay) intermediateForm;
             try
             {
-                Entity entity = Registry.ENTITY_TYPE.get(xed.entityId).create(MinecraftClient.getInstance().world);
+                Entity entity = Registry.ENTITY_TYPE.get(intermediate.entityId).create(MinecraftClient.getInstance().world);
                 if (entity != null) //EntityType.create(World) is nullable
                 {
-                    entity.fromTag(xed.nbt);
-                    return new EntityDisplayWidget(entity, xed.transform, xed.animation);
+                    entity.fromTag(intermediate.nbt);
+                    EntityDisplayWidget widget = new EntityDisplayWidget(entity, intermediate.transform, intermediate.animation);
+                    widget.setPadding(intermediate.padding);
+                    widget.setMargin(intermediate.margin);
+                    output.add(widget, new FlowLayoutData(intermediate.size));
                 }
             }
             catch (Exception e)
@@ -53,9 +60,10 @@ public class RenderFormatConverter
                 LOGGER.error(e);
             }
         }
-        else if (xmlForm instanceof Node)
-            return parseMarkDown((Node) xmlForm);
-        return new LabelWidget(new FormattedTextNode("CONVERT_FAIL", 0), Alignment.CENTER, Alignment.CENTER, 1.0F);
+        else if (intermediateForm instanceof Node)
+            output.add(parseMarkDown((Node) intermediateForm));
+        else
+            output.add(new LabelWidget(new FormattedTextNode("CONVERT_FAIL", 0), Alignment.CENTER, Alignment.CENTER, 1.0F));
     }
 
     private static GuideFlow parseMarkDown(Node markDownRoot)

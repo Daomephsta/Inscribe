@@ -4,5 +4,4 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentat
 
 public interface XmlGuideGuiElement extends IXmlRepresentation
 {
-
 }

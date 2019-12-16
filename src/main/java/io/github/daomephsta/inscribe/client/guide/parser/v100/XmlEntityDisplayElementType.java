@@ -13,6 +13,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlElements;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Animation;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Transform;
+import io.github.daomephsta.mosaic.EdgeSpacing;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
@@ -41,7 +42,9 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
                 : new CompoundTag();
             Transform transform = readTransform(XmlElements.getChildNullable(xml, "transform"));
             Animation animation = readAnimation(XmlElements.getChildNullable(xml, "animate"));
-            return new XmlEntityDisplay(entityId, nbt, transform, animation);
+            EdgeSpacing padding = LayoutParameters.readPadding(xml);
+            EdgeSpacing margin = LayoutParameters.readMargin(xml);
+            return new XmlEntityDisplay(entityId, nbt, transform, animation, padding, margin, LayoutParameters.readSize(xml));
         }
         catch (CommandSyntaxException e)
         {

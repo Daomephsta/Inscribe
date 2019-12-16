@@ -3,7 +3,7 @@ package io.github.daomephsta.inscribe.client.guide.parser.v100;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,7 +21,7 @@ import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.LinkStyle;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderFormatConverter;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.parser.Parser;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlResources;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
@@ -127,15 +127,15 @@ public class V100Parser implements Parser
         {
             Element link = (Element) linkElements.item(i);
             Element iconXml = XmlElements.getChildNullable(link, "icon");
-            if (style.requiresIcon() && iconXml != null)
+            if (style.requiresIcon() && iconXml == null)
                 throw new InscribeSyntaxException("Style " + style + " requires that an icon is specified");
             String name = XmlAttributes.getValue(link, "name");
             Identifier destination = XmlAttributes.asIdentifier(link, "destination");
-            Supplier<GuideWidget> iconFactory = null;
+            Consumer<GuideFlow> iconFactory = null;
             if (iconXml != null)
             {
                 XmlGuideGuiElement icon = GUIDE_GUI_ELEMENT_DESERIALISER.deserialise(iconXml);
-                iconFactory = () -> RenderFormatConverter.convert(icon );
+                iconFactory = output -> RenderFormatConverter.convert(output, icon);
             }
             links.add(new TableOfContents.Link(iconFactory, name, destination, style));
         }

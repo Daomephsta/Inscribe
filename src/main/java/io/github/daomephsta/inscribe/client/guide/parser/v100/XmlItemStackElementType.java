@@ -10,6 +10,7 @@ import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
+import io.github.daomephsta.mosaic.EdgeSpacing;
 import net.minecraft.command.arguments.ItemStringReader;
 import net.minecraft.item.ItemStack;
 
@@ -31,7 +32,9 @@ final class XmlItemStackElementType extends XmlElementType<XmlItemStack>
             int amount = XmlAttributes.asInt(xml, "amount", 1);
             ItemStack stack = new ItemStack(itemStringReader.getItem(), amount);
             stack.setTag(itemStringReader.getTag());
-            return new XmlItemStack(stack);
+            EdgeSpacing padding = LayoutParameters.readPadding(xml);
+            EdgeSpacing margin = LayoutParameters.readMargin(xml);
+            return new XmlItemStack(stack, padding, margin, LayoutParameters.readSize(xml));
         }
         catch (CommandSyntaxException e)
         {

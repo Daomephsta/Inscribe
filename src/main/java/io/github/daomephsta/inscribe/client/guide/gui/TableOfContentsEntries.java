@@ -9,7 +9,7 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextN
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents.Link;
-import io.github.daomephsta.mosaic.Size;
+import io.github.daomephsta.mosaic.SizeConstraint;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 
 public class TableOfContentsEntries implements VisibleContent
@@ -28,7 +28,7 @@ public class TableOfContentsEntries implements VisibleContent
             linkElement.margin().setVertical(2);
             links.add(linkElement);
         }
-        root.add(links, d -> d.setSize(Size.percentage(100)));
+        root.add(links, d -> d.setSizeConstraint(SizeConstraint.percentage(100)));
     }
 
     @Override
@@ -45,10 +45,7 @@ public class TableOfContentsEntries implements VisibleContent
         case ICON_WITH_TEXT:
         {
             GuideFlow linkElement = new GuideFlow(Direction.HORIZONTAL);
-            //TODO make copy
-            GuideWidget icon = link.getIcon();
-
-            linkElement.add(icon, d -> d.setSize(Size.pixels(16)));
+            link.addIcon(linkElement);
             LabelWidget label = new LabelWidget(new FormattedTextNode(link.name, 0x000000), Alignment.CENTER, Alignment.CENTER, 1.0F);
             label.margin().setLeft(1);
             linkElement.add(label);
@@ -56,7 +53,8 @@ public class TableOfContentsEntries implements VisibleContent
         }
         case ICON_WITH_TOOLTIP:
         {
-            GuideWidget linkElement = link.getIcon();
+            GuideFlow linkElement = new GuideFlow(Direction.HORIZONTAL);
+            link.addIcon(linkElement);
             linkElement.attach(new Tooltip(tooltip -> tooltip.accept(link.name)));
             return linkElement;
         }

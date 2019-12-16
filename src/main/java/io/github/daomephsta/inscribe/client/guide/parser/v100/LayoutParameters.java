@@ -1,0 +1,62 @@
+package io.github.daomephsta.inscribe.client.guide.parser.v100;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Element;
+
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
+import io.github.daomephsta.mosaic.EdgeSpacing;
+import io.github.daomephsta.mosaic.ParseException;
+import io.github.daomephsta.mosaic.Size;
+import io.github.daomephsta.mosaic.SizeConstraint;
+
+public class LayoutParameters
+{
+    private LayoutParameters(){}
+
+    public static EdgeSpacing readPadding(Element xml) throws InscribeSyntaxException
+    {
+        EdgeSpacing padding = new EdgeSpacing();
+        padding.setTop(XmlAttributes.asInt(xml, "paddingTop", 0));
+        padding.setBottom(XmlAttributes.asInt(xml, "paddingBottom", 0));
+        padding.setLeft(XmlAttributes.asInt(xml, "paddingLeft", 0));
+        padding.setRight(XmlAttributes.asInt(xml, "paddingRight", 0));
+        return padding;
+    }
+
+    public static EdgeSpacing readMargin(Element xml) throws InscribeSyntaxException
+    {
+        EdgeSpacing margin = new EdgeSpacing();
+        margin.setTop(XmlAttributes.asInt(xml, "marginTop", 0));
+        margin.setBottom(XmlAttributes.asInt(xml, "marginBottom", 0));
+        margin.setLeft(XmlAttributes.asInt(xml, "marginLeft", 0));
+        margin.setRight(XmlAttributes.asInt(xml, "marginRight", 0));
+        return margin;
+    }
+
+    public static Size readSize(Element xml) throws InscribeSyntaxException
+    {
+        return new Size()
+            .setMinSize(XmlAttributes.asInt(xml, "minSize", 1))
+            .setMaxSize(XmlAttributes.asInt(xml, "maxSize", Integer.MAX_VALUE))
+            .setSizeConstraint(readSizeConstraint(xml));
+    }
+
+    private static SizeConstraint readSizeConstraint(Element xml) throws InscribeSyntaxException
+    {
+        Attr size = xml.getAttributeNode("size");
+        if (size != null)
+        {
+            try
+            {
+                return SizeConstraint.parse(size.getTextContent());
+            }
+            catch (DOMException | ParseException e)
+            {
+                throw new InscribeSyntaxException("Could not parse size attribute of " + xml.getTagName(), e);
+            }
+        }
+        return SizeConstraint.DEFAULT;
+    }
+}

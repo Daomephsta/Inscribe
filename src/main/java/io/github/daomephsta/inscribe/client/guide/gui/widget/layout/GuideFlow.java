@@ -20,6 +20,11 @@ public class GuideFlow extends GuideWidget implements ParentWidget
         setMargin(elements.margin());
     }
 
+    public void add(GuideWidget element, FlowLayoutData layoutData)
+    {
+        elements.add(element, layoutData);
+    }
+
     public void add(GuideWidget element, Consumer<FlowLayoutData> layoutDataConfig)
     {
         elements.add(element, layoutDataConfig);
