@@ -65,8 +65,8 @@ public class XmlElements
             return null;
         if (matchingChildren.getLength() > 1)
         {
-            throw new InscribeSyntaxException(String.format("Found %d elements named '%s' in element '%s'. Expected 1.",
-                childName, xml.getTagName()));
+            throw new InscribeSyntaxException(String.format("Found %d elements named '%s' in %s. Expected 1.",
+                childName, XmlElements.getDebugString(xml)));
         }
         return (Element) matchingChildren.item(0);
     }
@@ -86,15 +86,23 @@ public class XmlElements
             throw noElementException(xml, childName);
         else if (matchingChildren.getLength() > 1)
         {
-            throw new InscribeSyntaxException(String.format("Found %d elements named '%s' in element '%s'. Expected 1.",
-                childName, xml.getTagName()));
+            throw new InscribeSyntaxException(String.format("Found %d elements named '%s' in %s. Expected 1.",
+                childName, XmlElements.getDebugString(xml)));
         }
         return (Element) matchingChildren.item(0);
     }
 
+    public static String getDebugString(Element xml)
+    {
+        String debugId = xml.getAttribute("debugId");
+        if (!debugId.isEmpty())
+            return String.format("(Tag Name: '%s' Debug ID: '%s')", xml.getTagName(), debugId);
+        return String.format("(Tag Name: '%s')", xml.getTagName());
+    }
+
     private static InscribeSyntaxException noElementException(Element xml, String childName)
     {
-        return new InscribeSyntaxException(String.format("No element named '%s' found in parent element '%s'",
-            childName, xml.getTagName()));
+        return new InscribeSyntaxException(String.format("No element named '%s' found in %s",
+            childName, XmlElements.getDebugString(xml)));
     }
 }

@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlElements;
 import io.github.daomephsta.mosaic.EdgeSpacing;
 import io.github.daomephsta.mosaic.ParseException;
 import io.github.daomephsta.mosaic.Size;
@@ -54,7 +55,7 @@ public class LayoutParameters
             }
             catch (DOMException | ParseException e)
             {
-                throw new InscribeSyntaxException("Could not parse size attribute of " + xml.getTagName(), e);
+                throw new InscribeSyntaxException("Could not parse size attribute of " + XmlElements.getDebugString(xml), e);
             }
         }
         return SizeConstraint.DEFAULT;

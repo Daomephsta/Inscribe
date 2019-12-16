@@ -74,7 +74,7 @@ public class XmlAttributes
         }
         catch (NumberFormatException e)
         {
-            throw wrappedNumberFormatException(attributeName, e);
+            throw wrappedNumberFormatException(xml, attributeName, e);
         }
     }
 
@@ -97,7 +97,7 @@ public class XmlAttributes
         }
         catch (NumberFormatException e)
         {
-            throw wrappedNumberFormatException(attributeName, e);
+            throw wrappedNumberFormatException(xml, attributeName, e);
         }
     }
 
@@ -118,7 +118,7 @@ public class XmlAttributes
         }
         catch (NumberFormatException e)
         {
-            throw wrappedNumberFormatException(attributeName, e);
+            throw wrappedNumberFormatException(xml, attributeName, e);
         }
     }
 
@@ -141,7 +141,7 @@ public class XmlAttributes
         }
         catch (NumberFormatException e)
         {
-            throw wrappedNumberFormatException(attributeName, e);
+            throw wrappedNumberFormatException(xml, attributeName, e);
         }
     }
 
@@ -162,7 +162,7 @@ public class XmlAttributes
         }
         catch (NumberFormatException e)
         {
-            throw wrappedNumberFormatException(attributeName, e);
+            throw wrappedNumberFormatException(xml, attributeName, e);
         }
     }
 
@@ -185,7 +185,7 @@ public class XmlAttributes
         }
         catch (NumberFormatException e)
         {
-            throw wrappedNumberFormatException(attributeName, e);
+            throw wrappedNumberFormatException(xml, attributeName, e);
         }
     }
 
@@ -206,7 +206,7 @@ public class XmlAttributes
         }
         catch (NumberFormatException e)
         {
-            throw wrappedNumberFormatException(attributeName, e);
+            throw wrappedNumberFormatException(xml, attributeName, e);
         }
     }
 
@@ -229,7 +229,7 @@ public class XmlAttributes
         }
         catch (NumberFormatException e)
         {
-            throw wrappedNumberFormatException(attributeName, e);
+            throw wrappedNumberFormatException(xml, attributeName, e);
         }
     }
 
@@ -409,11 +409,13 @@ public class XmlAttributes
 
     private static InscribeSyntaxException noAttributeException(Element xml, String attributeName)
     {
-        return new InscribeSyntaxException(String.format("No attribute named '%s' found in element of type %s", attributeName, xml.getTagName()));
+        return new InscribeSyntaxException(String.format("No attribute named '%s' found in element %s",
+            attributeName, XmlElements.getDebugString(xml)));
     }
 
-    private static RuntimeException wrappedNumberFormatException(String attributeName, NumberFormatException e)
+    private static RuntimeException wrappedNumberFormatException(Element parent, String attributeName, NumberFormatException e)
     {
-        return new InscribeXmlParseException(String.format("Could not parse value of attribute '%s' as an integer", attributeName), e);
+        return new InscribeXmlParseException(String.format("Could not parse value of attribute '%s' of %s as an integer",
+            attributeName, XmlElements.getDebugString(parent)), e);
     }
 }
