@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,8 +15,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.pivovarit.function.ThrowingSupplier;
+import com.pivovarit.function.exception.WrappedException;
 
 import io.github.daomephsta.inscribe.client.guide.parser.Parsers;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
@@ -82,6 +85,8 @@ public class GuideManager implements IdentifiableResourceReloadListener
         return loadGuide(resourceManager, guideDefPath)
             .exceptionally(thrw ->
             {
+                if (thrw instanceof WrappedException)
+                    thrw = thrw.getCause();
                 LOGGER.error("An error occured while reloading guide '{}'", guideId, thrw);
                 Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_guide"));
                 return getGuide(Guide.INVALID_GUIDE_ID);
@@ -106,9 +111,11 @@ public class GuideManager implements IdentifiableResourceReloadListener
         return loadEntry(resourceManager, entryLocation, loadExecutor)
             .exceptionally(thrw ->
             {
-                    LOGGER.error("An error occured while reloading entry '{}'", entryId, thrw);
-                    Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_entry"));
-                    return new XmlEntry(entryId, Collections.emptySet(), Collections.singletonList(new XmlPage(Collections.emptyList())));
+                 if (thrw instanceof WrappedException)
+                    thrw = thrw.getCause();
+                 LOGGER.error("An error occured while reloading entry '{}'", entryId, thrw);
+                 Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_entry"));
+                 return createFallbackEntry(entryId);
             })
             .thenApply(entry ->
             {
@@ -153,7 +160,10 @@ public class GuideManager implements IdentifiableResourceReloadListener
         }, executor)
         .exceptionally(thrw ->
         {
+            if (thrw instanceof WrappedException)
+                thrw = thrw.getCause();
             LOGGER.error("An unexpected error occured during the LOAD stage of guide loading", thrw);
+            Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.guide"));
             return Collections.singleton(getGuide(Guide.INVALID_GUIDE_ID));
         });
     }
@@ -184,27 +194,27 @@ public class GuideManager implements IdentifiableResourceReloadListener
             {
                 if (!entryPath.getNamespace().equals(namespace))
                     continue;
-                try
-                {
-                    XmlEntry entry = loadEntry(resourceManager, entryPath, null).join();
-                    entries.put(entry.getId(), entry);
-                }
-                catch (GuideLoadingException loadingException)
-                {
-                    if (loadingException.isFatal())
-                        throw new RuntimeException("An unrecoverable error occured while loading an entry from " + entryPath, loadingException);
-                    else
+                XmlEntry entry = loadEntry(resourceManager, entryPath, null)
+                    .exceptionally(thrw ->
                     {
-                        LOGGER.error("Entry at {} failed to load correctly:\n\t{}", entryPath, loadingException.getMessage());
+                        Throwable actual = thrw;
+                        while (actual instanceof CompletionException || actual instanceof WrappedException)
+                            actual = actual.getCause();
+                        if (actual instanceof InscribeSyntaxException)
+                            LOGGER.error("Entry at {} failed to load correctly:\n\t{}", entryPath, actual.getMessage());
+                        else
+                            LOGGER.error("Entry at {} failed to load correctly:", entryPath, actual);
                         Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.entry"));
-                    }
-                }
+                        return createFallbackEntry(entryPath);
+                    })
+                    .join();
+                entries.put(entry.getId(), entry);
             }
             return entries;
         });
     }
 
-    private CompletableFuture<XmlEntry> loadEntry(ResourceManager resourceManager, Identifier path, Executor loadExecutor) throws GuideLoadingException
+    private CompletableFuture<XmlEntry> loadEntry(ResourceManager resourceManager, Identifier path, Executor loadExecutor)
     {
         return loadExecutor != null
             ? CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() -> Parsers.loadEntry(resourceManager, path)), loadExecutor)
@@ -219,6 +229,11 @@ public class GuideManager implements IdentifiableResourceReloadListener
             this.guides.put(guide.getIdentifier(), guide);
         }
         LOGGER.info("Loaded {} guides", guidesIn.size());
+    }
+
+    private XmlEntry createFallbackEntry(Identifier entryId)
+    {
+        return new XmlEntry(entryId, Collections.emptySet(), Collections.singletonList(new XmlPage(Collections.emptyList())));
     }
 
     @Override
