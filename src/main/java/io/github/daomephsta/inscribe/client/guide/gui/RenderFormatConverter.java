@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.commonmark.node.Node;
 
 import io.github.daomephsta.inscribe.client.guide.gui.widget.EntityDisplayWidget;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.ImageWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.StackDisplayWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
@@ -16,6 +17,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEn
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlImage;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
 import io.github.daomephsta.mosaic.flow.FlowLayoutData;
+import io.github.daomephsta.mosaic.Size;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -33,12 +35,12 @@ public class RenderFormatConverter
             ImageWidget widget = new ImageWidget(intermediate.getSrc(), intermediate.getAltText(), intermediate.getWidth(), intermediate.getHeight());
             widget.setPadding(intermediate.padding);
             widget.setMargin(intermediate.margin);
-            output.add(widget, new FlowLayoutData(intermediate.size));
+            addWidget(output, widget, intermediate.size);
         }
         else if (intermediateForm instanceof XmlItemStack)
         {
             XmlItemStack intermediate = (XmlItemStack) intermediateForm;
-            output.add(new StackDisplayWidget(intermediate.stack), new FlowLayoutData(intermediate.size));
+            addWidget(output, new StackDisplayWidget(intermediate.stack), intermediate.size);
         }
         else if (intermediateForm instanceof XmlEntityDisplay)
         {
@@ -52,7 +54,7 @@ public class RenderFormatConverter
                     EntityDisplayWidget widget = new EntityDisplayWidget(entity, intermediate.transform, intermediate.animation);
                     widget.setPadding(intermediate.padding);
                     widget.setMargin(intermediate.margin);
-                    output.add(widget, new FlowLayoutData(intermediate.size));
+                    addWidget(output, widget, intermediate.size);
                 }
             }
             catch (Exception e)
@@ -64,6 +66,14 @@ public class RenderFormatConverter
             output.add(parseMarkDown((Node) intermediateForm));
         else
             output.add(new LabelWidget(new FormattedTextNode("CONVERT_FAIL", 0), Alignment.CENTER, Alignment.CENTER, 1.0F));
+    }
+
+    private static void addWidget(GuideFlow output, GuideWidget widget, Size size)
+    {
+        if (size.isDefault())
+            output.add(widget);
+        else
+            output.add(widget, new FlowLayoutData(size));
     }
 
     private static GuideFlow parseMarkDown(Node markDownRoot)

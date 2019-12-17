@@ -1,6 +1,5 @@
 package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
@@ -38,26 +37,25 @@ public class LayoutParameters
 
     public static Size readSize(Element xml) throws InscribeSyntaxException
     {
-        return new Size()
-            .setMinSize(XmlAttributes.asInt(xml, "minSize", 1))
-            .setMaxSize(XmlAttributes.asInt(xml, "maxSize", Integer.MAX_VALUE))
-            .setSizeConstraint(readSizeConstraint(xml));
+        Size size = new Size();
+        if (XmlElements.hasAttribute(xml, "minSize"))
+            size.setMinSize(XmlAttributes.asInt(xml, "minSize"));
+        if (XmlElements.hasAttribute(xml, "maxSize"))
+            size.setMaxSize(XmlAttributes.asInt(xml, "maxSize"));
+        if (XmlElements.hasAttribute(xml, "size"))
+            size.setPreferredSize(readSizeConstraint(xml));
+        return size;
     }
 
     private static SizeConstraint readSizeConstraint(Element xml) throws InscribeSyntaxException
     {
-        Attr size = xml.getAttributeNode("size");
-        if (size != null)
+        try
         {
-            try
-            {
-                return SizeConstraint.parse(size.getTextContent());
-            }
-            catch (DOMException | ParseException e)
-            {
-                throw new InscribeSyntaxException("Could not parse size attribute of " + XmlElements.getDebugString(xml), e);
-            }
+            return SizeConstraint.parse(xml.getAttribute("size"));
         }
-        return SizeConstraint.DEFAULT;
+        catch (DOMException | ParseException e)
+        {
+            throw new InscribeSyntaxException("Could not parse size attribute of " + XmlElements.getDebugString(xml), e);
+        }
     }
 }

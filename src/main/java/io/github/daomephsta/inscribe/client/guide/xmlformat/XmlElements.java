@@ -92,6 +92,11 @@ public class XmlElements
         return (Element) matchingChildren.item(0);
     }
 
+    public static boolean hasAttribute(Element xml, String attributeName)
+    {
+        return xml.getAttributeNode(attributeName) != null;
+    }
+
     public static String getDebugString(Element xml)
     {
         String debugId = xml.getAttribute("debugId");

@@ -28,7 +28,7 @@ public class TableOfContentsEntries implements VisibleContent
             linkElement.margin().setVertical(2);
             links.add(linkElement);
         }
-        root.add(links, d -> d.setSizeConstraint(SizeConstraint.percentage(100)));
+        root.add(links, d -> d.setPreferredSize(SizeConstraint.percentage(100)));
     }
 
     @Override
