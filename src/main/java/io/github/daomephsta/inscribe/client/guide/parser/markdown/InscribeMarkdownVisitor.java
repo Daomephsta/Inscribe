@@ -1,12 +1,16 @@
 package io.github.daomephsta.inscribe.client.guide.parser.markdown;
 
 import org.commonmark.node.AbstractVisitor;
+import org.commonmark.node.BulletList;
+import org.commonmark.node.Document;
 import org.commonmark.node.Emphasis;
 import org.commonmark.node.HardLineBreak;
 import org.commonmark.node.Heading;
 import org.commonmark.node.HtmlBlock;
 import org.commonmark.node.HtmlInline;
 import org.commonmark.node.LinkReferenceDefinition;
+import org.commonmark.node.ListItem;
+import org.commonmark.node.OrderedList;
 import org.commonmark.node.Paragraph;
 import org.commonmark.node.SoftLineBreak;
 import org.commonmark.node.StrongEmphasis;
@@ -16,6 +20,7 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
+import io.github.daomephsta.inscribe.client.guide.parser.markdown.ListData.ListType;
 
 public class InscribeMarkdownVisitor extends AbstractVisitor
 {
@@ -24,6 +29,12 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     public InscribeMarkdownVisitor(GuideFlow output)
     {
         this.builder = new InscribeBuilder(output);
+    }
+
+    @Override
+    public void visit(Document document)
+    {
+        visitChildren(document);
     }
 
     @Override
@@ -72,6 +83,29 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     {
         builder.pushLiteral(text.getLiteral(), 0x000000);
         visitChildren(text);
+    }
+
+    @Override
+    public void visit(BulletList bulletList)
+    {
+        builder.startList(ListType.UNORDERED);
+        visitChildren(bulletList);
+        builder.endList();
+    }
+
+    @Override
+    public void visit(OrderedList orderedList)
+    {
+        builder.startList(ListType.ORDERED);
+        visitChildren(orderedList);
+        builder.endList();
+    }
+
+    @Override
+    public void visit(ListItem listItem)
+    {
+        visitChildren(listItem);
+        builder.nextListItem();
     }
 
     @Override

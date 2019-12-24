@@ -18,7 +18,6 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlIm
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
 import io.github.daomephsta.mosaic.flow.FlowLayoutData;
 import io.github.daomephsta.mosaic.Size;
-import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.registry.Registry;
@@ -63,7 +62,7 @@ public class RenderFormatConverter
             }
         }
         else if (intermediateForm instanceof Node)
-            output.add(parseMarkDown((Node) intermediateForm));
+            ((Node) intermediateForm).accept(new InscribeMarkdownVisitor(output));
         else
             output.add(new LabelWidget(new FormattedTextNode("CONVERT_FAIL", 0), Alignment.CENTER, Alignment.CENTER, 1.0F));
     }
@@ -74,12 +73,5 @@ public class RenderFormatConverter
             output.add(widget);
         else
             output.add(widget, new FlowLayoutData(size));
-    }
-
-    private static GuideFlow parseMarkDown(Node markDownRoot)
-    {
-        GuideFlow output = new GuideFlow(Direction.VERTICAL);
-        markDownRoot.accept(new InscribeMarkdownVisitor(output ));
-        return output;
     }
 }

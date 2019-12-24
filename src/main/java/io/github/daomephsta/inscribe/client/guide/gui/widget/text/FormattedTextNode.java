@@ -34,9 +34,16 @@ public class FormattedTextNode extends TextNode
     @Override
     int getWidth()
     {
+        //Must be lazy because the text renderer may be unavailable during markdown parsing
         if (width == -1)
             width = MinecraftClient.getInstance().textRenderer.getStringWidth(text);
         return width;
+    }
+
+    @Override
+    int getHeight()
+    {
+        return MinecraftClient.getInstance().textRenderer.fontHeight;
     }
 
     @Override

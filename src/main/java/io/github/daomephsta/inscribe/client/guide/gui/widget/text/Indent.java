@@ -2,12 +2,13 @@ package io.github.daomephsta.inscribe.client.guide.gui.widget.text;
 
 import net.minecraft.client.MinecraftClient;
 
-public class LineBreak extends TextNode
+public class Indent extends TextNode
 {
-    @Override
-    int getWidth()
+    private final int level;
+
+    public Indent(int level)
     {
-        return 0;
+        this.level = level;
     }
 
     @Override
@@ -17,8 +18,14 @@ public class LineBreak extends TextNode
     }
 
     @Override
+    int getWidth()
+    {
+        return level * 4;
+    }
+
+    @Override
     public String toString()
     {
-        return "\\n";
+        return String.format("Indent(level: %d)", level);
     }
 }

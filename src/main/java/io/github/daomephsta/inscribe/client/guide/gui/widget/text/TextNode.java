@@ -8,6 +8,8 @@ public abstract class TextNode
 
     abstract int getWidth();
 
+    abstract int getHeight();
+
     TextNode next()
     {
         return next;
