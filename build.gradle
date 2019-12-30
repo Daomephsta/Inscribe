@@ -38,6 +38,11 @@ dependencies {
     def commonMark = "com.atlassian.commonmark:commonmark:${project.common_mark_version}"
     implementation commonMark
     shadow commonMark
+    
+    //Underline
+    def commonMarkInsExtension = "com.atlassian.commonmark:commonmark-ext-ins:${project.common_mark_version}"
+    implementation commonMarkInsExtension
+    shadow commonMarkInsExtension
 }
 
 processResources {

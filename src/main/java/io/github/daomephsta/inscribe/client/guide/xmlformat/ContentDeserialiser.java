@@ -4,10 +4,13 @@ import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.commonmark.ext.ins.InsExtension;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import com.google.common.collect.Lists;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
@@ -31,7 +34,9 @@ public interface ContentDeserialiser
 
     public static class Impl implements ContentDeserialiser
     {
-        private static final Parser MARKDOWN_PARSER = Parser.builder().build();
+        private static final Parser MARKDOWN_PARSER = Parser.builder()
+            .extensions(Lists.newArrayList(InsExtension.create()))
+            .build();
         private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.content_deserialiser.default");
         private static final Unindenter UNINDENTER = new Unindenter();
         private final Map<String, XmlElementType<?>> deserialisers = new HashMap<>();

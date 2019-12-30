@@ -5,7 +5,8 @@ import net.minecraft.util.Formatting;
 public enum FormatFlags
 {
     BOLD(Formatting.BOLD),
-    ITALIC(Formatting.ITALIC);
+    ITALIC(Formatting.ITALIC),
+    UNDERLINE(Formatting.UNDERLINE);
 
     private final Formatting delegate;
 

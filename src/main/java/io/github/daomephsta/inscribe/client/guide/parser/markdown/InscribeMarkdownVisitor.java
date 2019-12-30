@@ -1,7 +1,9 @@
 package io.github.daomephsta.inscribe.client.guide.parser.markdown;
 
+import org.commonmark.ext.ins.Ins;
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.BulletList;
+import org.commonmark.node.CustomNode;
 import org.commonmark.node.Document;
 import org.commonmark.node.Emphasis;
 import org.commonmark.node.HardLineBreak;
@@ -78,6 +80,12 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
         visitChildren(strongEmphasis);
     }
 
+    private void visit(Ins ins)
+    {
+        builder.pushFormatting(FormatFlags.UNDERLINE);
+        visitChildren(ins);
+    }
+
     @Override
     public void visit(Text text)
     {
@@ -124,5 +132,12 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     public void visit(HtmlBlock htmlBlock)
     {
         System.out.println("HTML unsupported");
+    }
+
+    @Override
+    public void visit(CustomNode customNode)
+    {
+        if (customNode instanceof Ins)
+            visit((Ins) customNode);
     }
 }
