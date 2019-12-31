@@ -26,11 +26,11 @@ import io.github.daomephsta.inscribe.client.guide.parser.markdown.ListData.ListT
 
 public class InscribeMarkdownVisitor extends AbstractVisitor
 {
-    private final InscribeBuilder builder;
+    private final PageBuilder builder;
 
     public InscribeMarkdownVisitor(GuideFlow output)
     {
-        this.builder = new InscribeBuilder(output);
+        this.builder = new PageBuilder(output);
     }
 
     @Override

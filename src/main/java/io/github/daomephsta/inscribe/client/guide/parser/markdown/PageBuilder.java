@@ -17,7 +17,7 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextNode;
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import io.github.daomephsta.inscribe.client.guide.parser.markdown.ListData.ListType;
 
-public class InscribeBuilder
+public class PageBuilder
 {
     private final GuideFlow output;
     private final Deque<FormatFlags> formatFlags = new ArrayDeque<>();
@@ -25,7 +25,7 @@ public class InscribeBuilder
     private final Deque<ListData> listData = new ArrayDeque<>();
     private int indentLevel = 0;
 
-    public InscribeBuilder(GuideFlow output)
+    public PageBuilder(GuideFlow output)
     {
         this.output = output;
     }
