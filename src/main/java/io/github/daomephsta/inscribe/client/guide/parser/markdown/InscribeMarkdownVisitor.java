@@ -17,6 +17,7 @@ import org.commonmark.node.Paragraph;
 import org.commonmark.node.SoftLineBreak;
 import org.commonmark.node.StrongEmphasis;
 import org.commonmark.node.Text;
+import org.commonmark.node.ThematicBreak;
 
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
@@ -114,6 +115,13 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     {
         visitChildren(listItem);
         builder.nextListItem();
+    }
+
+    @Override
+    public void visit(ThematicBreak thematicBreak)
+    {
+        builder.addHorizontalRule();
+        super.visit(thematicBreak);
     }
 
     @Override

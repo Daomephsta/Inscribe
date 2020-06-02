@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Stream;
 
+import io.github.daomephsta.inscribe.client.guide.gui.widget.HorizontalRuleWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
@@ -82,5 +83,10 @@ public class PageBuilder
     public void nextListItem()
     {
         listData.peek().nextItem();
+    }
+
+    public void addHorizontalRule()
+    {
+        output.add(new HorizontalRuleWidget());
     }
 }
