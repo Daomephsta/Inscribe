@@ -24,17 +24,14 @@ public class TextBlockWidget extends GuideWidget
         for (Iterator<TextNode> iter = content.iterator(); iter.hasNext();)
         {
             TextNode node = iter.next();
+            lineWidth += node.getWidth();
+            lineHeight = Math.max(lineHeight, node.getHeight());
             if (!iter.hasNext() || node instanceof LineBreak)
             {
                 width = Math.max(width, lineWidth);
                 height += lineHeight;
                 //Reset for next line
                 lineWidth = lineHeight = 0;
-            }
-            else
-            {
-                lineWidth += node.getWidth();
-                lineHeight = Math.max(lineHeight, node.getHeight());
             }
         }
         this.widthHint = width;
