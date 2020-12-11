@@ -6,7 +6,8 @@ public enum FormatFlags
 {
     BOLD(Formatting.BOLD),
     ITALIC(Formatting.ITALIC),
-    UNDERLINE(Formatting.UNDERLINE);
+    UNDERLINE(Formatting.UNDERLINE),
+    STRIKETHROUGH(Formatting.STRIKETHROUGH);
 
     private final Formatting delegate;
 

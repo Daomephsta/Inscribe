@@ -1,25 +1,19 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget.text;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import io.github.daomephsta.inscribe.client.guide.gui.InteractableElement;
-import io.github.daomephsta.inscribe.client.guide.gui.RenderableElement;
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Formatting;
 
-public class FormattedTextNode extends TextNode
+public class FormattedTextNode extends ElementHostNode
 {
     private String unformatted, formatted;
     private int colour;
     private final Set<FormatFlags> formatFlags;
     private int width = -1;
-    private final Collection<InteractableElement> attachedInteractables = new ArrayList<>();
-    private final Collection<RenderableElement> attachedRenderables = new ArrayList<>();
 
     public FormattedTextNode(String text, int color, FormatFlags... formatFlags)
     {
@@ -28,43 +22,11 @@ public class FormattedTextNode extends TextNode
         setText(text);
     }
 
-    public void attach(InteractableElement component)
-    {
-        attachedInteractables.add(component);
-        if (component instanceof RenderableElement)
-            attachedRenderables.add((RenderableElement) component);
-    }
-
-    public void attach(RenderableElement component)
-    {
-        attachedRenderables.add(component);
-        if (component instanceof InteractableElement)
-            attachedInteractables.add((InteractableElement) component);
-    }
-
-    public boolean mouseClicked(float x, float y, int mouseX, int mouseY, int button)
-    {
-        boolean mouseOver = contains(x, y, mouseX, mouseY);
-        for (InteractableElement element : attachedInteractables)
-        {
-            if (mouseOver)
-                return element.mouseClicked(mouseX, mouseY, button);
-        }
-        return false;
-    }
-
     @Override
     public void render(float x, float y, int mouseX, int mouseY, float lastFrameDuration)
     {
         MinecraftClient.getInstance().textRenderer.draw(formatted, x, y, colour);
-        boolean mouseOver = contains(x, y, mouseX, mouseY);
-        for (RenderableElement element : attachedRenderables)
-            element.render(mouseX, mouseY, lastFrameDuration, mouseOver);
-    }
-
-    private boolean contains(float x, float y, int mouseX, int mouseY)
-    {
-        return x <= mouseX && mouseX <= x + getWidth() && y <= mouseY && mouseY <= y + getHeight();
+        super.render(x, y, mouseX, mouseY, lastFrameDuration);
     }
 
     @Override

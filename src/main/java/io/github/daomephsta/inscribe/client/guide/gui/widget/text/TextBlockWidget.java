@@ -68,13 +68,16 @@ public class TextBlockWidget extends GuideWidget
         float left = horizontalAlignment.offsetX(x(), this, hintWidth());
         float x = left;
         float y = verticalAlignment.offsetY(y(), this, hintHeight());
+        int lineHeight = 0;
         for (TextNode node : content)
         {
+            lineHeight = Math.max(lineHeight, node.getHeight());
             node.render(x, y, mouseX, mouseY, lastFrameDuration);
             if (node instanceof LineBreak)
             {
-                y += 9;
+                y += lineHeight;
                 x = left;
+                lineHeight = 0;
             }
             else
                 x += node.getWidth();

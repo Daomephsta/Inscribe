@@ -16,6 +16,7 @@ import org.commonmark.node.HardLineBreak;
 import org.commonmark.node.Heading;
 import org.commonmark.node.HtmlBlock;
 import org.commonmark.node.HtmlInline;
+import org.commonmark.node.Image;
 import org.commonmark.node.Link;
 import org.commonmark.node.ListItem;
 import org.commonmark.node.Node;
@@ -28,12 +29,14 @@ import org.commonmark.node.ThematicBreak;
 
 import com.google.common.collect.Sets;
 
+import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import io.github.daomephsta.inscribe.client.guide.parser.markdown.ListData.ListType;
 import io.github.daomephsta.inscribe.common.Inscribe;
+import io.github.daomephsta.inscribe.common.util.Identifiers;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -212,6 +215,43 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
             builder.popColour();
             LOGGER.error("Link error", e);
             return;
+        }
+    }
+
+    @Override
+    public void visit(Image image)
+    {
+        try
+        {
+            Identifier location = Identifiers.builder(new Identifier(image.getDestination()))
+                .prependPathSegments("textures").build();
+            if (MinecraftClient.getInstance().getResourceManager().containsResource(location))
+                builder.addInlineImage(location, image.getTitle());
+            else
+                error(image, "Image %s not found", location);
+        }
+        catch (InvalidIdentifierException e)
+        {
+            builder.pushColour(0xFF0000);
+            builder.pushLiteral("Check inscribe.log");
+            builder.popColour();
+            LOGGER.error("Invalid image ID", e);
+        }
+    }
+
+    private void error(Node node, String format, Object... args)
+    {
+        {
+            builder.pushColour(0xFF0000);
+            builder.pushFormatting(FormatFlags.STRIKETHROUGH);
+            String message = String.format(format, args);
+            builder.pushRenderable(new Tooltip(tooltip ->
+                tooltip.accept(message)));
+            LOGGER.error(message);
+            visitChildren(node);
+            builder.popRenderable();
+            builder.popFormatting();
+            builder.popColour();
         }
     }
 

@@ -17,6 +17,7 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.text.InlineImage;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LineBreak;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextBlockWidget;
@@ -176,5 +177,17 @@ public class PageBuilder
     public void addHorizontalRule()
     {
         output.add(new HorizontalRuleWidget());
+    }
+
+    public void addInlineImage(Identifier location, String tooltipText)
+    {
+        InlineImage image = new InlineImage(location);
+        if (tooltipText != null)
+            image.attach(new Tooltip(tooltip -> tooltip.accept(tooltipText)));
+        if (!interactables.isEmpty())
+            image.attach(interactables.peek());
+        if (!renderables.isEmpty())
+            image.attach(renderables.peek());
+        textNodes.add(image);
     }
 }
