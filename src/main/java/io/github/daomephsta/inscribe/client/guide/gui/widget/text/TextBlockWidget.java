@@ -39,6 +39,30 @@ public class TextBlockWidget extends GuideWidget
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
+    {
+        if (super.mouseClicked(mouseX, mouseY, button))
+            return true;
+        float left = horizontalAlignment.offsetX(x(), this, hintWidth());
+        float x = left;
+        float y = verticalAlignment.offsetY(y(), this, hintHeight());
+        for (TextNode node : content)
+        {
+            if (node instanceof FormattedTextNode)
+                ((FormattedTextNode) node).mouseClicked(x, y, (int) mouseX, (int) mouseY, button);
+            if (node instanceof LineBreak)
+            {
+                y += 9;
+                x = left;
+            }
+            else
+                x += node.getWidth();
+            node = node.next;
+        }
+        return false;
+    }
+
+    @Override
     public void renderWidget(int mouseX, int mouseY, float lastFrameDuration)
     {
         float left = horizontalAlignment.offsetX(x(), this, hintWidth());

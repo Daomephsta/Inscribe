@@ -47,7 +47,7 @@ public class GuideFlow extends GuideWidget implements ParentWidget
     {
         for (GuideWidget child : elements.getChildren())
         {
-            child.render(mouseX, mouseY, lastFrameDuration);
+            child.render(mouseX, mouseY, lastFrameDuration, contains(mouseX, mouseY));
         }
     }
 

@@ -1,5 +1,11 @@
 package io.github.daomephsta.inscribe.client.guide.parser.markdown;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.commonmark.ext.ins.Ins;
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.BulletList;
@@ -10,8 +16,9 @@ import org.commonmark.node.HardLineBreak;
 import org.commonmark.node.Heading;
 import org.commonmark.node.HtmlBlock;
 import org.commonmark.node.HtmlInline;
-import org.commonmark.node.LinkReferenceDefinition;
+import org.commonmark.node.Link;
 import org.commonmark.node.ListItem;
+import org.commonmark.node.Node;
 import org.commonmark.node.OrderedList;
 import org.commonmark.node.Paragraph;
 import org.commonmark.node.SoftLineBreak;
@@ -19,14 +26,21 @@ import org.commonmark.node.StrongEmphasis;
 import org.commonmark.node.Text;
 import org.commonmark.node.ThematicBreak;
 
+import com.google.common.collect.Sets;
+
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import io.github.daomephsta.inscribe.client.guide.parser.markdown.ListData.ListType;
+import io.github.daomephsta.inscribe.common.Inscribe;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 
 public class InscribeMarkdownVisitor extends AbstractVisitor
 {
+    private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.markdown");
     private final PageBuilder builder;
 
     public InscribeMarkdownVisitor(GuideFlow output)
@@ -70,27 +84,31 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     @Override
     public void visit(Emphasis emphasis)
     {
-        builder.pushFormatting(FormatFlags.ITALIC);
-        visitChildren(emphasis);
+        visitFormatNode(emphasis, FormatFlags.ITALIC);
     }
 
     @Override
     public void visit(StrongEmphasis strongEmphasis)
     {
-        builder.pushFormatting(FormatFlags.BOLD);
-        visitChildren(strongEmphasis);
+        visitFormatNode(strongEmphasis, FormatFlags.BOLD);
     }
 
     private void visit(Ins ins)
     {
-        builder.pushFormatting(FormatFlags.UNDERLINE);
-        visitChildren(ins);
+        visitFormatNode(ins, FormatFlags.UNDERLINE);
+    }
+
+    private void visitFormatNode(Node node, FormatFlags represented)
+    {
+        builder.pushFormatting(represented);
+        visitChildren(node);
+        builder.popFormatting();
     }
 
     @Override
     public void visit(Text text)
     {
-        builder.pushLiteral(text.getLiteral(), 0x000000);
+        builder.pushLiteral(text.getLiteral());
         visitChildren(text);
     }
 
@@ -124,10 +142,77 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
         super.visit(thematicBreak);
     }
 
+    private static final Set<String> ALLOWED_SCHEMES = Sets.newHashSet("http", "https");
     @Override
-    public void visit(LinkReferenceDefinition linkReferenceDefinition)
+    public void visit(Link link)
     {
-        System.out.println("Link references not supported");
+        String destination = link.getDestination();
+        try
+        {
+            URI uri = new URI(destination);
+            String scheme = uri.getScheme();
+            if (scheme == null)
+            {
+                builder.pushColour(0xFF0000);
+                builder.pushLiteral("Check inscribe.log");
+                builder.popColour();
+                LOGGER.error("{} has bad scheme", destination, scheme);
+                return;
+            }
+            else if (scheme.equals(Inscribe.MOD_ID))
+            {
+                String[] split = uri.getRawAuthority().split(":");
+                if (split.length != 2)
+                {
+                    builder.pushColour(0xFF0000);
+                    builder.pushLiteral("BAD ID: " + uri);
+                    builder.popColour();
+                    return;
+                }
+                try
+                {
+                    Identifier entryId = new Identifier(split[0], split[1] + uri.getPath());
+                    String tooltipText = link.getTitle() != null ? link.getTitle() : entryId.toString();
+                    builder.startEntryLink(entryId, tooltipText);
+                }
+                catch (InvalidIdentifierException e)
+                {
+                    LOGGER.error("Invalid identifier", e);
+                    return;
+                }
+            }
+            else if (ALLOWED_SCHEMES.contains(scheme))
+            {
+                if (MinecraftClient.getInstance().options.chatLinks)
+                    builder.startWebLink(uri);
+                else
+                    LOGGER.info("{} disabled because web links are disabled in vanilla chat settings", link);
+            }
+            else
+            {
+                builder.pushColour(0xFF0000);
+                builder.pushLiteral("ILLEGAL SCHEME: " + scheme);
+                builder.popColour();
+                LOGGER.error("{} has illegal scheme: {}", destination, scheme);
+                return;
+            }
+            visitChildren(link);
+            if (scheme != null)
+            {
+                if (scheme.equals(Inscribe.MOD_ID))
+                    builder.endEntryLink();
+                else if (ALLOWED_SCHEMES.contains(scheme))
+                    builder.endWebLink();
+            }
+        }
+        catch (URISyntaxException e)
+        {
+            builder.pushColour(0xFF0000);
+            builder.pushLiteral("Check inscribe.log");
+            builder.popColour();
+            LOGGER.error("Link error", e);
+            return;
+        }
     }
 
     @Override

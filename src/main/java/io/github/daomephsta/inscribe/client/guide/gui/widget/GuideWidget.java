@@ -9,7 +9,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 
 import io.github.daomephsta.inscribe.client.guide.gui.InteractableElement;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderableElement;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.component.WidgetComponent;
 import io.github.daomephsta.mosaic.MosaicWidget;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
@@ -21,29 +20,25 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
     private final Collection<InteractableElement> attachedInteractables = new ArrayList<>();
     private final Collection<RenderableElement> attachedRenderables = new ArrayList<>();
 
-    public void attach(WidgetComponent component)
+    public void attach(InteractableElement component)
     {
-        boolean validComponent = false;
-        if (component instanceof InteractableElement)
-        {
-            attachedInteractables.add((InteractableElement) component);
-            validComponent = true;
-        }
+        attachedInteractables.add(component);
         if (component instanceof RenderableElement)
-        {
             attachedRenderables.add((RenderableElement) component);
-            validComponent = true;
-        }
-        if (!validComponent)
-            throw new IllegalArgumentException(component.getClass() + " does not extend InteractableElement or RenderableElement");
-        component.onAttached(this);
+    }
+
+    public void attach(RenderableElement component)
+    {
+        attachedRenderables.add(component);
+        if (component instanceof InteractableElement)
+            attachedInteractables.add((InteractableElement) component);
     }
 
     @Override
-    public final void render(int mouseX, int mouseY, float lastFrameDuration)
+    public final void render(int mouseX, int mouseY, float lastFrameDuration, boolean mouseOver)
     {
         for (RenderableElement element : attachedRenderables)
-            element.render(mouseX, mouseY, lastFrameDuration);
+            element.render(mouseX, mouseY, lastFrameDuration, contains(mouseX, mouseY));
         renderWidget(mouseX, mouseY, lastFrameDuration);
         if (Screen.hasAltDown())
             drawDebugBounds();

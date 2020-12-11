@@ -2,12 +2,18 @@ package io.github.daomephsta.inscribe.client.guide.parser.markdown;
 
 import static java.util.stream.Collectors.toList;
 
+import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Stream;
 
+import io.github.daomephsta.inscribe.client.guide.gui.InteractableElement;
+import io.github.daomephsta.inscribe.client.guide.gui.RenderableElement;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.HorizontalRuleWidget;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoEntry;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoURI;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
@@ -17,13 +23,19 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextBlockWidge
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextNode;
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import io.github.daomephsta.inscribe.client.guide.parser.markdown.ListData.ListType;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntStack;
+import net.minecraft.util.Identifier;
 
 public class PageBuilder
 {
     private final GuideFlow output;
     private final Deque<FormatFlags> formatFlags = new ArrayDeque<>();
+    private final IntStack colours = new IntArrayList(new int[] {0x000000});
     private final Deque<TextNode> textNodes = new ArrayDeque<>();
     private final Deque<ListData> listData = new ArrayDeque<>();
+    private final Deque<InteractableElement> interactables = new ArrayDeque<>();
+    private final Deque<RenderableElement> renderables = new ArrayDeque<>();
     private int indentLevel = 0;
 
     public PageBuilder(GuideFlow output)
@@ -36,12 +48,49 @@ public class PageBuilder
         formatFlags.push(formatFlag);
     }
 
-    public void pushLiteral(String literal, int color)
+    public void popFormatting()
     {
-        FormatFlags[] formatFlags = Stream.generate(this.formatFlags::poll)
-            .limit(this.formatFlags.size())
-            .toArray(FormatFlags[]::new);
-        textNodes.add(new FormattedTextNode(literal, color, formatFlags));
+        formatFlags.pop();
+    }
+
+    public void pushColour(int colour)
+    {
+        colours.push(colour);
+    }
+
+    public void popColour()
+    {
+        colours.popInt();
+    }
+
+    public void pushInteractable(InteractableElement e)
+    {
+        interactables.push(e);
+    }
+
+    public InteractableElement popInteractable()
+    {
+        return interactables.pop();
+    }
+
+    public void pushRenderable(RenderableElement e)
+    {
+        renderables.push(e);
+    }
+
+    public RenderableElement popRenderable()
+    {
+        return renderables.pop();
+    }
+
+    public void pushLiteral(String literal)
+    {
+        FormattedTextNode textNode = new FormattedTextNode(literal, colours.topInt(), formatFlags.toArray(new FormatFlags[0]));
+        if (!interactables.isEmpty())
+            textNode.attach(interactables.peek());
+        if (!renderables.isEmpty())
+            textNode.attach(renderables.peek());
+        textNodes.add(textNode);
     }
 
     public void addHardLineBreak()
@@ -51,7 +100,12 @@ public class PageBuilder
 
     public void addLabel(Alignment horizontalAlignment, Alignment verticalAlignment, float scale)
     {
-        output.add(new LabelWidget(textNodes.poll(), horizontalAlignment, verticalAlignment, scale));
+        LabelWidget label = new LabelWidget(textNodes.poll(), horizontalAlignment, verticalAlignment, scale);
+        if (!interactables.isEmpty())
+            label.attach(interactables.peek());
+        if (!renderables.isEmpty())
+            label.attach(renderables.peek());
+        output.add(label);
     }
 
     public void addTextBlock(Alignment horizontalAlignment, Alignment verticalAlignment, int color)
@@ -65,7 +119,41 @@ public class PageBuilder
             .limit(textNodes.size())
             .collect(toList());
         TextBlockWidget textBlock = new TextBlockWidget(horizontalAlignment, verticalAlignment, nodes);
+        if (!interactables.isEmpty())
+            textBlock.attach(interactables.peek());
+        if (!renderables.isEmpty())
+            textBlock.attach(renderables.peek());
         output.add(textBlock);
+    }
+
+    public void startWebLink(URI destination)
+    {
+        pushColour(0x0033FF);
+        pushFormatting(FormatFlags.UNDERLINE);
+        pushRenderable(new Tooltip(tooltip -> tooltip.accept(destination.toString())));
+        pushInteractable(new GotoURI(destination));
+    }
+
+    public void endWebLink()
+    {
+        popColour();
+        popFormatting();
+        popRenderable();
+        popInteractable();
+    }
+
+    public void startEntryLink(Identifier entryId, String tooltipText)
+    {
+        pushColour(0x0033FF);
+        pushRenderable(new Tooltip(tooltip -> tooltip.accept(tooltipText)));
+        pushInteractable(new GotoEntry(entryId));
+    }
+
+    public void endEntryLink()
+    {
+        popColour();
+        popRenderable();
+        popInteractable();
     }
 
     public void startList(ListType type)

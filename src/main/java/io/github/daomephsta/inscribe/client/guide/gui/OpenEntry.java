@@ -32,9 +32,33 @@ public class OpenEntry implements VisibleContent
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float lastFrameDuration)
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        root.render(mouseX, mouseY, lastFrameDuration);
+        return root.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button)
+    {
+        return root.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY)
+    {
+        return root.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double wheelDelta)
+    {
+        return root.mouseScrolled(mouseX, mouseY, wheelDelta);
+    }
+
+    @Override
+    public void render(int mouseX, int mouseY, float lastFrameDuration, boolean mouseOver)
+    {
+        root.render(mouseX, mouseY, lastFrameDuration, root.contains(mouseX, mouseY));
     }
 
     @Override

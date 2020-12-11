@@ -11,6 +11,7 @@ import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
+import io.github.daomephsta.inscribe.common.util.Identifiers;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.TranslatableText;
@@ -50,14 +51,30 @@ public class GuideScreen extends Screen implements GuideGui
         minecraft.getTextureManager().bindTexture(guide.getTheme().getGuiTexture());
         this.blit(guideLeft, guideTop, 20, 1, guideWidth, guideHeight);
         if (visibleContent != null)
-            visibleContent.render(mouseX, mouseY, lastFrameDuration);
+            visibleContent.render(mouseX, mouseY, lastFrameDuration, contains(mouseX, mouseY));
         GlStateManager.enableLighting();
+    }
+
+    private boolean contains(int mouseX, int mouseY)
+    {
+        return guideLeft <= mouseX && mouseX <= guideLeft + guideWidth &&
+            guideTop <= mouseY && mouseY <= guideTop + guideHeight;
     }
 
     @Override
     public void openEntry(Identifier entryId)
     {
-        XmlEntry entry = guide.getEntry(entryId);
+        Identifier guideId = Identifiers.builder(entryId).subPath(0, 1).build();
+        GuideScreen screen;
+        if (guide.getIdentifier().equals(guideId))
+            screen = this;
+        else
+        {
+            screen = new GuideScreen(GuideManager.INSTANCE.getGuide(guideId));
+            MinecraftClient.getInstance().openScreen(screen);
+        }
+
+        XmlEntry entry = screen.guide.getEntry(entryId);
         if (entry != null)
         {
             visibleContent = new OpenEntry(entry);

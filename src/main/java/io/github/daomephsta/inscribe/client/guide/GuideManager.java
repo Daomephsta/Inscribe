@@ -11,6 +11,7 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -134,9 +135,9 @@ public class GuideManager implements IdentifiableResourceReloadListener
             Collection<Guide> guides = new ArrayList<>(guideDefinitions.size());
             for (Identifier guideDefPath : guideDefinitions)
             {
-                if (guideDefPath.getPath().equals(FOLDER_NAME + "/" + GUIDE_DEFINITION_FILENAME))
+                if (StringUtils.countMatches(guideDefPath.getPath(), '/') != 2) //inscribe_guides/<guide ID path>/GUIDE_DEFINITION_FILENAME
                 {
-                    LOGGER.error("Ignored {}, it must be in a subfolder of the {} folder", guideDefPath, FOLDER_NAME);
+                    LOGGER.error("Ignored {}, guide definitions must be exactly 1 subfolders deep in {}", guideDefPath, FOLDER_NAME);
                     continue;
                 }
                 try

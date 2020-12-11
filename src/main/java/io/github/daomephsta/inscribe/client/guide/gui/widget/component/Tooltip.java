@@ -1,16 +1,15 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget.component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 import io.github.daomephsta.inscribe.client.guide.gui.RenderableElement;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import net.minecraft.client.MinecraftClient;
 
 public class Tooltip extends WidgetComponent implements RenderableElement
 {
-    private GuideWidget parent;
     private final Consumer<Consumer<String>> tooltipAppender;
 
     public Tooltip(Consumer<Consumer<String>> tooltipAppender)
@@ -19,18 +18,15 @@ public class Tooltip extends WidgetComponent implements RenderableElement
     }
 
     @Override
-    public void onAttached(GuideWidget parent)
+    public void render(int mouseX, int mouseY, float lastFrameDuration, boolean mouseOver)
     {
-        this.parent = parent;
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float lastFrameDuration)
-    {
-        if (!parent.contains(mouseX, mouseY))
+        if (!mouseOver)
             return;
+        MinecraftClient mc = MinecraftClient.getInstance();
         List<String> tooltip = new ArrayList<>();
-        tooltipAppender.accept(tooltip::add);
-        MinecraftClient.getInstance().currentScreen.renderTooltip(tooltip, mouseX, mouseY);
+        int maxLineWidth = mc.getWindow().getScaledWidth() - mouseX - 16;
+        tooltipAppender.accept(
+            line -> Collections.addAll(tooltip, mc.textRenderer.wrapStringToWidth(line, maxLineWidth).split("\n")));
+        mc.currentScreen.renderTooltip(tooltip, mouseX, mouseY);
     }
 }

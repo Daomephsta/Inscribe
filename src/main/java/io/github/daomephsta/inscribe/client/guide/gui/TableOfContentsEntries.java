@@ -66,9 +66,9 @@ public class TableOfContentsEntries implements VisibleContent
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float lastFrameDuration)
+    public void render(int mouseX, int mouseY, float lastFrameDuration, boolean mouseOver)
     {
-        root.render(mouseX, mouseY, lastFrameDuration);
+        root.render(mouseX, mouseY, lastFrameDuration, root.contains(mouseX, mouseY));
     }
 
     @Override
