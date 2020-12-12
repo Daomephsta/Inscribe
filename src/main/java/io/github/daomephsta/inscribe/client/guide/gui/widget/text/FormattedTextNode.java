@@ -1,8 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget.text;
 
-import java.util.Set;
-
-import com.google.common.collect.Sets;
+import java.util.Arrays;
 
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import net.minecraft.client.MinecraftClient;
@@ -10,22 +8,28 @@ import net.minecraft.util.Formatting;
 
 public class FormattedTextNode extends ElementHostNode
 {
-    private String unformatted, formatted;
-    private int colour;
-    private final Set<FormatFlags> formatFlags;
+    private final String text;
+    private final int colour;
+    private final FormatFlags[] formatFlags;
     private int width = -1;
 
     public FormattedTextNode(String text, int color, FormatFlags... formatFlags)
     {
         this.colour = color;
-        this.formatFlags = Sets.newHashSet(formatFlags);
-        setText(text);
+        this.formatFlags = formatFlags;
+        StringBuilder textBuilder = new StringBuilder(text.length() + (formatFlags.length + 1) * 2);
+        for (FormatFlags flag : formatFlags)
+            textBuilder.append(flag.getMCFormatCode());
+        textBuilder.append(text);
+        textBuilder.append(Formatting.RESET);
+        this.text = textBuilder.toString();
+        System.out.println(this);
     }
 
     @Override
     public void render(float x, float y, int mouseX, int mouseY, float lastFrameDuration)
     {
-        MinecraftClient.getInstance().textRenderer.draw(formatted, x, y, colour);
+        MinecraftClient.getInstance().textRenderer.draw(text, x, y, colour);
         super.render(x, y, mouseX, mouseY, lastFrameDuration);
     }
 
@@ -34,7 +38,7 @@ public class FormattedTextNode extends ElementHostNode
     {
         //Must be lazy because the text renderer may be unavailable during markdown parsing
         if (width == -1)
-            width = MinecraftClient.getInstance().textRenderer.getStringWidth(formatted);
+            width = MinecraftClient.getInstance().textRenderer.getStringWidth(text);
         return width;
     }
 
@@ -44,44 +48,9 @@ public class FormattedTextNode extends ElementHostNode
         return MinecraftClient.getInstance().textRenderer.fontHeight;
     }
 
-    public void setText(String text)
-    {
-        this.unformatted = text;
-        formatText();
-    }
-
-    public FormattedTextNode withColour(int colour)
-    {
-        this.colour = colour;
-        return this;
-    }
-
-    public FormattedTextNode clearFormatting()
-    {
-        formatFlags.clear();
-        return this;
-    }
-
-    public FormattedTextNode withFormatting(FormatFlags flag)
-    {
-        formatFlags.add(flag);
-        formatText();
-        return this;
-    }
-
-    private void formatText()
-    {
-        StringBuilder textBuilder = new StringBuilder(unformatted.length() + (formatFlags.size() + 1) * 2);
-        for (FormatFlags flag : formatFlags)
-            textBuilder.append(flag.getMCFormatCode());
-        textBuilder.append(unformatted);
-        textBuilder.append(Formatting.RESET);
-        this.formatted = textBuilder.toString();
-    }
-
     @Override
     public String toString()
     {
-        return String.format("FormattedTextNode('%s', %s, color=%#08x)", unformatted, formatFlags, colour);
+        return String.format("FormattedTextNode('%s', %s, color=%#08x)", text, Arrays.toString(formatFlags), colour);
     }
 }
