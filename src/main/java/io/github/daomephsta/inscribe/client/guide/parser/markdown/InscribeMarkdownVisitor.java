@@ -1,5 +1,7 @@
 package io.github.daomephsta.inscribe.client.guide.parser.markdown;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Set;
@@ -156,10 +158,7 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
             String scheme = uri.getScheme();
             if (scheme == null)
             {
-                builder.pushColour(0xFF0000);
-                builder.pushLiteral("Check inscribe.log");
-                builder.popColour();
-                LOGGER.error("{} has bad scheme", destination, scheme);
+                error(link, "%s has bad scheme", destination);
                 return;
             }
             else if (scheme.equals(Inscribe.MOD_ID))
@@ -167,9 +166,7 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
                 String[] split = uri.getRawAuthority().split(":");
                 if (split.length != 2)
                 {
-                    builder.pushColour(0xFF0000);
-                    builder.pushLiteral("BAD ID: " + uri);
-                    builder.popColour();
+                    error(link, "Missing/excess ':' in identifier %s", uri.getRawAuthority());
                     return;
                 }
                 try
@@ -180,7 +177,7 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
                 }
                 catch (InvalidIdentifierException e)
                 {
-                    LOGGER.error("Invalid identifier", e);
+                    error(link, "Invalid identifier: %s", e.getMessage());
                     return;
                 }
             }
@@ -193,10 +190,7 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
             }
             else
             {
-                builder.pushColour(0xFF0000);
-                builder.pushLiteral("ILLEGAL SCHEME: " + scheme);
-                builder.popColour();
-                LOGGER.error("{} has illegal scheme: {}", destination, scheme);
+                error(link, "%s has illegal scheme: %s Allowed: %s", uri, scheme, ALLOWED_SCHEMES);
                 return;
             }
             visitChildren(link);
@@ -210,10 +204,7 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
         }
         catch (URISyntaxException e)
         {
-            builder.pushColour(0xFF0000);
-            builder.pushLiteral("Check inscribe.log");
-            builder.popColour();
-            LOGGER.error("Link error", e);
+            error(link, "Invalid destination: %s", e.getMessage());
             return;
         }
     }
@@ -232,27 +223,26 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
         }
         catch (InvalidIdentifierException e)
         {
-            builder.pushColour(0xFF0000);
-            builder.pushLiteral("Check inscribe.log");
-            builder.popColour();
-            LOGGER.error("Invalid image ID", e);
+            error(image, "Invalid image ID: %s", e.getMessage());
         }
     }
 
     private void error(Node node, String format, Object... args)
     {
+        LOGGER.error(format.replaceAll("%\\w+", "{}"), args);
+        if (args[args.length - 1] instanceof Throwable)
         {
-            builder.pushColour(0xFF0000);
-            builder.pushFormatting(FormatFlags.STRIKETHROUGH);
-            String message = String.format(format, args);
-            builder.pushRenderable(new Tooltip(tooltip ->
-                tooltip.accept(message)));
-            LOGGER.error(message);
-            visitChildren(node);
-            builder.popRenderable();
-            builder.popFormatting();
-            builder.popColour();
+            Throwable t = (Throwable) args[args.length - 1];
+            StringWriter stringWriter = new StringWriter();
+            t.printStackTrace(new PrintWriter(stringWriter));
+            args[args.length - 1] = stringWriter.toString();
         }
+        builder.pushColour(0xFF00FF);
+        builder.pushRenderable(new Tooltip(tooltip ->
+            tooltip.accept(String.format(format, args))));
+        visitChildren(node);
+        builder.popRenderable();
+        builder.popColour();
     }
 
     @Override
