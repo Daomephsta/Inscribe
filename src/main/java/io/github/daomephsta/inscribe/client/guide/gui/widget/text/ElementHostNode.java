@@ -35,8 +35,7 @@ public abstract class ElementHostNode extends TextNode
         return false;
     }
 
-    @Override
-    public void render(float x, float y, int mouseX, int mouseY, float lastFrameDuration)
+    public void renderAttached(float x, float y, int mouseX, int mouseY, float lastFrameDuration)
     {
         boolean mouseOver = contains(x, y, mouseX, mouseY);
         for (RenderableElement element : attachedRenderables)

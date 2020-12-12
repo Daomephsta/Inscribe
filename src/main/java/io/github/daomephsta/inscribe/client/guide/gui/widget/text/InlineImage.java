@@ -35,7 +35,6 @@ public class InlineImage extends ElementHostNode
     {
         MinecraftClient.getInstance().getTextureManager().bindTexture(imageLocation);
         DrawableHelper.blit((int) x, (int) y, 0, 0, width, height, width, height);
-        super.render(x, y, mouseX, mouseY, lastFrameDuration);
     }
 
     @Override

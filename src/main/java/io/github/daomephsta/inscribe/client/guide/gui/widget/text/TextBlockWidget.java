@@ -1,10 +1,14 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget.text;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
+import net.minecraft.util.math.Vec2f;
 
 public class TextBlockWidget extends GuideWidget
 {
@@ -69,10 +73,13 @@ public class TextBlockWidget extends GuideWidget
         float x = left;
         float y = verticalAlignment.offsetY(y(), this, hintHeight());
         int lineHeight = 0;
+        Map<Vec2f, ElementHostNode> renderables = new HashMap<>();
         for (TextNode node : content)
         {
             lineHeight = Math.max(lineHeight, node.getHeight());
             node.render(x, y, mouseX, mouseY, lastFrameDuration);
+            if (node instanceof ElementHostNode)
+                renderables.put(new Vec2f(x, y), (ElementHostNode) node);
             if (node instanceof LineBreak)
             {
                 y += lineHeight;
@@ -81,7 +88,12 @@ public class TextBlockWidget extends GuideWidget
             }
             else
                 x += node.getWidth();
-            node = node.next;
+        }
+        // Attached renderables render over/after nodes
+        for (Entry<Vec2f, ElementHostNode> entry : renderables.entrySet())
+        {
+            float x2 = entry.getKey().x, y2 = entry.getKey().y;
+            entry.getValue().renderAttached(x2, y2, mouseX, mouseY, lastFrameDuration);
         }
     }
 
