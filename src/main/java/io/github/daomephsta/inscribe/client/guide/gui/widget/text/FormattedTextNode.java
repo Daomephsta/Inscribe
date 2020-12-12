@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.Formatting;
 
 public class FormattedTextNode extends ElementHostNode
 {
@@ -21,8 +20,6 @@ public class FormattedTextNode extends ElementHostNode
         for (FormatFlags flag : formatFlags)
             textBuilder.append(flag.getMCFormatCode());
         textBuilder.append(text);
-        if (formatFlags.length > 0)
-            textBuilder.append(Formatting.RESET);
         this.text = textBuilder.toString();
     }
 
