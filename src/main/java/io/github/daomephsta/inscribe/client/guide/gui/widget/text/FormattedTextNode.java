@@ -21,9 +21,9 @@ public class FormattedTextNode extends ElementHostNode
         for (FormatFlags flag : formatFlags)
             textBuilder.append(flag.getMCFormatCode());
         textBuilder.append(text);
-        textBuilder.append(Formatting.RESET);
+        if (formatFlags.length > 0)
+            textBuilder.append(Formatting.RESET);
         this.text = textBuilder.toString();
-        System.out.println(this);
     }
 
     @Override
