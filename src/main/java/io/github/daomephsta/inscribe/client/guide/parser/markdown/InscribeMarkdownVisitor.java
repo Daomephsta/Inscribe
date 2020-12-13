@@ -294,13 +294,13 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     @Override
     public void visit(HtmlInline htmlInline)
     {
-        System.out.println("HTML unsupported");
+        LOGGER.error("{}: Inline html is not supported", htmlInline.getLiteral());
     }
 
     @Override
     public void visit(HtmlBlock htmlBlock)
     {
-        System.out.println("HTML unsupported");
+        LOGGER.error("{}: Block html is not supported", htmlBlock.getLiteral());
     }
 
     @Override
