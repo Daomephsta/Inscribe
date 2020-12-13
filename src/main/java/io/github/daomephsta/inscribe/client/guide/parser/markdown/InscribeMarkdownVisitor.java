@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.commonmark.ext.ins.Ins;
 import org.commonmark.node.AbstractVisitor;
+import org.commonmark.node.BlockQuote;
 import org.commonmark.node.BulletList;
 import org.commonmark.node.CustomNode;
 import org.commonmark.node.Document;
@@ -70,7 +71,15 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     public void visit(Paragraph paragraph)
     {
         visitChildren(paragraph);
-        builder.addTextBlock(Alignment.LEADING, Alignment.CENTER, 0x000000);
+        builder.addTextBlock(Alignment.LEADING, Alignment.LEADING);
+    }
+
+    @Override
+    public void visit(BlockQuote blockQuote)
+    {
+        builder.startBlockQuote();
+        visitChildren(blockQuote);
+        builder.endBlockQuote();
     }
 
     @Override

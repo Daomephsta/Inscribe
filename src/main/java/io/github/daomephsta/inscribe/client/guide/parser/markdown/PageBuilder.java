@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import io.github.daomephsta.inscribe.client.guide.gui.InteractableElement;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderableElement;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.HorizontalRuleWidget;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.VerticalRuleWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoEntry;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoURI;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
@@ -24,13 +25,14 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextBlockWidge
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextNode;
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import io.github.daomephsta.inscribe.client.guide.parser.markdown.ListData.ListType;
+import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 import net.minecraft.util.Identifier;
 
 public class PageBuilder
 {
-    private final GuideFlow output;
+    private final Deque<GuideFlow> output;
     private final Deque<FormatFlags> formatFlags = new ArrayDeque<>();
     private final IntStack colours = new IntArrayList(new int[] {0x000000});
     private final Deque<TextNode> textNodes = new ArrayDeque<>();
@@ -41,7 +43,8 @@ public class PageBuilder
 
     public PageBuilder(GuideFlow output)
     {
-        this.output = output;
+        this.output = new ArrayDeque<>();
+        this.output.add(output);
     }
 
     public void pushFormatting(FormatFlags formatFlag)
@@ -106,10 +109,10 @@ public class PageBuilder
             label.attach(interactables.peek());
         if (!renderables.isEmpty())
             label.attach(renderables.peek());
-        output.add(label);
+        output.peek().add(label);
     }
 
-    public void addTextBlock(Alignment horizontalAlignment, Alignment verticalAlignment, int color)
+    public void addTextBlock(Alignment horizontalAlignment, Alignment verticalAlignment)
     {
         ListData listDatum = listData.peek();
         if (listDatum != null)
@@ -124,7 +127,20 @@ public class PageBuilder
             textBlock.attach(interactables.peek());
         if (!renderables.isEmpty())
             textBlock.attach(renderables.peek());
-        output.add(textBlock);
+        output.peek().add(textBlock);
+    }
+
+    public void startBlockQuote()
+    {
+        GuideFlow flow = new GuideFlow(Direction.HORIZONTAL);
+        flow.add(new VerticalRuleWidget(0x808080));
+        output.push(flow);
+    }
+
+    public void endBlockQuote()
+    {
+        GuideFlow flow = output.pop();
+        output.peek().add(flow);
     }
 
     public void startWebLink(URI destination)
@@ -176,7 +192,7 @@ public class PageBuilder
 
     public void addHorizontalRule()
     {
-        output.add(new HorizontalRuleWidget());
+        output.peek().add(new HorizontalRuleWidget());
     }
 
     public void addInlineImage(Identifier location, String tooltipText)
