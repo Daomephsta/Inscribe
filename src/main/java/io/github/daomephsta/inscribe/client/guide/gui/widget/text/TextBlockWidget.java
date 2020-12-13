@@ -40,6 +40,7 @@ public class TextBlockWidget extends GuideWidget
         }
         this.widthHint = width;
         this.heightHint = height;
+        margin().setVertical(1);
     }
 
     @Override

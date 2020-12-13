@@ -10,7 +10,7 @@ public class HorizontalRuleWidget extends GuideWidget
 {
     public HorizontalRuleWidget()
     {
-        margin().setBottom(3);
+        margin().setBottom(1);
     }
 
     @Override
