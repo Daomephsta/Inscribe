@@ -28,12 +28,14 @@ import io.github.daomephsta.inscribe.client.guide.parser.markdown.ListData.ListT
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 
 public class PageBuilder
 {
     private final Deque<GuideFlow> output;
     private final Deque<FormatFlags> formatFlags = new ArrayDeque<>();
+    private final Deque<Identifier> fonts = new ArrayDeque<>();
     private final IntStack colours = new IntArrayList(new int[] {0x000000});
     private final Deque<TextNode> textNodes = new ArrayDeque<>();
     private final Deque<ListData> listData = new ArrayDeque<>();
@@ -45,6 +47,8 @@ public class PageBuilder
     {
         this.output = new ArrayDeque<>();
         this.output.add(output);
+        //Default font
+        this.fonts.add(MinecraftClient.DEFAULT_TEXT_RENDERER_ID);
     }
 
     public void pushFormatting(FormatFlags formatFlag)
@@ -55,6 +59,16 @@ public class PageBuilder
     public void popFormatting()
     {
         formatFlags.pop();
+    }
+
+    public void pushFont(Identifier font)
+    {
+        fonts.push(font);
+    }
+
+    public void popFont()
+    {
+        fonts.pop();
     }
 
     public void pushColour(int colour)
@@ -89,7 +103,7 @@ public class PageBuilder
 
     public void pushLiteral(String literal)
     {
-        FormattedTextNode textNode = new FormattedTextNode(literal, colours.topInt(), formatFlags.toArray(new FormatFlags[0]));
+        FormattedTextNode textNode = new FormattedTextNode(literal, fonts.peek(), colours.topInt(), formatFlags.toArray(new FormatFlags[0]));
         if (!interactables.isEmpty())
             textNode.attach(interactables.peek());
         if (!renderables.isEmpty())
@@ -122,7 +136,8 @@ public class PageBuilder
         List<TextNode> nodes = Stream.generate(textNodes::poll)
             .limit(textNodes.size())
             .collect(toList());
-        TextBlockWidget textBlock = new TextBlockWidget(horizontalAlignment, verticalAlignment, nodes);
+        TextBlockWidget textBlock = new TextBlockWidget(
+            horizontalAlignment, verticalAlignment, nodes);
         if (!interactables.isEmpty())
             textBlock.attach(interactables.peek());
         if (!renderables.isEmpty())

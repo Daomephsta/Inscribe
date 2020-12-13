@@ -2,9 +2,11 @@ This file lists assets and code distributed under different licenses from the re
 
 
 The following assets are works created by others or derivatives of such works.
-If you are viewing this document in the .jar, all asset paths beginning with / are relative to the root. 
+If you are viewing this document in the .jar, all asset paths are relative to the root. 
 If you are viewing this as part of the source, all asset paths are relative to src/main/resources.
-	No 3rd party assets
+
+assets/inscribe/texture/font/mono.png
+	Licensed under the ComputerCraft Public License (licenses/ccpl.txt)
 
 	
 The following packages consist entirely of code and assets created by others. These packages are present only in the JAR distribution.

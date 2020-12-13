@@ -11,6 +11,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfCo
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents.Link;
 import io.github.daomephsta.mosaic.SizeConstraint;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
+import net.minecraft.client.MinecraftClient;
 
 public class TableOfContentsEntries implements VisibleContent
 {
@@ -46,7 +47,9 @@ public class TableOfContentsEntries implements VisibleContent
         {
             GuideFlow linkElement = new GuideFlow(Direction.HORIZONTAL);
             link.addIcon(linkElement);
-            LabelWidget label = new LabelWidget(new FormattedTextNode(link.name, 0x000000), Alignment.CENTER, Alignment.CENTER, 1.0F);
+            LabelWidget label = new LabelWidget(
+                new FormattedTextNode(link.name, MinecraftClient.DEFAULT_TEXT_RENDERER_ID, 0x000000),
+                Alignment.CENTER, Alignment.CENTER, 1.0F);
             label.margin().setLeft(1);
             linkElement.add(label);
             return linkElement;
@@ -59,7 +62,9 @@ public class TableOfContentsEntries implements VisibleContent
             return linkElement;
         }
         case TEXT:
-            return new LabelWidget(new FormattedTextNode(link.name, 0x000000), Alignment.LEADING, Alignment.CENTER, 1.0F);
+            return new LabelWidget(
+                new FormattedTextNode(link.name, MinecraftClient.DEFAULT_TEXT_RENDERER_ID, 0x000000),
+                Alignment.LEADING, Alignment.CENTER, 1.0F);
         default:
             throw new IllegalArgumentException("Unknown link style " + link.style);
         }

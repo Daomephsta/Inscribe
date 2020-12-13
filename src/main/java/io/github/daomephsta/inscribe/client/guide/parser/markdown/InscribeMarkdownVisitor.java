@@ -12,14 +12,17 @@ import org.commonmark.ext.ins.Ins;
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.BlockQuote;
 import org.commonmark.node.BulletList;
+import org.commonmark.node.Code;
 import org.commonmark.node.CustomNode;
 import org.commonmark.node.Document;
 import org.commonmark.node.Emphasis;
+import org.commonmark.node.FencedCodeBlock;
 import org.commonmark.node.HardLineBreak;
 import org.commonmark.node.Heading;
 import org.commonmark.node.HtmlBlock;
 import org.commonmark.node.HtmlInline;
 import org.commonmark.node.Image;
+import org.commonmark.node.IndentedCodeBlock;
 import org.commonmark.node.Link;
 import org.commonmark.node.ListItem;
 import org.commonmark.node.Node;
@@ -36,6 +39,7 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextBlockWidget;
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import io.github.daomephsta.inscribe.client.guide.parser.markdown.ListData.ListType;
 import io.github.daomephsta.inscribe.common.Inscribe;
@@ -252,6 +256,39 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
         visitChildren(node);
         builder.popRenderable();
         builder.popColour();
+    }
+
+    @Override
+    public void visit(Code code)
+    {
+        visitCodeBlock(code, code.getLiteral());
+    }
+
+    @Override
+    public void visit(FencedCodeBlock fencedCodeBlock)
+    {
+        visitCodeBlock(fencedCodeBlock, fencedCodeBlock.getLiteral());
+    }
+
+    @Override
+    public void visit(IndentedCodeBlock indentedCodeBlock)
+    {
+        visitCodeBlock(indentedCodeBlock, indentedCodeBlock.getLiteral());
+    }
+
+    private void visitCodeBlock(Node codeBlock, String literal)
+    {
+        builder.pushFont(TextBlockWidget.MONO_FONT);
+        String[] lines = literal.split("\n");
+        for (int i = 0; i < lines.length; i++)
+        {
+            if (i > 0)
+                builder.addHardLineBreak();
+            builder.pushLiteral(lines[i]);
+        }
+        visitChildren(codeBlock);
+        builder.addTextBlock(Alignment.LEADING, Alignment.LEADING);
+        builder.popFont();
     }
 
     @Override

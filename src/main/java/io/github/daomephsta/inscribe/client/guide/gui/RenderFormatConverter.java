@@ -64,7 +64,10 @@ public class RenderFormatConverter
         else if (intermediateForm instanceof Node)
             ((Node) intermediateForm).accept(new InscribeMarkdownVisitor(output));
         else
-            output.add(new LabelWidget(new FormattedTextNode("CONVERT_FAIL", 0), Alignment.CENTER, Alignment.CENTER, 1.0F));
+        {
+            output.add(new LabelWidget(new FormattedTextNode("CONVERT_FAIL",
+                MinecraftClient.DEFAULT_TEXT_RENDERER_ID, 0), Alignment.CENTER, Alignment.CENTER, 1.0F));
+        }
     }
 
     private static void addWidget(GuideFlow output, GuideWidget widget, Size size)

@@ -5,6 +5,7 @@ import java.util.Deque;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.Indent;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextNode;
+import net.minecraft.client.MinecraftClient;
 
 class ListData
 {
@@ -39,7 +40,8 @@ class ListData
             @Override
             public void addListMarker(Deque<TextNode> textNodes, int indentLevel, int currentItemIndex)
             {
-                textNodes.push(new FormattedTextNode(Integer.toString(currentItemIndex + 1) + ". ", 0x000000));
+                textNodes.push(new FormattedTextNode(Integer.toString(currentItemIndex + 1) + ". ",
+                    MinecraftClient.DEFAULT_TEXT_RENDERER_ID, 0x000000));
                 textNodes.push(new Indent(indentLevel));
             }
         },
@@ -48,7 +50,8 @@ class ListData
             @Override
             public void addListMarker(Deque<TextNode> textNodes, int indentLevel, int currentItemIndex)
             {
-                textNodes.push(new FormattedTextNode("\u2022 ", 0x000000));
+                textNodes.push(new FormattedTextNode("\u2022 ",
+                    MinecraftClient.DEFAULT_TEXT_RENDERER_ID, 0x000000));
                 textNodes.push(new Indent(indentLevel));
             }
         };

@@ -8,10 +8,13 @@ import java.util.Map.Entry;
 
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
+import io.github.daomephsta.inscribe.common.Inscribe;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
 
 public class TextBlockWidget extends GuideWidget
 {
+    public static final Identifier MONO_FONT = new Identifier(Inscribe.MOD_ID, "mono");
     private final Alignment horizontalAlignment,
                             verticalAlignment;
     private final int widthHint,
