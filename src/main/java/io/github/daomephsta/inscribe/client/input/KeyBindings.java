@@ -4,7 +4,6 @@ import java.util.concurrent.CompletableFuture;
 
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.GuideGui;
-import io.github.daomephsta.inscribe.client.guide.gui.GuideScreen;
 import io.github.daomephsta.inscribe.client.input.KeyWatcher.KeyAction;
 import io.github.daomephsta.inscribe.client.input.WatchedKeyBinding.Modifier;
 import io.github.daomephsta.inscribe.common.Inscribe;
@@ -41,10 +40,7 @@ public class KeyBindings
             .thenRun(() ->
             {
                 if (client.currentScreen instanceof GuideGui)
-                {
-                    MinecraftClient.getInstance().openScreen(new GuideScreen(
-                        GuideManager.INSTANCE.getGuide(((GuideGui) client.currentScreen).getOpenGuideId())));
-                }
+                    ((GuideGui) client.currentScreen).reopen();
             });
     }
 

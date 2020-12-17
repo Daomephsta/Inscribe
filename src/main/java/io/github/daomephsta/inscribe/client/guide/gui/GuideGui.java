@@ -17,5 +17,7 @@ public interface GuideGui
 
     public void reloadOpenEntry();
 
+    public void reopen();
+
     public Identifier getOpenGuideId();
 }
