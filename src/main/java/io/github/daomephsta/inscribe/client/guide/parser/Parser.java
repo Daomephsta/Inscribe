@@ -12,5 +12,5 @@ public interface Parser
 {
     public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, Identifier path) throws GuideLoadingException;
 
-    public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier path) throws GuideLoadingException;
+    public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier id, Identifier path) throws GuideLoadingException;
 }

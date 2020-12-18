@@ -101,22 +101,17 @@ public class GuideManager implements IdentifiableResourceReloadListener
             .thenCompose(synchronizer::whenPrepared);
     }
 
-    public CompletableFuture<XmlEntry> reloadEntry(Identifier guideId, Identifier entryId, Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor) throws GuideLoadingException
+    public CompletableFuture<XmlEntry> reloadEntry(Identifier guideId, Identifier entryFile, Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor) throws GuideLoadingException
     {
-        String guideFolder = entryId.getPath().substring(0, guideId.getPath().length());
-        String entryPath = entryId.getPath().substring(guideId.getPath().length() + 1, entryId.getPath().length());
-        Identifier entryLocation = Identifiers.builder(entryId.getNamespace())
-            .appendPathSegments(FOLDER_NAME, guideFolder, "entries", entryPath)
-            .suffixPath(".xml")
-            .build();
+        Identifier entryLocation = entryFile;
         return loadEntry(resourceManager, entryLocation, loadExecutor)
             .exceptionally(thrw ->
             {
                  if (thrw instanceof WrappedException)
                     thrw = thrw.getCause();
-                 LOGGER.error("An error occured while reloading entry '{}'", entryId, thrw);
+                 LOGGER.error("An error occured while reloading entry '{}'", entryFile, thrw);
                  Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_entry"));
-                 return createFallbackEntry(entryId);
+                 return createFallbackEntry(entryFile, entryLocation);
             })
             .thenApply(entry ->
             {
@@ -174,8 +169,8 @@ public class GuideManager implements IdentifiableResourceReloadListener
         return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
         {
             GuideDefinition guideDefinition = loadGuideDefinition(resourceManager, guideDefPath);
-            String rootPath = Identifiers.replaceFromEnd(guideDefPath, 0, "entries").getPath();
-            Map<Identifier, XmlEntry> entries = loadEntries(resourceManager, guideDefPath.getNamespace(), rootPath).join();
+            Identifier rootPath = Identifiers.replaceFromEnd(guideDefPath, 0, guideDefinition.getActiveTranslation() + "/entries");
+            Map<Identifier, XmlEntry> entries = loadEntries(resourceManager, guideDefPath.getNamespace(), rootPath.getPath()).join();
             LOGGER.info("Loaded {} entries for {}", entries.size(), guideDefinition.getGuideId());
             return new Guide(guideDefinition, entries);
         }));
@@ -206,7 +201,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
                         else
                             LOGGER.error("Entry at {} failed to load correctly:", entryPath, actual);
                         Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.entry"));
-                        return createFallbackEntry(entryPath);
+                        return createFallbackEntry(entryPath, entryPath);
                     })
                     .join();
                 entries.put(entry.getId(), entry);
@@ -232,9 +227,9 @@ public class GuideManager implements IdentifiableResourceReloadListener
         LOGGER.info("Loaded {} guides", guidesIn.size());
     }
 
-    private XmlEntry createFallbackEntry(Identifier entryId)
+    private XmlEntry createFallbackEntry(Identifier entryId, Identifier entryFile)
     {
-        return new XmlEntry(entryId, Collections.emptySet(), Collections.singletonList(new XmlPage(Collections.emptyList())));
+        return new XmlEntry(entryId, entryFile, Collections.emptySet(), Collections.singletonList(new XmlPage(Collections.emptyList())));
     }
 
     @Override

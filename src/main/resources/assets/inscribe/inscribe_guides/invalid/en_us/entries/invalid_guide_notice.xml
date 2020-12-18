@@ -1,0 +1,10 @@
+<entry parser_version="1.0.0">
+	<page>
+		This guide is invalid.  
+		If you obtained this via  
+		commands, check the  
+		value of the guide_id  
+		tag. Otherwise check the   
+		log for loading errors.
+	</page>
+</entry>

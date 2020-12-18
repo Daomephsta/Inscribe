@@ -9,22 +9,23 @@ import net.minecraft.util.Identifier;
 public class GuideDefinition
 {
     public static final GuideDefinition FALLBACK = new GuideDefinition(Guide.INVALID_GUIDE_ID, new NoGuideAccessMethod(),
-        new TableOfContents(Collections.emptyList()), Theme.DEFAULT);
+        new TableOfContents(Collections.emptyList()), Theme.DEFAULT, "en_us");
 
     private final Identifier guideId;
     private final String translationKey;
     private final GuideAccessMethod guideAccess;
     private final TableOfContents mainTableOfContents;
     private final Theme theme;
+    private final String activeTranslation;
 
-
-    public GuideDefinition(Identifier guideId, GuideAccessMethod guideAccess, TableOfContents mainTableOfContents, Theme theme)
+    public GuideDefinition(Identifier guideId, GuideAccessMethod guideAccess, TableOfContents mainTableOfContents, Theme theme, String activeTranslation)
     {
         this.guideId = guideId;
         this.translationKey = guideId.getNamespace() + ".guide." + guideId.getPath() + ".name";
         this.guideAccess = guideAccess;
         this.mainTableOfContents = mainTableOfContents;
         this.theme = theme;
+        this.activeTranslation = activeTranslation;
     }
 
     public Identifier getGuideId()
@@ -50,6 +51,11 @@ public class GuideDefinition
     public Theme getTheme()
     {
         return theme;
+    }
+
+    public String getActiveTranslation()
+    {
+        return activeTranslation;
     }
 
     @Override

@@ -10,13 +10,14 @@ import net.minecraft.util.Identifier;
 
 public class XmlEntry implements IXmlRepresentation
 {
-    private final Identifier id;
+    private final Identifier id, filePath;
     private final Set<String> tags;
     private final List<XmlPage> pages;
 
-    public XmlEntry(Identifier id, Collection<String> tags, List<XmlPage> pages)
+    public XmlEntry(Identifier id, Identifier path, Collection<String> tags, List<XmlPage> pages)
     {
         this.id = id;
+        this.filePath = path;
         this.tags = new HashSet<>(tags);
         this.pages = pages;
     }
@@ -30,6 +31,11 @@ public class XmlEntry implements IXmlRepresentation
     public Identifier getId()
     {
         return id;
+    }
+
+    public Identifier getFilePath()
+    {
+        return filePath;
     }
 
     public Set<String> getTags()

@@ -108,7 +108,7 @@ public class OpenEntryScreen extends GuideScreen
         try
         {
             MinecraftClient mc = MinecraftClient.getInstance();
-            GuideManager.INSTANCE.reloadEntry(getOpenGuideId(), getEntryId(),
+            GuideManager.INSTANCE.reloadEntry(getOpenGuideId(), entry.getFilePath(),
                 CompletableFuture::completedFuture, mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
                 Util.getServerWorkerExecutor(), mc)
                 .thenAccept(entry ->

@@ -53,7 +53,8 @@ public class Parsers
         return getParser(root).loadGuideDefinition(root, resourceManager, path);
     }
 
-    private static final Pattern ENTRY_PATH_TO_ID = Pattern.compile("inscribe_guides\\/(?<guideName>[a-z0-9\\/._-]+)\\/entries\\/(?<entryName>[a-z0-9\\/._-]+)\\.xml");
+    private static final Pattern ENTRY_PATH_TO_ID =
+        Pattern.compile("inscribe_guides\\/(?<guideName>[a-z0-9\\/._-]+)\\/[a-z0-9._-]+\\/entries\\/(?<entryName>[a-z0-9\\/._-]+)\\.xml");
     public static XmlEntry loadEntry(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
     {
         Matcher pathMatcher = ENTRY_PATH_TO_ID.matcher(path.getPath());
@@ -64,7 +65,7 @@ public class Parsers
         }
         Identifier id = new Identifier(path.getNamespace(), pathMatcher.group("guideName") + "/" + pathMatcher.group("entryName"));
         Element root = XmlResources.readDocument(ENTRY_BUILDER, resourceManager, path).getDocumentElement();
-        XmlEntry loadEntry = getParser(root).loadEntry(root, resourceManager, id);
+        XmlEntry loadEntry = getParser(root).loadEntry(root, resourceManager, id, path);
         return loadEntry;
     }
 

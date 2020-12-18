@@ -40,6 +40,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -88,18 +89,33 @@ public class V100Parser implements Parser
     {
         //Remove "inscribe_guides" from the start and "guide_definition.xml" from the end
         Identifier guideId = Identifiers.builder(path).subPath(1, -2).build();
-        Identifier mainTocPath = Identifiers.builder(XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
+        String activeTranslation = MinecraftClient.getInstance().options.language;
+        Identifier mainTocPath = Identifiers.builder(
+                XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
             .namespace(guideId.getNamespace())
+            .prependPathSegments(activeTranslation)
             .prependPathSegments(guideId.getPath())
             .prependPathSegments(GuideManager.FOLDER_NAME)
             .build();
+        if (!resourceManager.containsResource(mainTocPath))
+        {
+            LOGGER.info("No {} translation found for {}, falling back to en_us", activeTranslation, guideId);
+            activeTranslation = "en_us";
+            mainTocPath = Identifiers.builder(
+                    XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
+                .namespace(guideId.getNamespace())
+                .prependPathSegments(activeTranslation)
+                .prependPathSegments(guideId.getPath())
+                .prependPathSegments(GuideManager.FOLDER_NAME)
+                .build();
+        }
         try
         {
             TableOfContents mainTableOfContents = loadTableOfContents(resourceManager, mainTocPath);
             GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(XmlElements.getChild(xml, "access_method"));
             Element themeXml = XmlElements.getChildNullable(xml, "theme");
             Theme theme = themeXml != null ? Theme.fromXml(themeXml) : Theme.DEFAULT;
-            return new GuideDefinition(guideId, guideAccess, mainTableOfContents, theme);
+            return new GuideDefinition(guideId, guideAccess, mainTableOfContents, theme, activeTranslation);
         }
         catch (GuideLoadingException loadingException)
         {
@@ -144,11 +160,12 @@ public class V100Parser implements Parser
     }
 
     @Override
-    public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier id) throws GuideLoadingException
+    public XmlEntry loadEntry(Element root, ResourceManager resourceManager,
+        Identifier id, Identifier path) throws GuideLoadingException
     {
         List<String> tags = XmlAttributes.asStringList(root, "tags", Collections::emptyList);
         List<XmlPage> pages = readPages(root, id);
-        return new XmlEntry(id, tags, pages);
+        return new XmlEntry(id, path, tags, pages);
     }
 
     private List<XmlPage> readPages(Element root, Identifier entryId) throws GuideLoadingException
