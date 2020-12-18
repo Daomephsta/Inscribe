@@ -24,7 +24,8 @@ public class Unindenter
 
     public String unindent(String input)
     {
-        List<String> lines = LINE_BREAK.splitToList(input);
+        // Strip whitespace only from the end
+        List<String> lines = LINE_BREAK.splitToList(StringUtils.stripEnd(input, null));
         String[] trimmedLines = new String[lines.size()];
         int[] indents = new int[lines.size()];
         int smallestIndent = Integer.MAX_VALUE;
