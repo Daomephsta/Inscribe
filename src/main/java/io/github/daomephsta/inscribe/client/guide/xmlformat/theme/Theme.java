@@ -4,11 +4,12 @@ import org.w3c.dom.Element;
 
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
+import io.github.daomephsta.inscribe.common.Inscribe;
 import net.minecraft.util.Identifier;
 
 public class Theme
 {
-    public static final Theme DEFAULT = new Theme(new Identifier("minecraft:textures/gui/book.png"));
+    public static final Theme DEFAULT = new Theme(new Identifier(Inscribe.MOD_ID, "textures/gui/guide.png"));
 
     private final Identifier guiTexture;
 

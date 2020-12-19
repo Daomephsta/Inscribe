@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
@@ -21,22 +19,23 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfCo
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents.Link;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.PageTurnWidget;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DummyProfiler;
 
-public class OpenTableOfContentsScreen extends GuideScreen
+public class OpenTableOfContentsScreen extends PageSpreadScreen
 {
-    private final PageStore pages;
-    private AbstractButtonWidget prevPage, nextPage;
+    private final TableOfContents toc;
 
     public OpenTableOfContentsScreen(Guide guide, TableOfContents toc)
     {
         super(guide);
+        this.toc = toc;
+    }
 
+    @Override
+    protected List<GuideFlow> buildPages()
+    {
         List<GuideFlow> pageFlows = new ArrayList<>();
-
         GuideFlow linksPage = createPage();
         pageFlows.add(linksPage);
         int used = 0;
@@ -47,59 +46,23 @@ public class OpenTableOfContentsScreen extends GuideScreen
             linkElement.attach(new GotoEntry(link.destination));
             linkElement.margin().setVertical(2);
             used += linkElement.hintHeight();
-            if (used > 100 && iter.hasNext())
+            linksPage.add(linkElement);
+            if (used > 138 && iter.hasNext())
             {
                 linksPage = createPage();
                 pageFlows.add(linksPage);
                 used = 0;
             }
-            linksPage.add(linkElement);
         }
-        this.pages = new PageStore(pageFlows);
+        return pageFlows;
     }
 
     private GuideFlow createPage()
     {
         GuideFlow linksPage;
         linksPage = new GuideFlow(Direction.VERTICAL);
-        linksPage.padding()
-            .setHorizontal(13)
-            .setVertical(10);
+        linksPage.padding().setVertical(2).setHorizontal(4);
         return linksPage;
-    }
-
-    @Override
-    public void init(MinecraftClient minecraft, int width, int height)
-    {
-        super.init(minecraft, width, height);
-        int guideHeight = 180;
-        int guideWidth = 146;
-        int guideTop = 2;
-        int guideLeft = (width - guideWidth) / 2;
-        for (GuideFlow page : pages)
-        {
-            page.setLayoutParameters(guideLeft, guideTop, guideWidth, guideHeight);
-            page.layoutChildren();
-        }
-        int controlsX = pages.current().right();
-        int controlsY = pages.current().bottom() - 23;
-        this.prevPage = addButton(new PageTurnWidget(controlsX, controlsY, false, b ->
-            {
-                pages.previous();
-                updateButtonVisibility();
-            }, true));
-        this.nextPage = addButton(new PageTurnWidget(controlsX, controlsY - 16, true, b ->
-            {
-                pages.next();
-                updateButtonVisibility();
-            }, true));
-        updateButtonVisibility();
-    }
-
-    private void updateButtonVisibility()
-    {
-        prevPage.visible = pages.hasPrevious();
-        nextPage.visible = pages.hasNext();
     }
 
     private GuideWidget createLinkElement(Link link)
@@ -161,33 +124,5 @@ public class OpenTableOfContentsScreen extends GuideScreen
     public void reloadOpenEntry()
     {
         //TODO
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float lastFrameDuration)
-    {
-        GlStateManager.disableLighting();
-        minecraft.getTextureManager().bindTexture(guide.getTheme().getGuiTexture());
-        this.blit((width - 146) / 2, 2, 20, 1, 146, 180);
-        pages.current().render(mouseX, mouseY, lastFrameDuration,
-            pages.current().contains(mouseX, mouseY));
-        super.render(mouseX, mouseY, lastFrameDuration);
-        GlStateManager.enableLighting();
-
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button)
-    {
-        return super.mouseClicked(mouseX, mouseY, button) ||
-            pages.current().mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public void onClose()
-    {
-        for (GuideFlow page : pages)
-            page.dispose();
-        super.onClose();
     }
 }
