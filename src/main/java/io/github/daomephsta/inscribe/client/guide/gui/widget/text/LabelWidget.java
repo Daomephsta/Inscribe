@@ -46,6 +46,12 @@ public class LabelWidget extends GuideWidget
     }
 
     @Override
+    public void dispose()
+    {
+        text.dispose();
+    }
+
+    @Override
     public String toString()
     {
         return String.format("LabelWidget [text=%s, horizontalAlignment=%s, verticalAlignment=%s]", text, horizontalAlignment, verticalAlignment);

@@ -10,6 +10,8 @@ public abstract class TextNode
 
     abstract int getHeight();
 
+    void dispose() {}
+
     TextNode next()
     {
         return next;

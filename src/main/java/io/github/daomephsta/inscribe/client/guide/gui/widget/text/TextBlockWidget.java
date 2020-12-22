@@ -114,6 +114,13 @@ public class TextBlockWidget extends GuideWidget
     }
 
     @Override
+    public void dispose()
+    {
+        for (TextNode node : content)
+            node.dispose();
+    }
+
+    @Override
     public String toString()
     {
         return String.format("TextBlockWidget[nodes=%s, horizontalAlignment=%s, verticalAlignment=%s]", content, horizontalAlignment, verticalAlignment);

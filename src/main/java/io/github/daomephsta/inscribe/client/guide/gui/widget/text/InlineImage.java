@@ -11,6 +11,7 @@ import net.minecraft.util.Identifier;
 public class InlineImage extends ElementHostNode
 {
     private final Identifier imageLocation;
+    private final NativeImageBackedTexture texture;
     private int width,
                 height;
 
@@ -19,14 +20,16 @@ public class InlineImage extends ElementHostNode
         this.imageLocation = imageLocation;
         try
         {
-            NativeImage ni = NativeImage.read(MinecraftClient.getInstance().getResourceManager().getResource(imageLocation).getInputStream());
-            this.width = ni.getWidth();
-            this.height = ni.getHeight();
-            MinecraftClient.getInstance().getTextureManager().registerTexture(imageLocation, new NativeImageBackedTexture(ni));
+            MinecraftClient mc = MinecraftClient.getInstance();
+            NativeImage image = NativeImage.read(mc.getResourceManager().getResource(imageLocation).getInputStream());
+            this.width = image.getWidth();
+            this.height = image.getHeight();
+            this.texture = new NativeImageBackedTexture(image);
+            mc.getTextureManager().registerTexture(imageLocation, texture);
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -47,5 +50,11 @@ public class InlineImage extends ElementHostNode
     public int getHeight()
     {
         return height + 2; //padding
+    }
+
+    @Override
+    void dispose()
+    {
+        texture.close();
     }
 }
