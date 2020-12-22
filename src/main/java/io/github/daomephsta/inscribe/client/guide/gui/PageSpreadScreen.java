@@ -103,24 +103,24 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button)
     {
-        if (super.mouseClicked(mouseX, mouseY, button))
+        if (super.mouseReleased(mouseX, mouseY, button))
             return true;
         if (pageSpreads.leftPage().contains(mouseX, mouseY))
-            return pageSpreads.leftPage().mouseClicked(mouseX, mouseY, button);
+            return pageSpreads.leftPage().mouseReleased(mouseX, mouseY, button);
         if (pageSpreads.rightPage().contains(mouseX, mouseY))
-            return pageSpreads.rightPage().mouseClicked(mouseX, mouseY, button);
+            return pageSpreads.rightPage().mouseReleased(mouseX, mouseY, button);
         return false;
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY)
     {
-        if (super.mouseClicked(mouseX, mouseY, button))
+        if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY))
             return true;
         if (pageSpreads.leftPage().contains(mouseX, mouseY))
-            return pageSpreads.leftPage().mouseClicked(mouseX, mouseY, button);
+            return pageSpreads.leftPage().mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         if (pageSpreads.rightPage().contains(mouseX, mouseY))
-            return pageSpreads.rightPage().mouseClicked(mouseX, mouseY, button);
+            return pageSpreads.rightPage().mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         return false;
     }
 
