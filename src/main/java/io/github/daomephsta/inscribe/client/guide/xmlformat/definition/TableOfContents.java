@@ -10,11 +10,24 @@ import net.minecraft.util.Identifier;
 
 public class TableOfContents
 {
+    private final Identifier id, filePath;
     private final List<Link> links;
 
-    public TableOfContents(List<Link> links)
+    public TableOfContents(Identifier id, Identifier path, List<Link> links)
     {
+        this.id = id;
+        this.filePath = path;
         this.links = ImmutableList.copyOf(links);
+    }
+
+    public Identifier getId()
+    {
+        return id;
+    }
+
+    public Identifier getFilePath()
+    {
+        return filePath;
     }
 
     public Iterable<Link> getLinks()

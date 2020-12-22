@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
  */
 public interface GuideGui
 {
-    public void openEntry(Identifier entryId);
+    public void open(Identifier entryId);
 
     public void reloadOpenGuide();
 

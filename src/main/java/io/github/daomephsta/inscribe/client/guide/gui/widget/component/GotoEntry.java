@@ -21,7 +21,7 @@ public class GotoEntry extends WidgetComponent implements InteractableElement
         Screen currentScreen = MinecraftClient.getInstance().currentScreen;
         if (currentScreen instanceof GuideGui)
         {
-            ((GuideGui) currentScreen).openEntry(entryId);
+            ((GuideGui) currentScreen).open(entryId);
             return true;
         }
         return false;

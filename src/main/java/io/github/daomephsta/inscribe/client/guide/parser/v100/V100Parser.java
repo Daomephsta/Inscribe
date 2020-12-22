@@ -5,10 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
@@ -23,7 +19,7 @@ import io.github.daomephsta.inscribe.client.guide.LinkStyle;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderFormatConverter;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.parser.Parser;
-import io.github.daomephsta.inscribe.client.guide.parser.XmlResources;
+import io.github.daomephsta.inscribe.client.guide.parser.Parsers;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser;
@@ -70,19 +66,6 @@ public class V100Parser implements Parser
             .registerDeserialiser(V100ElementTypes.IMAGE)
             .registerDeserialiser(V100ElementTypes.ITEMSTACK)
             .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
-    private final DocumentBuilder tocBuilder;
-
-    private V100Parser()
-    {
-        try
-        {
-            tocBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        }
-        catch (ParserConfigurationException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
@@ -93,6 +76,7 @@ public class V100Parser implements Parser
         Identifier mainTocPath = Identifiers.builder(
                 XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
             .namespace(guideId.getNamespace())
+            .prependPathSegments("entries")
             .prependPathSegments(activeTranslation)
             .prependPathSegments(guideId.getPath())
             .prependPathSegments(GuideManager.FOLDER_NAME)
@@ -111,7 +95,7 @@ public class V100Parser implements Parser
         }
         try
         {
-            TableOfContents mainTableOfContents = loadTableOfContents(resourceManager, mainTocPath);
+            TableOfContents mainTableOfContents = Parsers.loadTableOfContents(resourceManager, mainTocPath);
             GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(XmlElements.getChild(xml, "access_method"));
             Element themeXml = XmlElements.getChildNullable(xml, "theme");
             Theme theme = themeXml != null ? Theme.fromXml(themeXml) : Theme.DEFAULT;
@@ -130,14 +114,12 @@ public class V100Parser implements Parser
         return GuideDefinition.FALLBACK;
     }
 
-    private TableOfContents loadTableOfContents(ResourceManager resourceManager, Identifier tableOfContentsPath) throws GuideLoadingException
+    @Override
+    public TableOfContents loadTableOfContents(Element root, Identifier id, Identifier path) throws GuideLoadingException
     {
-        if (!resourceManager.containsResource(tableOfContentsPath))
-            throw new InscribeSyntaxException("Could not find table of contents at " + tableOfContentsPath);
-        Element tableOfContents = XmlResources.readDocument(tocBuilder, resourceManager, tableOfContentsPath).getDocumentElement();
-        LinkStyle style = XmlAttributes.asEnum(tableOfContents, "link_style", LinkStyle::fromRepresentation);
+        LinkStyle style = XmlAttributes.asEnum(root, "link_style", LinkStyle::fromRepresentation);
 
-        NodeList linkElements = tableOfContents.getElementsByTagName("link");
+        NodeList linkElements = root.getElementsByTagName("link");
         List<TableOfContents.Link> links = Lists.newArrayListWithCapacity(linkElements.getLength());
         for (int i = 0; i < linkElements.getLength(); i++)
         {
@@ -155,8 +137,7 @@ public class V100Parser implements Parser
             }
             links.add(new TableOfContents.Link(iconFactory, name, destination, style));
         }
-
-        return new TableOfContents(links);
+        return new TableOfContents(id, path, links);
     }
 
     @Override

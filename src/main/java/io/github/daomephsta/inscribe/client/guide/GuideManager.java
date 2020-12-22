@@ -8,20 +8,25 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Element;
 
 import com.pivovarit.function.ThrowingSupplier;
 import com.pivovarit.function.exception.WrappedException;
 
 import io.github.daomephsta.inscribe.client.guide.parser.Parsers;
+import io.github.daomephsta.inscribe.client.guide.parser.XmlResources;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
 import io.github.daomephsta.inscribe.common.Inscribe;
@@ -103,15 +108,15 @@ public class GuideManager implements IdentifiableResourceReloadListener
 
     public CompletableFuture<XmlEntry> reloadEntry(Identifier guideId, Identifier entryFile, Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor) throws GuideLoadingException
     {
-        Identifier entryLocation = entryFile;
-        return loadEntry(resourceManager, entryLocation, loadExecutor)
+        Element root = XmlResources.readDocument(XmlResources.GENERAL, resourceManager, entryFile).getDocumentElement();
+        return loadEntry(root, resourceManager, entryFile, loadExecutor)
             .exceptionally(thrw ->
             {
                  if (thrw instanceof WrappedException)
                     thrw = thrw.getCause();
                  LOGGER.error("An error occured while reloading entry '{}'", entryFile, thrw);
                  Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_entry"));
-                 return createFallbackEntry(entryFile, entryLocation);
+                 return createFallbackEntry(entryFile, entryFile);
             })
             .thenApply(entry ->
             {
@@ -170,9 +175,12 @@ public class GuideManager implements IdentifiableResourceReloadListener
         {
             GuideDefinition guideDefinition = loadGuideDefinition(resourceManager, guideDefPath);
             Identifier rootPath = Identifiers.replaceFromEnd(guideDefPath, 0, guideDefinition.getActiveTranslation() + "/entries");
-            Map<Identifier, XmlEntry> entries = loadEntries(resourceManager, guideDefPath.getNamespace(), rootPath.getPath()).join();
+            Map<Identifier, XmlEntry> entries = new HashMap<>();
+            Map<Identifier, TableOfContents> tocs = new HashMap<>();
+            loadEntries(resourceManager, guideDefPath.getNamespace(), rootPath.getPath(),
+                entry -> entries.put(entry.getId(), entry), toc -> tocs.put(toc.getId(), toc));
             LOGGER.info("Loaded {} entries for {}", entries.size(), guideDefinition.getGuideId());
-            return new Guide(guideDefinition, entries);
+            return new Guide(guideDefinition, entries, tocs);
         }));
     }
 
@@ -181,16 +189,18 @@ public class GuideManager implements IdentifiableResourceReloadListener
         return Parsers.loadGuideDefinition(resourceManager, path);
     }
 
-    private CompletableFuture<Map<Identifier, XmlEntry>> loadEntries(ResourceManager resourceManager, String namespace, String rootPath)
+    private void loadEntries(ResourceManager resourceManager, String namespace, String rootPath,
+        Consumer<XmlEntry> entries, Consumer<TableOfContents> tablesOfContents) throws GuideLoadingException
     {
-        return CompletableFuture.supplyAsync(() ->
+        for(Identifier entryPath : resourceManager.findResources(rootPath, path -> path.endsWith(".xml")))
         {
-            Map<Identifier, XmlEntry> entries = new HashMap<>();
-            for(Identifier entryPath : resourceManager.findResources(rootPath, path -> path.endsWith(".xml")))
+            if (!entryPath.getNamespace().equals(namespace))
+                continue;
+
+            Element root = XmlResources.readDocument(XmlResources.GENERAL, resourceManager, entryPath).getDocumentElement();
+            if (root.getTagName().equals("entry"))
             {
-                if (!entryPath.getNamespace().equals(namespace))
-                    continue;
-                XmlEntry entry = loadEntry(resourceManager, entryPath, null)
+                entries.accept(loadEntry(root, resourceManager, entryPath, null)
                     .exceptionally(thrw ->
                     {
                         Throwable actual = thrw;
@@ -203,18 +213,21 @@ public class GuideManager implements IdentifiableResourceReloadListener
                         Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.entry"));
                         return createFallbackEntry(entryPath, entryPath);
                     })
-                    .join();
-                entries.put(entry.getId(), entry);
+                    .join());
             }
-            return entries;
-        });
+            else if (root.getTagName().equals("toc"))
+            {
+                tablesOfContents.accept(Parsers.loadTableOfContents(root, resourceManager, entryPath));
+            }
+        }
     }
 
-    private CompletableFuture<XmlEntry> loadEntry(ResourceManager resourceManager, Identifier path, Executor loadExecutor)
+    private CompletableFuture<XmlEntry> loadEntry(Element root, ResourceManager resourceManager, Identifier path, Executor loadExecutor)
     {
+        Supplier<XmlEntry> entrySupplier = ThrowingSupplier.unchecked(() -> Parsers.loadEntry(root, resourceManager, path));
         return loadExecutor != null
-            ? CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() -> Parsers.loadEntry(resourceManager, path)), loadExecutor)
-            : CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() -> Parsers.loadEntry(resourceManager, path)));
+            ? CompletableFuture.supplyAsync(entrySupplier, loadExecutor)
+            : CompletableFuture.supplyAsync(entrySupplier);
     }
 
     public void apply(Collection<Guide> guidesIn, ResourceManager resourceManager, Profiler profiler, Executor executor)

@@ -4,12 +4,18 @@ import java.util.Collections;
 
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
+import io.github.daomephsta.inscribe.common.Inscribe;
 import net.minecraft.util.Identifier;
 
 public class GuideDefinition
 {
-    public static final GuideDefinition FALLBACK = new GuideDefinition(Guide.INVALID_GUIDE_ID, new NoGuideAccessMethod(),
-        new TableOfContents(Collections.emptyList()), Theme.DEFAULT, "en_us");
+    public static final GuideDefinition FALLBACK;
+    static
+    {
+        Identifier fallbackToC = new Identifier(Inscribe.MOD_ID, "invalid/toc");
+        FALLBACK  = new GuideDefinition(Guide.INVALID_GUIDE_ID, new NoGuideAccessMethod(),
+            new TableOfContents(fallbackToC, fallbackToC, Collections.emptyList()), Theme.DEFAULT, "en_us");
+    }
 
     private final Identifier guideId;
     private final String translationKey;

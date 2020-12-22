@@ -11,6 +11,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import net.minecraft.client.MinecraftClient;
@@ -136,15 +137,18 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     }
 
     @Override
-    public void openEntry(Identifier entryId)
+    public void open(Identifier id)
     {
-        Identifier guideId = Identifiers.builder(entryId).subPath(0, 1).build();
+        Identifier guideId = Identifiers.builder(id).subPath(0, 1).build();
         Guide owningGuide = GuideManager.INSTANCE.getGuide(guideId);
-        XmlEntry entry = owningGuide.getEntry(entryId);
+        XmlEntry entry = owningGuide.getEntry(id);
+        TableOfContents toc = owningGuide.getTableOfContents(id);
         if (entry != null)
             MinecraftClient.getInstance().openScreen(new OpenEntryScreen(owningGuide, entry));
+        else if (toc != null)
+            MinecraftClient.getInstance().openScreen(new OpenTableOfContentsScreen(guide, toc));
         else
-            LOGGER.error("Could not open unknown entry {}", entryId);
+            LOGGER.error("Could not open unknown entry or ToC {}", id);
     }
 
     @Override

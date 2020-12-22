@@ -21,7 +21,9 @@ import io.github.daomephsta.inscribe.client.guide.GuideLoadingException.Severity
 import io.github.daomephsta.inscribe.client.guide.parser.v100.V100Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
+import io.github.daomephsta.inscribe.common.util.Identifiers;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
@@ -32,14 +34,12 @@ public class Parsers
             .build();
     private static final ThreadLocal<String> LAST_VERSION = ThreadLocal.withInitial(() -> "");
     private static final ThreadLocal<Parser> LAST_PARSER = new ThreadLocal<>();
-    private static final DocumentBuilder GUIDE_DEFINITION_BUILDER,
-                                         ENTRY_BUILDER;
+    private static final DocumentBuilder GUIDE_DEFINITION_BUILDER;
     static
     {
         try
         {
             GUIDE_DEFINITION_BUILDER = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            ENTRY_BUILDER = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         }
         catch (ParserConfigurationException e)
         {
@@ -55,18 +55,33 @@ public class Parsers
 
     private static final Pattern ENTRY_PATH_TO_ID =
         Pattern.compile("inscribe_guides\\/(?<guideName>[a-z0-9\\/._-]+)\\/[a-z0-9._-]+\\/entries\\/(?<entryName>[a-z0-9\\/._-]+)\\.xml");
-    public static XmlEntry loadEntry(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    public static XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    {
+        return getParser(root).loadEntry(root, resourceManager, deriveId(path), path);
+    }
+
+    public static TableOfContents loadTableOfContents(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    {
+        Element root = XmlResources.readDocument(XmlResources.GENERAL, resourceManager, path).getDocumentElement();
+        return getParser(root).loadTableOfContents(root, deriveId(path), path);
+    }
+
+    public static TableOfContents loadTableOfContents(Element root, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    {
+        return getParser(root).loadTableOfContents(root, deriveId(path), path);
+    }
+
+    private static Identifier deriveId(Identifier path) throws GuideLoadingException
     {
         Matcher pathMatcher = ENTRY_PATH_TO_ID.matcher(path.getPath());
         if (!pathMatcher.matches())
         {
-            throw new GuideLoadingException(String.format("Expected %s to match regex %s. Please report this error to the Inscribe author.",
-                path.getPath(), ENTRY_PATH_TO_ID), Severity.NON_FATAL);
+            throw new GuideLoadingException(String.format("Expected %s to match regex %s. Please report "
+                + "this error to the Inscribe author.", path.getPath(), ENTRY_PATH_TO_ID), Severity.NON_FATAL);
         }
-        Identifier id = new Identifier(path.getNamespace(), pathMatcher.group("guideName") + "/" + pathMatcher.group("entryName"));
-        Element root = XmlResources.readDocument(ENTRY_BUILDER, resourceManager, path).getDocumentElement();
-        XmlEntry loadEntry = getParser(root).loadEntry(root, resourceManager, id, path);
-        return loadEntry;
+        return Identifiers.builder(path.getNamespace())
+            .appendPathSegments(pathMatcher.group("guideName"), pathMatcher.group("entryName"))
+            .build();
     }
 
     private static Parser getParser(Element root) throws InscribeSyntaxException
