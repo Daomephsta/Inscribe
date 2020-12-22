@@ -127,6 +127,33 @@ public class GuideManager implements IdentifiableResourceReloadListener
             });
     }
 
+    public CompletableFuture<TableOfContents> reloadTableOfContents(Identifier guideId, Identifier file,
+        Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler,
+        Executor loadExecutor, Executor applyExecutor) throws GuideLoadingException
+    {
+        Supplier<TableOfContents> tocSupplier = ThrowingSupplier.unchecked(() ->
+            Parsers.loadTableOfContents(resourceManager, file));
+        CompletableFuture<TableOfContents> tocFuture = loadExecutor != null
+            ? CompletableFuture.supplyAsync(tocSupplier, loadExecutor)
+            : CompletableFuture.supplyAsync(tocSupplier);
+        return tocFuture.exceptionally(thrw ->
+            {
+                 if (thrw instanceof WrappedException)
+                    thrw = thrw.getCause();
+                 LOGGER.error("An error occured while reloading ToC '{}'", file, thrw);
+                 Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_toc"));
+                 return getGuide(Guide.INVALID_GUIDE_ID).getMainTableOfContents();
+            })
+            .thenApply(toc ->
+            {
+                Guide guide = guides.get(guideId);
+                guide.replaceTableOfContents(toc.getId(), toc);
+                LOGGER.info("Reloaded ToC '{}'", toc.getId());
+                return toc;
+            });
+    }
+
+
     public CompletableFuture<Collection<Guide>> load(ResourceManager resourceManager, Profiler profiler, Executor executor)
     {
         return CompletableFuture.supplyAsync(() ->
