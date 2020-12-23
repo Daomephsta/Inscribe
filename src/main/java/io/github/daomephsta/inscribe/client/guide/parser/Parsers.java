@@ -88,7 +88,7 @@ public class Parsers
     {
         Attr versionAttribute = root.getAttributeNode("parser_version");
         if (versionAttribute == null)
-            throw new InscribeSyntaxException("Missing parser version attribute");
+            throw new InscribeSyntaxException(root.getTagName() + " missing 'parser_version' attribute");
         if (LAST_VERSION.get().equals(versionAttribute.getValue()))
             return LAST_PARSER.get();
         try
