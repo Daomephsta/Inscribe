@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -18,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
+import com.google.common.collect.Sets;
 import com.pivovarit.function.ThrowingSupplier;
 import com.pivovarit.function.exception.WrappedException;
 
@@ -33,6 +36,10 @@ import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.search.SearchManager;
+import net.minecraft.client.search.SearchableContainer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -259,11 +266,17 @@ public class GuideManager implements IdentifiableResourceReloadListener
 
     public void apply(Collection<Guide> guidesIn, ResourceManager resourceManager, Profiler profiler, Executor executor)
     {
+        Set<Identifier> old = new HashSet<>(guides.keySet());
         this.guides.clear();
         for (Guide guide : guidesIn)
-        {
             this.guides.put(guide.getIdentifier(), guide);
-        }
+
+        SearchableContainer<ItemStack> tooltipSearchCache = MinecraftClient.getInstance()
+            .getSearchableContainer(SearchManager.ITEM_TOOLTIP);
+        if (!Sets.difference(old, guides.keySet()).isEmpty())
+            tooltipSearchCache.clear();
+        for (Identifier added : Sets.difference(guides.keySet(), old))
+            tooltipSearchCache.add(Inscribe.GUIDE_ITEM.forGuide(getGuide(added)));
         LOGGER.info("Loaded {} guides", guidesIn.size());
     }
 
