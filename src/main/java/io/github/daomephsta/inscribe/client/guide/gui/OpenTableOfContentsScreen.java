@@ -17,6 +17,7 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextN
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents.Link;
+import io.github.daomephsta.mosaic.SizeConstraint;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Util;
@@ -36,33 +37,55 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
     protected List<GuideFlow> buildPages()
     {
         List<GuideFlow> pageFlows = new ArrayList<>();
-        GuideFlow linksPage = createPage();
-        pageFlows.add(linksPage);
-        int used = 0;
+
+        GuideFlow page = addPage(pageFlows);
+        GuideFlow column = addColumn(page);
+        int usedColumns = 1;
+        int usedY = 0;
         for (Iterator<Link> iter = toc.getLinks().iterator(); iter.hasNext();)
         {
             Link link = iter.next();
             GuideWidget linkElement = createLinkElement(link);
             linkElement.attach(new GotoEntry(link.destination));
             linkElement.margin().setVertical(2);
-            used += linkElement.hintHeight();
-            linksPage.add(linkElement);
-            if (used > 138 && iter.hasNext())
+            usedY += linkElement.hintHeight();
+            column.add(linkElement);
+            if (usedY > 138 && iter.hasNext())
             {
-                linksPage = createPage();
-                pageFlows.add(linksPage);
-                used = 0;
+                usedY = 0;
+                if (usedColumns < toc.getColumns())
+                {
+                    column = addColumn(page);
+                    usedColumns += 1;
+                }
+                else
+                {
+                    page = addPage(pageFlows);
+                    column = addColumn(page);
+                    usedColumns = 1;
+                }
             }
         }
+
         return pageFlows;
     }
 
-    private GuideFlow createPage()
+    private GuideFlow addPage(List<GuideFlow> pageFlows)
     {
-        GuideFlow linksPage;
-        linksPage = new GuideFlow(Direction.VERTICAL);
-        linksPage.padding().setVertical(2).setHorizontal(4);
-        return linksPage;
+        GuideFlow page = new GuideFlow(Direction.HORIZONTAL);
+        page.padding().setVertical(2).setHorizontal(4);
+        pageFlows.add(page);
+        return page;
+    }
+
+    private GuideFlow addColumn(GuideFlow columns)
+    {
+        GuideFlow column = new GuideFlow(Direction.VERTICAL);
+        columns.add(column, layout ->
+        {
+            layout.setPreferredSize(SizeConstraint.percentage(100D / toc.getColumns()));
+        });
+        return column;
     }
 
     private GuideWidget createLinkElement(Link link)

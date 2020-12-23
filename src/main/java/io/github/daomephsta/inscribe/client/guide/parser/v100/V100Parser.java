@@ -88,6 +88,7 @@ public class V100Parser implements Parser
             mainTocPath = Identifiers.builder(
                     XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
                 .namespace(guideId.getNamespace())
+                .prependPathSegments("entries")
                 .prependPathSegments(activeTranslation)
                 .prependPathSegments(guideId.getPath())
                 .prependPathSegments(GuideManager.FOLDER_NAME)
@@ -137,7 +138,7 @@ public class V100Parser implements Parser
             }
             links.add(new TableOfContents.Link(iconFactory, name, destination, style));
         }
-        return new TableOfContents(id, path, links);
+        return new TableOfContents(id, path, links, XmlAttributes.asInt(root, "columns", 1));
     }
 
     @Override

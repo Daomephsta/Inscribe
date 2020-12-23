@@ -12,12 +12,14 @@ public class TableOfContents
 {
     private final Identifier id, filePath;
     private final List<Link> links;
+    private final int columns;
 
-    public TableOfContents(Identifier id, Identifier path, List<Link> links)
+    public TableOfContents(Identifier id, Identifier path, List<Link> links, int columns)
     {
         this.id = id;
         this.filePath = path;
         this.links = ImmutableList.copyOf(links);
+        this.columns = columns;
     }
 
     public Identifier getId()
@@ -33,6 +35,11 @@ public class TableOfContents
     public Iterable<Link> getLinks()
     {
         return links;
+    }
+
+    public int getColumns()
+    {
+        return columns;
     }
 
     public static class Link
