@@ -4,20 +4,22 @@ import java.util.List;
 import java.util.function.Consumer;
 import com.google.common.collect.ImmutableList;
 
+import io.github.daomephsta.inscribe.client.guide.GuideIdentifier;
 import io.github.daomephsta.inscribe.client.guide.LinkStyle;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import net.minecraft.util.Identifier;
 
 public class TableOfContents
 {
-    private final Identifier id, filePath;
+    private final Identifier id;
+    private final GuideIdentifier filePath;
     private final List<Link> links;
     private final int columns;
 
-    public TableOfContents(Identifier id, Identifier path, List<Link> links, int columns)
+    public TableOfContents(Identifier id, GuideIdentifier filePath, List<Link> links, int columns)
     {
         this.id = id;
-        this.filePath = path;
+        this.filePath = filePath;
         this.links = ImmutableList.copyOf(links);
         this.columns = columns;
     }
@@ -27,7 +29,7 @@ public class TableOfContents
         return id;
     }
 
-    public Identifier getFilePath()
+    public GuideIdentifier getFilePath()
     {
         return filePath;
     }

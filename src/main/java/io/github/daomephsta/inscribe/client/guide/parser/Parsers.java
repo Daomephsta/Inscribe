@@ -6,16 +6,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Ints;
 
+import io.github.daomephsta.inscribe.client.guide.GuideIdentifier;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException.Severity;
 import io.github.daomephsta.inscribe.client.guide.parser.v100.V100Parser;
@@ -34,52 +31,33 @@ public class Parsers
             .build();
     private static final ThreadLocal<String> LAST_VERSION = ThreadLocal.withInitial(() -> "");
     private static final ThreadLocal<Parser> LAST_PARSER = new ThreadLocal<>();
-    private static final DocumentBuilder GUIDE_DEFINITION_BUILDER;
-    static
-    {
-        try
-        {
-            GUIDE_DEFINITION_BUILDER = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        }
-        catch (ParserConfigurationException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
 
-    public static GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    public static GuideDefinition loadGuideDefinition(Element root, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
     {
-        Element root = XmlResources.readDocument(GUIDE_DEFINITION_BUILDER, resourceManager, path).getDocumentElement();
-        return getParser(root).loadGuideDefinition(root, resourceManager, path);
+        return getParser(root).loadGuideDefinition(root, resourceManager, filePath);
     }
 
     private static final Pattern ENTRY_PATH_TO_ID =
         Pattern.compile("inscribe_guides\\/(?<guideName>[a-z0-9\\/._-]+)\\/[a-z0-9._-]+\\/entries\\/(?<entryName>[a-z0-9\\/._-]+)\\.xml");
-    public static XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    public static XmlEntry loadEntry(Element root, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
     {
-        return getParser(root).loadEntry(root, resourceManager, deriveId(path), path);
+        return getParser(root).loadEntry(root, resourceManager, deriveId(filePath), filePath);
     }
 
-    public static TableOfContents loadTableOfContents(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    public static TableOfContents loadTableOfContents(Element root, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
     {
-        Element root = XmlResources.readDocument(XmlResources.GENERAL, resourceManager, path).getDocumentElement();
-        return getParser(root).loadTableOfContents(root, deriveId(path), path);
+        return getParser(root).loadTableOfContents(root, deriveId(filePath), filePath);
     }
 
-    public static TableOfContents loadTableOfContents(Element root, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    private static Identifier deriveId(GuideIdentifier filePath) throws GuideLoadingException
     {
-        return getParser(root).loadTableOfContents(root, deriveId(path), path);
-    }
-
-    private static Identifier deriveId(Identifier path) throws GuideLoadingException
-    {
-        Matcher pathMatcher = ENTRY_PATH_TO_ID.matcher(path.getPath());
+        Matcher pathMatcher = ENTRY_PATH_TO_ID.matcher(filePath.getPath());
         if (!pathMatcher.matches())
         {
             throw new GuideLoadingException(String.format("Expected %s to match regex %s. Please report "
-                + "this error to the Inscribe author.", path.getPath(), ENTRY_PATH_TO_ID), Severity.NON_FATAL);
+                + "this error to the Inscribe author.", filePath.getPath(), ENTRY_PATH_TO_ID), Severity.NON_FATAL);
         }
-        return Identifiers.builder(path.getNamespace())
+        return Identifiers.builder(filePath.getNamespace())
             .appendPathSegments(pathMatcher.group("guideName"), pathMatcher.group("entryName"))
             .build();
     }

@@ -2,6 +2,7 @@ package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -13,13 +14,12 @@ import org.w3c.dom.NodeList;
 
 import com.google.common.collect.Lists;
 
+import io.github.daomephsta.inscribe.client.guide.GuideIdentifier;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
-import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.LinkStyle;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderFormatConverter;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.parser.Parser;
-import io.github.daomephsta.inscribe.client.guide.parser.Parsers;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser;
@@ -68,47 +68,32 @@ public class V100Parser implements Parser
             .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
 
     @Override
-    public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, Identifier path) throws GuideLoadingException
+    public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
     {
         //Remove "inscribe_guides" from the start and "guide_definition.xml" from the end
-        Identifier guideId = Identifiers.builder(path).subPath(1, -2).build();
+        Identifier guideId = Identifiers.builder(filePath).subPath(1, -2).build();
         String activeTranslation = MinecraftClient.getInstance().options.language;
         Identifier mainTocPath = Identifiers.builder(
                 XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
             .namespace(guideId.getNamespace())
-            .prependPathSegments("entries")
-            .prependPathSegments(activeTranslation)
             .prependPathSegments(guideId.getPath())
-            .prependPathSegments(GuideManager.FOLDER_NAME)
             .build();
-        if (!resourceManager.containsResource(mainTocPath))
-        {
-            LOGGER.info("No {} translation found for {}, falling back to en_us", activeTranslation, guideId);
-            activeTranslation = "en_us";
-            mainTocPath = Identifiers.builder(
-                    XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
-                .namespace(guideId.getNamespace())
-                .prependPathSegments("entries")
-                .prependPathSegments(activeTranslation)
-                .prependPathSegments(guideId.getPath())
-                .prependPathSegments(GuideManager.FOLDER_NAME)
-                .build();
-        }
+        mainTocPath = new Identifier(mainTocPath.getNamespace(),
+            mainTocPath.getPath().substring(0, mainTocPath.getPath().length() - ".xml".length()));
         try
         {
-            TableOfContents mainTableOfContents = Parsers.loadTableOfContents(resourceManager, mainTocPath);
             GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(XmlElements.getChild(xml, "access_method"));
             Element themeXml = XmlElements.getChildNullable(xml, "theme");
             Theme theme = themeXml != null ? Theme.fromXml(themeXml) : Theme.DEFAULT;
-            return new GuideDefinition(guideId, guideAccess, mainTableOfContents, theme, activeTranslation);
+            return new GuideDefinition(guideId, guideAccess, mainTocPath, theme, activeTranslation);
         }
         catch (GuideLoadingException loadingException)
         {
             if (loadingException.isFatal())
-                throw new RuntimeException("An unrecoverable error occured while loading guide definition '" + path + "'", loadingException);
+                throw new RuntimeException("An unrecoverable error occured while loading guide definition '" + filePath + "'", loadingException);
             else
             {
-                LOGGER.error("Guide definition at {} failed to load correctly:\n\t{}", path, loadingException.getMessage());
+                LOGGER.error("Guide definition at {} failed to load correctly:\n\t{}", filePath, loadingException.getMessage());
                 Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.guide_definition"));
             }
         }
@@ -116,7 +101,7 @@ public class V100Parser implements Parser
     }
 
     @Override
-    public TableOfContents loadTableOfContents(Element root, Identifier id, Identifier path) throws GuideLoadingException
+    public TableOfContents loadTableOfContents(Element root, Identifier id, GuideIdentifier filePath) throws GuideLoadingException
     {
         LinkStyle style = XmlAttributes.asEnum(root, "link_style", LinkStyle::fromRepresentation);
 
@@ -138,16 +123,18 @@ public class V100Parser implements Parser
             }
             links.add(new TableOfContents.Link(iconFactory, name, destination, style));
         }
-        return new TableOfContents(id, path, links, XmlAttributes.asInt(root, "columns", 1));
+        return new TableOfContents(id, filePath, links, XmlAttributes.asInt(root, "columns", 1));
     }
+
+
 
     @Override
     public XmlEntry loadEntry(Element root, ResourceManager resourceManager,
-        Identifier id, Identifier path) throws GuideLoadingException
+        Identifier id, GuideIdentifier filePath) throws GuideLoadingException
     {
         List<String> tags = XmlAttributes.asStringList(root, "tags", Collections::emptyList);
         List<XmlPage> pages = readPages(root, id);
-        return new XmlEntry(id, path, tags, pages);
+        return new XmlEntry(id, filePath, new HashSet<>(tags), pages);
     }
 
     private List<XmlPage> readPages(Element root, Identifier entryId) throws GuideLoadingException

@@ -71,14 +71,13 @@ public class OpenEntryScreen extends PageSpreadScreen
         try
         {
             MinecraftClient mc = MinecraftClient.getInstance();
-            GuideManager.INSTANCE.reloadEntry(getOpenGuideId(), entry.getFilePath(),
-                CompletableFuture::completedFuture, mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
-                Util.getServerWorkerExecutor(), mc)
-                .thenAccept(entry ->
-                {
-                    Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
-                    mc.openScreen(new OpenEntryScreen(guide, entry));
-                });
+            GuideManager.INSTANCE.reloadEntry(entry, CompletableFuture::completedFuture, mc.getResourceManager(),
+                DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getServerWorkerExecutor(), mc)
+            .thenAccept(entry ->
+            {
+                Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
+                mc.openScreen(new OpenEntryScreen(guide, entry));
+            });
         }
         catch (GuideLoadingException e)
         {

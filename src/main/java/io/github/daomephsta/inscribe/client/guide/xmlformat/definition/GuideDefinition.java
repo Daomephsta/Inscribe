@@ -1,7 +1,5 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat.definition;
 
-import java.util.Collections;
-
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
 import io.github.daomephsta.inscribe.common.Inscribe;
@@ -9,22 +7,17 @@ import net.minecraft.util.Identifier;
 
 public class GuideDefinition
 {
-    public static final GuideDefinition FALLBACK;
-    static
-    {
-        Identifier fallbackToC = new Identifier(Inscribe.MOD_ID, "invalid/toc");
-        FALLBACK  = new GuideDefinition(Guide.INVALID_GUIDE_ID, new NoGuideAccessMethod(),
-            new TableOfContents(fallbackToC, fallbackToC, Collections.emptyList(), 1), Theme.DEFAULT, "en_us");
-    }
+    public static final GuideDefinition FALLBACK = new GuideDefinition(Guide.INVALID_GUIDE_ID,
+        new NoGuideAccessMethod(), new Identifier(Inscribe.MOD_ID, "invalid/toc"), Theme.DEFAULT, "en_us");
 
     private final Identifier guideId;
     private final String translationKey;
     private final GuideAccessMethod guideAccess;
-    private final TableOfContents mainTableOfContents;
+    private final Identifier mainTableOfContents;
     private final Theme theme;
     private final String activeTranslation;
 
-    public GuideDefinition(Identifier guideId, GuideAccessMethod guideAccess, TableOfContents mainTableOfContents, Theme theme, String activeTranslation)
+    public GuideDefinition(Identifier guideId, GuideAccessMethod guideAccess, Identifier mainTableOfContents, Theme theme, String activeTranslation)
     {
         this.guideId = guideId;
         this.translationKey = guideId.getNamespace() + ".guide." + guideId.getPath() + ".name";
@@ -49,7 +42,7 @@ public class GuideDefinition
         return guideAccess;
     }
 
-    public TableOfContents getMainTableOfContents()
+    public Identifier getMainTableOfContents()
     {
         return mainTableOfContents;
     }

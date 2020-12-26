@@ -1,5 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -18,17 +19,21 @@ public class Guide
     private final Map<Identifier, XmlEntry> entries;
     private final Map<Identifier, TableOfContents> tablesOfContents;
 
-    public Guide(GuideDefinition definition, Map<Identifier, XmlEntry> entries,
-        Map<Identifier, TableOfContents> tablesOfContents)
+    public Guide(GuideDefinition definition)
     {
         this.definition = definition;
-        this.entries = entries;
-        this.tablesOfContents = tablesOfContents;
+        this.entries = new HashMap<>();
+        this.tablesOfContents = new HashMap<>();
     }
 
     public XmlEntry getEntry(Identifier entryId)
     {
         return entries.get(entryId);
+    }
+
+    public XmlEntry addEntry(XmlEntry entry)
+    {
+        return entries.put(entry.getId(), entry);
     }
 
     void replaceEntry(Identifier id, XmlEntry entry)
@@ -40,6 +45,11 @@ public class Guide
     public TableOfContents getTableOfContents(Identifier id)
     {
         return tablesOfContents.get(id);
+    }
+
+    public TableOfContents addTableOfContents(TableOfContents toc)
+    {
+        return tablesOfContents.put(toc.getId(), toc);
     }
 
     void replaceTableOfContents(Identifier id, TableOfContents toc)
@@ -70,7 +80,7 @@ public class Guide
 
     public TableOfContents getMainTableOfContents()
     {
-        return definition.getMainTableOfContents();
+        return tablesOfContents.get(definition.getMainTableOfContents());
     }
 
     public Theme getTheme()

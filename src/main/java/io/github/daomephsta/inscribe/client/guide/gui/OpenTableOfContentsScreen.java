@@ -149,14 +149,14 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         try
         {
             MinecraftClient mc = MinecraftClient.getInstance();
-            GuideManager.INSTANCE.reloadTableOfContents(getOpenGuideId(), toc.getFilePath(),
-                CompletableFuture::completedFuture, mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
+            GuideManager.INSTANCE.reloadTableOfContents(toc, CompletableFuture::completedFuture,
+                mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
                 Util.getServerWorkerExecutor(), mc)
-                .thenAccept(toc ->
-                {
-                    Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
-                    mc.openScreen(new OpenTableOfContentsScreen(guide, toc));
-                });
+            .thenAccept(toc ->
+            {
+                Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
+                mc.openScreen(new OpenTableOfContentsScreen(guide, toc));
+            });
         }
         catch (GuideLoadingException e)
         {

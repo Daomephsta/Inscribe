@@ -1,21 +1,18 @@
 package io.github.daomephsta.inscribe.client.guide;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
@@ -26,14 +23,11 @@ import com.pivovarit.function.exception.WrappedException;
 
 import io.github.daomephsta.inscribe.client.guide.parser.Parsers;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlResources;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
 import io.github.daomephsta.inscribe.common.Inscribe;
-import io.github.daomephsta.inscribe.common.util.Identifiers;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
@@ -51,7 +45,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
     public static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
     private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.guide_manager");
     private static final Identifier ID = new Identifier(Inscribe.MOD_ID, "guide_manager");
-    private static final String GUIDE_DEFINITION_FILENAME = "guide_definition.xml";
+    static final String GUIDE_DEFINITION_FILENAME = "guide_definition.xml";
 
     private final Map<Identifier, Guide> guides = new HashMap<>();
     private final Collection<Guide> guidesImmutable = Collections.unmodifiableCollection(guides.values());
@@ -92,197 +86,212 @@ public class GuideManager implements IdentifiableResourceReloadListener
             .thenCompose(synchronizer::whenPrepared);
     }
 
-    public CompletableFuture<Guide> reloadGuide(Identifier guideId, Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor) throws GuideLoadingException
+    public CompletableFuture<Guide> reloadGuide(Identifier guideId, Synchronizer synchronizer,
+        ResourceManager assets, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor,
+        Executor applyExecutor) throws GuideLoadingException
     {
-        Identifier guideDefPath = new Identifier(guideId.getNamespace(), FOLDER_NAME + "/" + guideId.getPath()+ "/" + GUIDE_DEFINITION_FILENAME);
-        return loadGuide(resourceManager, guideDefPath)
-            .exceptionally(thrw ->
-            {
-                if (thrw instanceof WrappedException)
-                    thrw = thrw.getCause();
-                LOGGER.error("An error occured while reloading guide '{}'", guideId, thrw);
-                Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_guide"));
-                return getGuide(Guide.INVALID_GUIDE_ID);
-            })
-            .thenApply(guide ->
-            {
-                this.guides.put(guide.getIdentifier(), guide);
-                LOGGER.info("Reloaded guide '{}'", guide.getIdentifier());
-                return guide;
-            })
-            .thenCompose(synchronizer::whenPrepared);
+        return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
+            findGuideAssets(assets, FOLDER_NAME + '/' + guideId.getPath())))
+        .thenApply(guideAssets ->
+        {
+            loadGuideAssets(guideAssets, assets);
+            return getGuide(guideId);
+        })
+        .exceptionally(thrw ->
+        {
+            if (thrw instanceof WrappedException)
+                thrw = thrw.getCause();
+            LOGGER.error("An error occured while reloading guide '{}'", guideId, thrw);
+            Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_guide"));
+            return getGuide(Guide.INVALID_GUIDE_ID);
+        })
+        .thenApply(guide ->
+        {
+            this.guides.put(guide.getIdentifier(), guide);
+            LOGGER.info("Reloaded guide '{}'", guide.getIdentifier());
+            return guide;
+        })
+        .thenCompose(synchronizer::whenPrepared);
     }
 
-    public CompletableFuture<XmlEntry> reloadEntry(Identifier guideId, Identifier entryFile, Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor) throws GuideLoadingException
+    public CompletableFuture<XmlEntry> reloadEntry(XmlEntry entry, Synchronizer synchronizer,
+        ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler,
+        Executor loadExecutor, Executor applyExecutor) throws GuideLoadingException
     {
-        Element root = XmlResources.readDocument(XmlResources.GENERAL, resourceManager, entryFile).getDocumentElement();
-        return loadEntry(root, resourceManager, entryFile, loadExecutor)
-            .exceptionally(thrw ->
-            {
-                 if (thrw instanceof WrappedException)
-                    thrw = thrw.getCause();
-                 LOGGER.error("An error occured while reloading entry '{}'", entryFile, thrw);
-                 Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_entry"));
-                 return createFallbackEntry(entryFile, entryFile);
-            })
-            .thenApply(entry ->
-            {
-                Guide guide = guides.get(guideId);
-                guide.replaceEntry(entry.getId(), entry);
-                LOGGER.info("Reloaded entry '{}'", entry.getId());
-                return entry;
-            });
+        return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
+        {
+            return Parsers.loadEntry(XmlResources.readDocument(XmlResources.GENERAL, resourceManager,
+                entry.getFilePath()).getDocumentElement(), resourceManager, entry.getFilePath());
+        }), loadExecutor)
+        .exceptionally(thrw ->
+        {
+             if (thrw instanceof WrappedException)
+                thrw = thrw.getCause();
+             LOGGER.error("An error occured while reloading entry '{}'", entry.getId(), thrw);
+             Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_entry"));
+             return createFallbackEntry(entry.getId(), entry.getFilePath());
+        })
+        .thenApply(newEntry ->
+        {
+            Guide guide = guides.get(newEntry.getFilePath().getGuideId());
+            guide.replaceEntry(newEntry.getId(), newEntry);
+            LOGGER.info("Reloaded entry '{}'", newEntry.getId());
+            return newEntry;
+        });
     }
 
-    public CompletableFuture<TableOfContents> reloadTableOfContents(Identifier guideId, Identifier file,
+    public CompletableFuture<TableOfContents> reloadTableOfContents(TableOfContents oldToc,
         Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler,
         Executor loadExecutor, Executor applyExecutor) throws GuideLoadingException
     {
-        Supplier<TableOfContents> tocSupplier = ThrowingSupplier.unchecked(() ->
-            Parsers.loadTableOfContents(resourceManager, file));
-        CompletableFuture<TableOfContents> tocFuture = loadExecutor != null
-            ? CompletableFuture.supplyAsync(tocSupplier, loadExecutor)
-            : CompletableFuture.supplyAsync(tocSupplier);
-        return tocFuture.exceptionally(thrw ->
-            {
-                 if (thrw instanceof WrappedException)
-                    thrw = thrw.getCause();
-                 LOGGER.error("An error occured while reloading ToC '{}'", file, thrw);
-                 Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_toc"));
-                 return getGuide(Guide.INVALID_GUIDE_ID).getMainTableOfContents();
-            })
-            .thenApply(toc ->
-            {
-                Guide guide = guides.get(guideId);
-                guide.replaceTableOfContents(toc.getId(), toc);
-                LOGGER.info("Reloaded ToC '{}'", toc.getId());
-                return toc;
-            });
+        return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
+        {
+            Element root = XmlResources.readDocument(XmlResources.GENERAL,
+                resourceManager, oldToc.getFilePath()).getDocumentElement();
+            return Parsers.loadTableOfContents(root, resourceManager, oldToc.getFilePath());
+        }), loadExecutor)
+        .thenApply(toc ->
+        {
+            Guide guide = guides.get(oldToc.getFilePath().getGuideId());
+            guide.replaceTableOfContents(toc.getId(), toc);
+            LOGGER.info("Reloaded ToC '{}'", toc.getId());
+            return toc;
+        })
+        .exceptionally(thrw ->
+        {
+             if (thrw instanceof WrappedException)
+                thrw = thrw.getCause();
+             LOGGER.error("An error occured while reloading ToC '{}'", oldToc.getId(), thrw);
+             Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_toc"));
+             return getGuide(Guide.INVALID_GUIDE_ID).getMainTableOfContents();
+        });
     }
 
 
-    public CompletableFuture<Collection<Guide>> load(ResourceManager resourceManager, Profiler profiler, Executor executor)
+    public CompletableFuture<Map<GuideIdentifier, Element>> load(
+        ResourceManager assets, Profiler profiler, Executor executor)
     {
-        return CompletableFuture.supplyAsync(() ->
-        {
-            Collection<Identifier> guideDefinitions = resourceManager.findResources(FOLDER_NAME, path -> path.endsWith(GUIDE_DEFINITION_FILENAME));
-            Collection<Guide> guides = new ArrayList<>(guideDefinitions.size());
-            for (Identifier guideDefPath : guideDefinitions)
-            {
-                if (StringUtils.countMatches(guideDefPath.getPath(), '/') != 2) //inscribe_guides/<guide ID path>/GUIDE_DEFINITION_FILENAME
-                {
-                    LOGGER.error("Ignored {}, guide definitions must be exactly 1 subfolders deep in {}", guideDefPath, FOLDER_NAME);
-                    continue;
-                }
-                try
-                {
-                    guides.add(loadGuide(resourceManager, guideDefPath).join());
-                }
-                catch (GuideLoadingException loadingException)
-                {
-                    Identifier guidePath = Identifiers.subPath(guideDefPath, 0, -1);
-                    if (loadingException.isFatal())
-                        throw new RuntimeException("An unrecoverable error occured while loading a guide from " + guidePath , loadingException);
-                    else
-                    {
-                        LOGGER.error("Guide at {} failed to load correctly:\n\t{}", guidePath, loadingException.getMessage());
-                        Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.guide"));
-                    }
-                }
-            }
-
-            return guides;
-        }, executor)
+        return CompletableFuture.supplyAsync(() -> findGuideAssets(assets, FOLDER_NAME), executor)
         .exceptionally(thrw ->
         {
             if (thrw instanceof WrappedException)
                 thrw = thrw.getCause();
             LOGGER.error("An unexpected error occured during the LOAD stage of guide loading", thrw);
             Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.guide"));
-            return Collections.singleton(getGuide(Guide.INVALID_GUIDE_ID));
+            return null;
         });
     }
 
-    private CompletableFuture<Guide> loadGuide(ResourceManager resourceManager, Identifier guideDefPath) throws GuideLoadingException
+    public Map<GuideIdentifier, Element> findGuideAssets(ResourceManager assets, String folder)
     {
-        return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
+        Map<GuideIdentifier, Element> guideAssets = new TreeMap<>((a, b) ->
         {
-            GuideDefinition guideDefinition = loadGuideDefinition(resourceManager, guideDefPath);
-            Identifier rootPath = Identifiers.replaceFromEnd(guideDefPath, 0, guideDefinition.getActiveTranslation() + "/entries");
-            Map<Identifier, XmlEntry> entries = new HashMap<>();
-            Map<Identifier, TableOfContents> tocs = new HashMap<>();
-            loadEntries(resourceManager, guideDefPath.getNamespace(), rootPath.getPath(),
-                entry -> entries.put(entry.getId(), entry), toc -> tocs.put(toc.getId(), toc));
-            LOGGER.info("Loaded {} entries for {}", entries.size(), guideDefinition.getGuideId());
-            return new Guide(guideDefinition, entries, tocs);
-        }));
-    }
-
-    private GuideDefinition loadGuideDefinition(ResourceManager resourceManager, Identifier path) throws GuideLoadingException
-    {
-        return Parsers.loadGuideDefinition(resourceManager, path);
-    }
-
-    private void loadEntries(ResourceManager resourceManager, String namespace, String rootPath,
-        Consumer<XmlEntry> entries, Consumer<TableOfContents> tablesOfContents) throws GuideLoadingException
-    {
-        for(Identifier entryPath : resourceManager.findResources(rootPath, path -> path.endsWith(".xml")))
+            // Guide definitions first
+            if (isGuideDefinition(a) && !isGuideDefinition(b))
+                return -1;
+            if (!isGuideDefinition(a) && isGuideDefinition(b))
+                return 1;
+            // Translations of the same entry are equivalent, for the purposes of this map
+            if (a.getGuideId().equals(b.getGuideId()) && a.getSectionPath().equals(b.getSectionPath()))
+                return 0;
+            return a.compareTo(b);
+        });
+        for (Identifier file : assets.findResources(folder, fileName -> fileName.endsWith(".xml")))
         {
-            if (!entryPath.getNamespace().equals(namespace))
-                continue;
-
-            Element root = XmlResources.readDocument(XmlResources.GENERAL, resourceManager, entryPath).getDocumentElement();
-            if (root.getTagName().equals("entry"))
+            GuideIdentifier guideAsset = new GuideIdentifier(file);
+            try
             {
-                entries.accept(loadEntry(root, resourceManager, entryPath, null)
-                    .exceptionally(thrw ->
-                    {
-                        Throwable actual = thrw;
-                        while (actual instanceof CompletionException || actual instanceof WrappedException)
-                            actual = actual.getCause();
-                        if (actual instanceof InscribeSyntaxException)
-                            LOGGER.error("Entry at {} failed to load correctly:\n\t{}", entryPath, actual.getMessage());
-                        else
-                            LOGGER.error("Entry at {} failed to load correctly:", entryPath, actual);
-                        Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.entry"));
-                        return createFallbackEntry(entryPath, entryPath);
-                    })
-                    .join());
+                if (guideAsset.getLangCode().isEmpty() ||
+                    guideAsset.getLangCode().equals(MinecraftClient.getInstance().options.language))
+                {
+                    // Universal or user language assets override any existing assets
+                    guideAssets.put(guideAsset, XmlResources.readDocument(
+                        XmlResources.GENERAL, assets, file).getDocumentElement());
+                }
+                else if (guideAsset.getLangCode().equals("en_us"))
+                {
+                    // en_us assets don't override
+                    guideAssets.putIfAbsent(guideAsset, XmlResources.readDocument(
+                        XmlResources.GENERAL, assets, file).getDocumentElement());
+                }
             }
-            else if (root.getTagName().equals("toc"))
+            catch (GuideLoadingException e)
             {
-                tablesOfContents.accept(Parsers.loadTableOfContents(root, resourceManager, entryPath));
+                e.printStackTrace();
+            }
+        }
+        return guideAssets;
+    }
+
+    private boolean isGuideDefinition(GuideIdentifier filePath)
+    {
+        return filePath.getPath().endsWith(GUIDE_DEFINITION_FILENAME);
+    }
+
+    public void apply(Map<GuideIdentifier, Element> guideAssets,
+        ResourceManager assets, Profiler profiler, Executor executor)
+    {
+        Set<Identifier> oldGuides = new HashSet<>(guides.keySet());
+        this.guides.clear();
+        loadGuideAssets(guideAssets, assets);
+        editSearchCache(oldGuides);
+        LOGGER.info("Loaded {} guides", guides.size());
+    }
+
+    private void loadGuideAssets(Map<GuideIdentifier, Element> guideAssets, ResourceManager assets)
+    {
+        for (Entry<GuideIdentifier, Element> entry : guideAssets.entrySet())
+        {
+            GuideIdentifier file = entry.getKey();
+            Element xml = entry.getValue();
+            try
+            {
+                if (isGuideDefinition(file))
+                    guides.put(file.getGuideId(), new Guide(Parsers.loadGuideDefinition(xml, assets, file)));
+                else if (xml.getTagName().equals("entry"))
+                {
+                    Guide guide = guides.get(file.getGuideId());
+                    if (guide == null)
+                    {
+                        LOGGER.error("Skipped loading {} because no guide definition exists for {}",
+                            file, file.getGuideId());
+                        continue;
+                    }
+                    guide.addEntry(Parsers.loadEntry(xml, assets, file));
+                }
+                else if (xml.getTagName().equals("toc"))
+                {
+                    Guide guide = guides.get(file.getGuideId());
+                    if (guide == null)
+                    {
+                        LOGGER.error("Skipped loading {} because no guide definition exists for {}",
+                            file, file.getGuideId());
+                        continue;
+                    }
+                    guide.addTableOfContents(Parsers.loadTableOfContents(xml, assets, file));
+                }
+            }
+            catch (GuideLoadingException e)
+            {
+                e.printStackTrace();
             }
         }
     }
 
-    private CompletableFuture<XmlEntry> loadEntry(Element root, ResourceManager resourceManager, Identifier path, Executor loadExecutor)
+    private void editSearchCache(Set<Identifier> oldGuides)
     {
-        Supplier<XmlEntry> entrySupplier = ThrowingSupplier.unchecked(() -> Parsers.loadEntry(root, resourceManager, path));
-        return loadExecutor != null
-            ? CompletableFuture.supplyAsync(entrySupplier, loadExecutor)
-            : CompletableFuture.supplyAsync(entrySupplier);
-    }
-
-    public void apply(Collection<Guide> guidesIn, ResourceManager resourceManager, Profiler profiler, Executor executor)
-    {
-        Set<Identifier> old = new HashSet<>(guides.keySet());
-        this.guides.clear();
-        for (Guide guide : guidesIn)
-            this.guides.put(guide.getIdentifier(), guide);
-
         SearchableContainer<ItemStack> tooltipSearchCache = MinecraftClient.getInstance()
             .getSearchableContainer(SearchManager.ITEM_TOOLTIP);
-        if (!Sets.difference(old, guides.keySet()).isEmpty())
+        // Clearing the cache to remove guides isn't ideal, but this case should be uncommon
+        if (!Sets.difference(oldGuides, guides.keySet()).isEmpty())
             tooltipSearchCache.clear();
-        for (Identifier added : Sets.difference(guides.keySet(), old))
+        for (Identifier added : Sets.difference(guides.keySet(), oldGuides))
             tooltipSearchCache.add(Inscribe.GUIDE_ITEM.forGuide(getGuide(added)));
-        LOGGER.info("Loaded {} guides", guidesIn.size());
     }
 
-    private XmlEntry createFallbackEntry(Identifier entryId, Identifier entryFile)
+    private XmlEntry createFallbackEntry(Identifier entryId, GuideIdentifier filePath)
     {
-        return new XmlEntry(entryId, entryFile, Collections.emptySet(), Collections.singletonList(new XmlPage(Collections.emptyList())));
+        return new XmlEntry(entryId, filePath, Collections.emptySet(), Collections.singletonList(new XmlPage(Collections.emptyList())));
     }
 
     @Override
