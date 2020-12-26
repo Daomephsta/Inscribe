@@ -37,7 +37,6 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -72,7 +71,6 @@ public class V100Parser implements Parser
     public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
     {
         Identifier guideId = filePath.getGuideId();
-        String activeTranslation = MinecraftClient.getInstance().options.language;
         Identifier mainTocPath = Identifiers.working(guideId)
             .addPathSegment(XmlAttributes.getValue(
                 XmlElements.getChild(xml, "main_table_of_contents"), "location"))
@@ -83,7 +81,7 @@ public class V100Parser implements Parser
             GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(XmlElements.getChild(xml, "access_method"));
             Element themeXml = XmlElements.getChildNullable(xml, "theme");
             Theme theme = themeXml != null ? Theme.fromXml(themeXml) : Theme.DEFAULT;
-            return new GuideDefinition(guideId, guideAccess, mainTocPath, theme, activeTranslation);
+            return new GuideDefinition(guideId, guideAccess, mainTocPath, theme);
         }
         catch (GuideLoadingException loadingException)
         {
