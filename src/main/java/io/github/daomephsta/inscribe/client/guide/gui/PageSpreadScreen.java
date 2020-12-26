@@ -139,7 +139,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     @Override
     public void open(Identifier id)
     {
-        Identifier guideId = Identifiers.builder(id).subPath(0, 1).build();
+        Identifier guideId = Identifiers.working(id).subIdentifier(0, 1).toIdentifier();
         Guide owningGuide = GuideManager.INSTANCE.getGuide(guideId);
         XmlEntry entry = owningGuide.getEntry(id);
         TableOfContents toc = owningGuide.getTableOfContents(id);

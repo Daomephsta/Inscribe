@@ -1,5 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide;
 
+import io.github.daomephsta.inscribe.common.util.Identifiers;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 
@@ -11,21 +12,20 @@ public class GuideIdentifier extends Identifier
     public GuideIdentifier(Identifier identifier)
     {
         super(identifier.getNamespace(), identifier.getPath());
-        int langCodeEnd = getPath().indexOf("/entries");
-        if (langCodeEnd != -1)
+        Identifiers.Working working = Identifiers.working(identifier);
+        int entriesIndex = working.indexOf("entries");
+        if (entriesIndex != -1)
         {
-            int langCodeStart = getPath().lastIndexOf('/', langCodeEnd - 1);
-            this.langCode = getPath().substring(langCodeStart + 1, langCodeEnd);
-            this.guideId = new Identifier(identifier.getNamespace(),
-                getPath().substring("inscribe_guides/".length(), langCodeStart));
-            this.sectionPath = getPath().substring(langCodeEnd + "/entries/".length());
+            int langCodeIndex = entriesIndex - 1;
+            this.langCode = working.getSegment(langCodeIndex);
+            this.guideId = Identifiers.working(identifier).subIdentifier(1, langCodeIndex).toIdentifier();
+            this.sectionPath = Identifiers.working(identifier).subIdentifier(entriesIndex + 1, -1).toPath();
         }
         else if (getPath().endsWith(GuideManager.GUIDE_DEFINITION_FILENAME))
         {
             this.langCode = ""; //Universal. Same convention as Locale.ROOT
             this.sectionPath = GuideManager.GUIDE_DEFINITION_FILENAME;
-            this.guideId = new Identifier(identifier.getNamespace(), getPath().substring("inscribe_guides/".length(),
-                getPath().length() - GuideManager.GUIDE_DEFINITION_FILENAME.length() - 1));
+            this.guideId = working.subIdentifier(1, -2).toIdentifier();
         }
         else
             throw new InvalidIdentifierException(identifier + " isn't an entry or guide definition identifier");

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
@@ -70,16 +71,13 @@ public class V100Parser implements Parser
     @Override
     public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
     {
-        //Remove "inscribe_guides" from the start and "guide_definition.xml" from the end
-        Identifier guideId = Identifiers.builder(filePath).subPath(1, -2).build();
+        Identifier guideId = filePath.getGuideId();
         String activeTranslation = MinecraftClient.getInstance().options.language;
-        Identifier mainTocPath = Identifiers.builder(
-                XmlAttributes.asIdentifier(XmlElements.getChild(xml, "main_table_of_contents"), "location"))
-            .namespace(guideId.getNamespace())
-            .prependPathSegments(guideId.getPath())
-            .build();
-        mainTocPath = new Identifier(mainTocPath.getNamespace(),
-            mainTocPath.getPath().substring(0, mainTocPath.getPath().length() - ".xml".length()));
+        Identifier mainTocPath = Identifiers.working(guideId)
+            .addPathSegment(XmlAttributes.getValue(
+                XmlElements.getChild(xml, "main_table_of_contents"), "location"))
+            .editPathSegment(-1, FilenameUtils::removeExtension)
+            .toIdentifier();
         try
         {
             GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(XmlElements.getChild(xml, "access_method"));

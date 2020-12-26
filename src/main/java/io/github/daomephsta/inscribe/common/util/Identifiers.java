@@ -1,9 +1,17 @@
 package io.github.daomephsta.inscribe.common.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
-import com.google.common.collect.*;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 
 import net.minecraft.util.Identifier;
 
@@ -11,206 +19,145 @@ public class Identifiers
 {
     public static final String PATH_SEPARATOR = "/";
     public static final char PATH_SEPARATOR_CHAR = '/';
-    private static final Splitter PATH_SPLITTER = Splitter.on(PATH_SEPARATOR_CHAR);
+    private static final Splitter PATH_SPLITTER = Splitter.on(PATH_SEPARATOR_CHAR),
+                                  IDENTIFIER_SPLITTER = Splitter.on(CharMatcher.anyOf(":" + PATH_SEPARATOR));
 
-    public static Identifier withNamespace(Identifier base, String namespace)
+
+    public static Working working(String base)
     {
-        return builder(base).namespace(namespace).build();
+        Iterator<String> split = IDENTIFIER_SPLITTER.split(base).iterator();
+        String namespace = split.next();
+        ArrayList<String> path = Streams.stream(split).collect(Collectors.toCollection(ArrayList::new));
+        return new Working(namespace, path);
     }
 
-    public static Identifier withPath(Identifier base, String path)
+    public static Working working(Identifier base)
     {
-        return builder(base).path(path).build();
+        return new Working(base);
     }
 
-    public static Identifier prefixPath(Identifier base, String prefix)
-    {
-        return builder(base).prependPathSegments(prefix).build();
-    }
-
-    public static Identifier suffixPath(Identifier base, String suffix)
-    {
-        return builder(base).appendPathSegments(suffix).build();
-    }
-
-    public static Identifier subPath(Identifier base, int start)
-    {
-        return builder(base).subPath(start).build();
-    }
-
-    public static Identifier subPath(Identifier base, int start, int end)
-    {
-        return builder(base).subPath(start, end).build();
-    }
-
-    public static Identifier replace(Identifier base, int start, String replacement)
-    {
-        List<String> pathSegments = splitPathMutable(base.getPath());
-        checkStartBounds(start, pathSegments.size());
-        List<String> replacementSegments = splitPath(replacement);
-        pathSegments.remove(start);
-        pathSegments.addAll(start, replacementSegments);
-        return createIdentifier(base.getNamespace(), pathSegments);
-    }
-
-    public static Identifier replaceFromEnd(Identifier base, int start, String replacement)
-    {
-        return builder(base).replaceFromEnd(start, replacement).build();
-    }
-
-    public static Builder builder(Identifier base)
-    {
-        return new Builder(base);
-    }
-
-    public static Builder builder(String namespace)
-    {
-        return new Builder(namespace);
-    }
-
-    public static class Builder
+    public static class Working
     {
         private String namespace;
         private List<String> pathSegments;
 
-        private Builder(String namespace)
+        private Working(String namespace, List<String> pathSegments)
         {
-            namespace(namespace);
-            this.pathSegments = new ArrayList<>();
+            this.namespace = namespace;
+            this.pathSegments = pathSegments;
         }
 
-        private Builder(Identifier base)
+        private Working(Identifier base)
         {
             this.namespace(base.getNamespace()).path(base.getPath());
         }
 
-        public Builder namespace(String namespace)
+        public Working namespace(String namespace)
         {
             this.namespace = namespace;
             return this;
         }
 
-        public Builder path(String path)
+        public Working editNamespace(UnaryOperator<String> namespace)
+        {
+            this.namespace = namespace.apply(this.namespace);
+            return this;
+        }
+
+        public Working editPathSegment(int index, UnaryOperator<String> segment)
+        {
+            if (index < 0)
+                index += pathSegments.size();
+            pathSegments.set(index, segment.apply(pathSegments.get(index)));
+            return this;
+        }
+
+        public String getSegment(int index)
+        {
+            return pathSegments.get(index);
+        }
+
+        public int indexOf(String pathSegment)
+        {
+            return pathSegments.indexOf(pathSegment);
+        }
+
+        public Working path(String path)
         {
             this.pathSegments = splitPathMutable(path);
             return this;
         }
 
-        public Builder prependPathSegments(String[] prefixes)
+        private static ArrayList<String> splitPathMutable(String path)
         {
-            for (String prefix : prefixes)
-                this.pathSegments.addAll(0, splitPath(prefix));
+            return Lists.newArrayList(PATH_SPLITTER.split(path));
+        }
+
+        public Working subIdentifier(int from, int to)
+        {
+            if (from < 0)
+                from += pathSegments.size();
+            if (to < 0) // Negative tos are inclusive
+                to = to + pathSegments.size() + 1;
+            return new Working(namespace, pathSegments.subList(from, to));
+        }
+
+        public Working addPathSegment(String segment)
+        {
+            pathSegments.add(segment);
             return this;
         }
 
-        public Builder prependPathSegments(String prefix)
+        public Working addPathSegment(int index, String segment)
         {
-            this.pathSegments.addAll(0, splitPath(prefix));
+            if (index < 0)
+                index += pathSegments.size();
+            pathSegments.add(index, segment);
             return this;
         }
 
-        public Builder appendPathSegments(String firstSuffix, String... suffixes)
+        public Working addPathSegments(Collection<? extends String> segments)
         {
-            appendPathSegments(firstSuffix);
-            for (String suffix : suffixes)
-                appendPathSegments(suffix);
+            pathSegments.addAll(segments);
             return this;
         }
 
-        public Builder appendPathSegments(String[] suffixes)
+        public Working addPathSegments(int index, Collection<? extends String> segments)
         {
-            for (String suffix : suffixes)
-                appendPathSegments(suffix);
+            if (index < 0)
+                index += pathSegments.size();
+            pathSegments.addAll(index, segments);
             return this;
         }
 
-        public Builder appendPathSegments(String suffix)
+        public Working addPathSegments(String... segments)
         {
-            this.pathSegments.addAll(splitPath(suffix));
+            Collections.addAll(this.pathSegments, segments);
             return this;
         }
 
-        public Builder prefixPath(String prefix)
+        public Working addPathSegments(int index, String... segments)
         {
-            this.pathSegments.set(0, prefix + this.pathSegments.get(0));
+            if (index < 0)
+                index += pathSegments.size();
+            Collections.addAll(this.pathSegments.subList(0, index + 1), segments);
             return this;
         }
 
-        public Builder suffixPath(String suffix)
+        public Working clearPath()
         {
-            int last = this.pathSegments.size() - 1;
-            this.pathSegments.set(last, this.pathSegments.get(last) + suffix);
+            pathSegments.clear();
             return this;
         }
 
-        public Builder subPath(int start)
+        public Identifier toIdentifier()
         {
-            checkStartBounds(start, pathSegments.size());
-            subPath(start, -1);
-            return this;
+            return new Identifier(namespace, toPath());
         }
 
-        public Builder subPath(int start, int end)
+        public String toPath()
         {
-            checkStartBounds(start, pathSegments.size());
-            if (end < 0)
-                end = pathSegments.size() + 1 + end;
-            checkEndBounds(end, pathSegments.size());
-            this.pathSegments = pathSegments.subList(start, end);
-            return this;
+            return String.join(PATH_SEPARATOR, pathSegments);
         }
-
-        public Builder replace(int start, String replacement)
-        {
-            checkStartBounds(start, pathSegments.size());
-            List<String> replacementSegments = splitPath(replacement);
-            pathSegments.remove(start);
-            pathSegments.addAll(start, replacementSegments);
-            return this;
-        }
-
-        public Builder replaceFromEnd(int start, String replacement)
-        {
-            checkStartBounds(start, pathSegments.size());
-            List<String> replacementSegments = splitPath(replacement);
-            int absoluteStart = pathSegments.size() - 1 - start;
-            pathSegments.remove(absoluteStart);
-            pathSegments.addAll(absoluteStart, replacementSegments);
-            return this;
-        }
-
-        public Identifier build()
-        {
-            return createIdentifier(namespace, pathSegments);
-        }
-    }
-
-    private static List<String> splitPath(String path)
-    {
-        return PATH_SPLITTER.splitToList(path);
-    }
-
-    private static ArrayList<String> splitPathMutable(String path)
-    {
-        return Lists.newArrayList(PATH_SPLITTER.split(path));
-    }
-
-    private static Identifier createIdentifier(String namespace, List<String> pathSegments)
-    {
-        return new Identifier(namespace, String.join(PATH_SEPARATOR, pathSegments));
-    }
-
-    private static void checkStartBounds(int index, int segmentCount)
-    {
-        if (index < 0 || index >= segmentCount)
-            throw new IllegalArgumentException(String.format("Start index value %d is outside of the range [0, %d)",
-                index, segmentCount));
-    }
-
-    private static void checkEndBounds(int index, int segmentCount)
-    {
-        if (index < 0 || index > segmentCount)
-            throw new IllegalArgumentException(String.format("End index value %d is outside of the range [0, %d]",
-                index, segmentCount));
     }
 }

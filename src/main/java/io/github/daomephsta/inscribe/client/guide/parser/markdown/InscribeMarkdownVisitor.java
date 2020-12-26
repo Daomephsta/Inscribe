@@ -227,8 +227,8 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     {
         try
         {
-            Identifier location = Identifiers.builder(new Identifier(image.getDestination()))
-                .prependPathSegments("textures").build();
+            Identifier location = Identifiers.working(image.getDestination())
+                .addPathSegment("textures").toIdentifier();
             if (MinecraftClient.getInstance().getResourceManager().containsResource(location))
                 builder.addInlineImage(location, image.getTitle());
             else
