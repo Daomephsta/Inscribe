@@ -1,10 +1,10 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget;
 
-import org.lwjgl.opengl.GL11;
-
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import io.github.daomephsta.inscribe.common.util.Lighting;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class HorizontalRuleWidget extends GuideWidget
 {
@@ -14,17 +14,20 @@ public class HorizontalRuleWidget extends GuideWidget
     }
 
     @Override
-    protected void renderWidget(int mouseX, int mouseY, float lastFrameDuration)
+    protected void renderWidget(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration)
     {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vertexBuf = tessellator.getBuffer();
         float y = top() + height()  / 2.0F;
-        vertexBuf.begin(GL11.GL_QUADS, VertexFormats.POSITION_COLOR);
-        vertexBuf.vertex(left(), y, 0).color(0, 0, 0, 255).next();
-        vertexBuf.vertex(right(), y, 0).color(0, 0, 0, 255).next();
-        vertexBuf.vertex(right(), y + 1, 0).color(0, 0, 0, 255).next();
-        vertexBuf.vertex(left(), y + 1, 0).color(0, 0, 0, 255).next();
-        tessellator.draw();
+        matrices.push();
+        VertexConsumer vertexBuf = vertices.getBuffer(RenderLayer.getLeash());
+        vertexBuf.vertex(matrices.peek().getModel(), left(), y, 0)
+            .color(0, 0, 0, 255).light(Lighting.MAX).next();
+        vertexBuf.vertex(matrices.peek().getModel(),right(), y, 0)
+            .color(0, 0, 0, 255).light(Lighting.MAX).next();
+        vertexBuf.vertex(matrices.peek().getModel(),right(), y + 1, 0)
+            .color(0, 0, 0, 255).light(Lighting.MAX).next();
+        vertexBuf.vertex(matrices.peek().getModel(),left(), y + 1, 0)
+            .color(0, 0, 0, 255).light(Lighting.MAX).next();
+        matrices.pop();
     }
 
     @Override

@@ -2,10 +2,14 @@ package io.github.daomephsta.inscribe.client.guide.gui.widget.text;
 
 import java.io.IOException;
 
+import io.github.daomephsta.inscribe.common.util.Lighting;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 public class InlineImage extends ElementHostNode
@@ -34,10 +38,18 @@ public class InlineImage extends ElementHostNode
     }
 
     @Override
-    public void render(float x, float y, int mouseX, int mouseY, float lastFrameDuration)
+    public void render(VertexConsumerProvider vertices, MatrixStack matrices, float x, float y, int mouseX, int mouseY, float lastFrameDuration)
     {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(imageLocation);
-        DrawableHelper.blit((int) x, (int) y, 0, 0, width, height, width, height);
+        VertexConsumer vertexBuf = vertices.getBuffer(RenderLayer.getText(imageLocation));
+        float right = x + width, bottom = y + height;
+        vertexBuf.vertex(x, bottom, 0).color(255, 255, 255, 255)
+            .texture(0.0F, 1.0F).light(Lighting.MAX).next();
+        vertexBuf.vertex(right, bottom, 0).color(255, 255, 255, 255)
+            .texture(1.0F, 1.0F).light(Lighting.MAX).next();
+        vertexBuf.vertex(right, y, 0).color(255, 255, 255, 255)
+            .texture(1.0F, 0.0F).light(Lighting.MAX).next();
+        vertexBuf.vertex(x, y, 0).color(255, 255, 255, 255)
+            .texture(0.0F, 0.0F).light(Lighting.MAX).next();
     }
 
     @Override

@@ -3,8 +3,11 @@ package io.github.daomephsta.inscribe.client.guide.gui.widget.text;
 import java.util.Arrays;
 
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
+import io.github.daomephsta.inscribe.common.util.Lighting;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 public class FormattedTextNode extends ElementHostNode
@@ -28,9 +31,9 @@ public class FormattedTextNode extends ElementHostNode
     }
 
     @Override
-    public void render(float x, float y, int mouseX, int mouseY, float lastFrameDuration)
+    public void render(VertexConsumerProvider vertices, MatrixStack matrices, float x, float y, int mouseX, int mouseY, float lastFrameDuration)
     {
-        font.draw(text, x, y, colour);
+        font.draw(text, x, y, colour, false, matrices.peek().getModel(), vertices, false, /*No highlight*/ 0, Lighting.MAX);
     }
 
     @Override

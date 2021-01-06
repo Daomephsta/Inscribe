@@ -8,6 +8,8 @@ import io.github.daomephsta.mosaic.ParentWidget;
 import io.github.daomephsta.mosaic.flow.Flow;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import io.github.daomephsta.mosaic.flow.FlowLayoutData;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class GuideFlow extends GuideWidget implements ParentWidget
 {
@@ -43,11 +45,11 @@ public class GuideFlow extends GuideWidget implements ParentWidget
     }
 
     @Override
-    protected void renderWidget(int mouseX, int mouseY, float lastFrameDuration)
+    protected void renderWidget(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration)
     {
         for (GuideWidget child : elements.getChildren())
         {
-            child.render(mouseX, mouseY, lastFrameDuration, contains(mouseX, mouseY));
+            child.render(vertices, matrices, mouseX, mouseY, lastFrameDuration, contains(mouseX, mouseY));
         }
     }
 

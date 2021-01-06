@@ -1,23 +1,27 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Animation;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Revolve;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Transform;
+import io.github.daomephsta.inscribe.common.util.Lighting;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Quaternion;
 
 public class EntityDisplayWidget extends GuideWidget
 {
-    //Block and sky light of 15 packed into a single int
-    private static final int MAX_LIGHT = 0xF000F0;
+    private static final int MAX_LIGHT = Lighting.MAX;
+    private static final Matrix3f IDENTITY_3F;
+    static
+    {
+        IDENTITY_3F = new Matrix3f();
+        IDENTITY_3F.loadIdentity();
+    }
     private final Entity entity;
     private final XmlEntityDisplay.Transform transform;
     private final XmlEntityDisplay.Animation animation;
@@ -30,26 +34,32 @@ public class EntityDisplayWidget extends GuideWidget
     }
 
     @Override
-    public void renderWidget(int mouseX, int mouseY, float lastFrameDuration)
+    public void renderWidget(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration)
     {
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef(left() + width() / 2, bottom() - (entity.getHeight() * 30 / 2), 1050.0F);
-        MatrixStack matrixStack = new MatrixStack();
-        RenderSystem.scalef(1.0F, 1.0F, -1.0F);
+        // Nasty hack to deal with mysterious Z axis inversion. Rendering is suffering...
+        double zOffset = isOnGui(matrices) ? 100 : -1;
+
+        matrices.push();
+        matrices.translate(left() + width() / 2, bottom() - (entity.getHeight() * 30 / 2), zOffset);
+        matrices.scale(1, 1, 0.001F);
         Quaternion rotation = transform.rotation.copy();
-        applyTransform(matrixStack, rotation, transform);
+        applyTransform(matrices, rotation, transform);
         rotation.conjugate();
-        matrixStack.multiply(rotation);
-        DiffuseLighting.enableForLevel(matrixStack.peek().getModel());
+        matrices.multiply(rotation);
         EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
         entityRenderDispatcher.setRotation(rotation);
         entityRenderDispatcher.setRenderShadows(false);
         VertexConsumerProvider.Immediate entityVertexConsumers = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        matrixStack.translate(0, -entity.getHeight() / 2, 0);
-        entityRenderDispatcher.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrixStack, entityVertexConsumers, MAX_LIGHT);
+        matrices.translate(0, -entity.getHeight() / 2, 0);
+        entityRenderDispatcher.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrices, entityVertexConsumers, MAX_LIGHT);
         entityVertexConsumers.draw();
         entityRenderDispatcher.setRenderShadows(true);
-        RenderSystem.popMatrix();
+        matrices.pop();
+    }
+
+    private boolean isOnGui(MatrixStack matrices)
+    {
+        return matrices.peek().getNormal().equals(IDENTITY_3F);
     }
 
     private void applyTransform(MatrixStack matrixStack, Quaternion rotation, Transform transform)

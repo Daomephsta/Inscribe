@@ -13,7 +13,9 @@ import io.github.daomephsta.mosaic.MosaicWidget;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
 
 public abstract class GuideWidget extends MosaicWidget implements GuideGuiElement
 {
@@ -35,11 +37,11 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
     }
 
     @Override
-    public final void render(int mouseX, int mouseY, float lastFrameDuration, boolean mouseOver)
+    public final void render(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration, boolean mouseOver)
     {
         for (RenderableElement element : attachedRenderables)
-            element.render(mouseX, mouseY, lastFrameDuration, contains(mouseX, mouseY));
-        renderWidget(mouseX, mouseY, lastFrameDuration);
+            element.render(vertices, matrices, mouseX, mouseY, lastFrameDuration, contains(mouseX, mouseY));
+        renderWidget(vertices, matrices, mouseX, mouseY, lastFrameDuration);
         if (Screen.hasAltDown())
             drawDebugBounds();
     }
@@ -70,7 +72,7 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
         tessellator.draw();
     }
 
-    protected abstract void renderWidget(int mouseX, int mouseY, float lastFrameDuration);
+    protected abstract void renderWidget(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration);
 
     /**Called when the widget is no longer needed, to allow it to cleanup (e.g mark entities created solely for rendering as removed)*/
     public void dispose() {}

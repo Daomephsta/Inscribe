@@ -1,9 +1,10 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget.text;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
+import io.github.daomephsta.inscribe.common.util.Lighting;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class LabelWidget extends GuideWidget
 {
@@ -23,14 +24,14 @@ public class LabelWidget extends GuideWidget
     }
 
     @Override
-    public void renderWidget(int mouseX, int mouseY, float lastFrameDuration)
+    public void renderWidget(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration)
     {
         float x = horizontalAlignment.offsetX(x(), this, hintWidth());
         float y = verticalAlignment.offsetY(y(), this, hintHeight());
-        GlStateManager.pushMatrix();
-        GlStateManager.scalef(scale, scale, scale);
-        text.render(x / scale, y / scale, mouseX, mouseY, lastFrameDuration);
-        GlStateManager.popMatrix();
+        matrices.push();
+        matrices.scale(scale, scale, scale);
+        text.render(vertices, matrices, x / scale, y / scale, mouseX, mouseY, Lighting.MAX);
+        matrices.pop();
     }
 
     @Override

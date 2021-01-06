@@ -5,7 +5,9 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 public class ImageWidget extends GuideWidget
@@ -24,7 +26,7 @@ public class ImageWidget extends GuideWidget
     }
 
     @Override
-    public void renderWidget(int mouseX, int mouseY, float lastFrameDuration)
+    public void renderWidget(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration)
     {
         MinecraftClient.getInstance().getTextureManager().bindTexture(src);
         Tessellator tessellator = Tessellator.getInstance();

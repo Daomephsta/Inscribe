@@ -1,6 +1,8 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
 public class StackDisplayWidget extends GuideWidget
@@ -13,7 +15,7 @@ public class StackDisplayWidget extends GuideWidget
     }
 
     @Override
-    public void renderWidget(int mouseX, int mouseY, float lastFrameDuration)
+    public void renderWidget(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration)
     {
         MinecraftClient client = MinecraftClient.getInstance();
         ItemStack stack = stacks[(int) ((System.currentTimeMillis() / 2000) % stacks.length)];

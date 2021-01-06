@@ -18,6 +18,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
@@ -80,10 +83,15 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
         GlStateManager.disableLighting();
         minecraft.getTextureManager().bindTexture(guide.getTheme().getGuiTexture());
         blit((width - 381) / 2, (height - 232) / 2, 0, 0, 401, 232, 440, 256);
-        pageSpreads.leftPage().render(mouseX, mouseY, lastFrameDuration,
-            pageSpreads.leftPage().contains(mouseX, mouseY));
-        pageSpreads.rightPage().render(mouseX, mouseY, lastFrameDuration,
-            pageSpreads.rightPage().contains(mouseX, mouseY));
+
+        VertexConsumerProvider.Immediate vertices = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+        MatrixStack matrices = new MatrixStack();
+        pageSpreads.leftPage().render(vertices, matrices , mouseX,
+            mouseY, lastFrameDuration, pageSpreads.leftPage().contains(mouseX, mouseY));
+        pageSpreads.rightPage().render(vertices, matrices, mouseX,
+            mouseY, lastFrameDuration, pageSpreads.rightPage().contains(mouseX, mouseY));
+        vertices.draw();
+
         super.render(mouseX, mouseY, lastFrameDuration);
         GlStateManager.enableLighting();
     }

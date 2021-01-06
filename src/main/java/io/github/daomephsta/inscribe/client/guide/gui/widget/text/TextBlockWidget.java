@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.common.Inscribe;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
 
@@ -71,7 +73,7 @@ public class TextBlockWidget extends GuideWidget
     }
 
     @Override
-    public void renderWidget(int mouseX, int mouseY, float lastFrameDuration)
+    public void renderWidget(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration)
     {
         float left = horizontalAlignment.offsetX(x(), this, hintWidth());
         float x = left;
@@ -81,7 +83,7 @@ public class TextBlockWidget extends GuideWidget
         for (TextNode node : content)
         {
             lineHeight = Math.max(lineHeight, node.getHeight());
-            node.render(x, y, mouseX, mouseY, lastFrameDuration);
+            node.render(vertices, matrices, x, y, mouseX, mouseY, lastFrameDuration);
             if (node instanceof ElementHostNode)
                 renderables.put(new Vec2f(x, y), (ElementHostNode) node);
             if (node instanceof LineBreak)
@@ -97,7 +99,7 @@ public class TextBlockWidget extends GuideWidget
         for (Entry<Vec2f, ElementHostNode> entry : renderables.entrySet())
         {
             float x2 = entry.getKey().x, y2 = entry.getKey().y;
-            entry.getValue().renderAttached(x2, y2, mouseX, mouseY, lastFrameDuration);
+            entry.getValue().renderAttached(vertices, matrices, x2, y2, mouseX, mouseY, lastFrameDuration);
         }
     }
 

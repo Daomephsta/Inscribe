@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import io.github.daomephsta.inscribe.client.guide.gui.InteractableElement;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderableElement;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 
 public abstract class ElementHostNode extends TextNode
 {
@@ -35,11 +37,11 @@ public abstract class ElementHostNode extends TextNode
         return false;
     }
 
-    public void renderAttached(float x, float y, int mouseX, int mouseY, float lastFrameDuration)
+    public void renderAttached(VertexConsumerProvider vertices, MatrixStack matrices, float x, float y, int mouseX, int mouseY, float lastFrameDuration)
     {
         boolean mouseOver = contains(x, y, mouseX, mouseY);
         for (RenderableElement element : attachedRenderables)
-            element.render(mouseX, mouseY, lastFrameDuration, mouseOver);
+            element.render(vertices, matrices, mouseX, mouseY, lastFrameDuration, mouseOver);
     }
 
     private boolean contains(float x, float y, int mouseX, int mouseY)
