@@ -6,6 +6,7 @@ import io.github.daomephsta.inscribe.client.input.KeyBindings;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 
@@ -16,6 +17,7 @@ public class InscribeClientInitialiser implements ClientModInitializer
     {
         new Inscribe().onInitialise();
         registerModels();
+        BlockEntityRendererRegistry.INSTANCE.register(Inscribe.POSTER_BLOCK_ENTITY, PosterBlockEntityRenderer::new);
         KeyBindings.initialise();
     }
 

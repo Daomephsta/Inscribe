@@ -9,5 +9,6 @@
     "inscribe.chat_message.load_failure.guide": "[Inscribe] One or more guides failed to load properly. Check logs/inscribe.log for details.",
     "inscribe.chat_message.load_failure.entry": "[Inscribe] One or more entries failed to load properly. Check logs/inscribe.log for details.",
     "category.inscribe.keys": "Inscribe",
-    "key.inscribe.reload_guide_base": "Guide Reload Base Key"
+    "key.inscribe.reload_guide_base": "Guide Reload Base Key",
+	"block.inscribe.poster": "Poster (4 x 3)"
 }

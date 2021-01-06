@@ -1,0 +1,24 @@
+{
+	"variants": 
+	{
+		"facing=north":
+		{
+			"model": "inscribe:block/poster"
+		},
+		"facing=east":
+		{
+			"model": "inscribe:block/poster",
+			"y": 90
+		},
+		"facing=south":
+		{
+			"model": "inscribe:block/poster",
+			"y": 180
+		},
+		"facing=west":
+		{
+			"model": "inscribe:block/poster",
+			"y": 270
+		}
+	}
+}

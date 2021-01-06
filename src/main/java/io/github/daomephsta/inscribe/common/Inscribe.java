@@ -1,5 +1,7 @@
 package io.github.daomephsta.inscribe.common;
 
+import java.util.Collections;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,9 +15,14 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import io.github.daomephsta.inscribe.common.guide.item.GuideItem;
+import io.github.daomephsta.inscribe.common.guide.poster.PosterBlock;
+import io.github.daomephsta.inscribe.common.guide.poster.PosterBlockEntity;
+import io.github.daomephsta.inscribe.common.guide.poster.PosterItem;
 import io.github.daomephsta.inscribe.server.DelegatingArgumentType;
 import io.github.daomephsta.inscribe.server.InscribeCommand;
 import net.fabricmc.fabric.api.event.server.ServerStartCallback;
+import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.util.registry.Registry;
 
@@ -23,11 +30,17 @@ public class Inscribe
 {
     public static final String MOD_ID = "inscribe";
     public static final GuideItem GUIDE_ITEM = new GuideItem();
+    public static final Block POSTER_BLOCK = new PosterBlock();
+    public static final BlockEntityType<PosterBlockEntity> POSTER_BLOCK_ENTITY =
+        new BlockEntityType<>(PosterBlockEntity::new, Collections.singleton(POSTER_BLOCK), null);
     public static final Logger LOGGER = LogManager.getLogger();
 
     public void onInitialise()
     {
+        Registry.register(Registry.BLOCK, MOD_ID + ":poster", POSTER_BLOCK);
+        Registry.register(Registry.BLOCK_ENTITY, MOD_ID + ":poster", POSTER_BLOCK_ENTITY);
         Registry.register(Registry.ITEM, MOD_ID + ":guide", GUIDE_ITEM);
+        Registry.register(Registry.ITEM, MOD_ID + ":poster", new PosterItem(POSTER_BLOCK));
         ArgumentTypes.register(Inscribe.MOD_ID + ":delegating", DelegatingArgumentType.class, new DelegatingArgumentType.Serialiser());
         ServerStartCallback.EVENT.register(server ->
         {
