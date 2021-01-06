@@ -86,6 +86,7 @@ shadowJar {
     //Exclude META-INF entries of shaded deps
     exclude 'META-INF/**'
     exclude '**/*.pdn'
+    exclude '**/*.bbmodel'
     from('.') {
         include 'LICENSE.md'
 		include 'NOTICE.txt'
