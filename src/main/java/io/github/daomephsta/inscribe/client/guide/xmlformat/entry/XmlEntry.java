@@ -25,7 +25,7 @@ public class XmlEntry implements IXmlRepresentation
     @Override
     public String toString()
     {
-        return String.format("XmlEntry [id=%s, tags=%s]", tags);
+        return String.format("XmlEntry [id=%s, tags=%s]", id, tags);
     }
 
     public Identifier getId()
