@@ -7,10 +7,10 @@ import java.util.function.Consumer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import io.github.daomephsta.inscribe.client.InscribeRenderLayers;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderableElement;
 import io.github.daomephsta.inscribe.common.util.Lighting;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.Matrix4f;
@@ -102,7 +102,7 @@ public class Tooltip extends WidgetComponent implements RenderableElement
         RenderSystem.disableAlphaTest();
         RenderSystem.defaultBlendFunc();
         RenderSystem.shadeModel(7425);
-        VertexConsumer vertexBuf = vertices.getBuffer(RenderLayer.getLeash());
+        VertexConsumer vertexBuf = vertices.getBuffer(InscribeRenderLayers.COLOUR_QUADS);
         Matrix4f model = matrices.peek().getModel();
         vertexBuf.vertex(model, right, top, blitOffset).color(redStart, blueStart, greenStart, alphaStart).light(Lighting.MAX).next();
         vertexBuf.vertex(model, left, top, blitOffset).color(redStart, blueStart, greenStart, alphaStart).light(Lighting.MAX).next();

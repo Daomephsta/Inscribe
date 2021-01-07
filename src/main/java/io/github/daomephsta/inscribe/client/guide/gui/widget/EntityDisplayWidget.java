@@ -4,7 +4,6 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEn
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Animation;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Revolve;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Transform;
-import io.github.daomephsta.inscribe.common.util.Lighting;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -15,7 +14,6 @@ import net.minecraft.util.math.Quaternion;
 
 public class EntityDisplayWidget extends GuideWidget
 {
-    private static final int MAX_LIGHT = Lighting.MAX;
     private static final Matrix3f IDENTITY_3F;
     static
     {
@@ -51,7 +49,7 @@ public class EntityDisplayWidget extends GuideWidget
         entityRenderDispatcher.setRenderShadows(false);
         VertexConsumerProvider.Immediate entityVertexConsumers = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         matrices.translate(0, -entity.getHeight() / 2, 0);
-        entityRenderDispatcher.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrices, entityVertexConsumers, MAX_LIGHT);
+        entityRenderDispatcher.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrices, entityVertexConsumers, 0x00F000F0);
         entityVertexConsumers.draw();
         entityRenderDispatcher.setRenderShadows(true);
         matrices.pop();

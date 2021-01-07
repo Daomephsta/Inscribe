@@ -2,7 +2,7 @@ package io.github.daomephsta.inscribe.client.guide.gui.widget.text;
 
 import java.io.IOException;
 
-import io.github.daomephsta.inscribe.common.util.Lighting;
+import io.github.daomephsta.inscribe.client.InscribeRenderLayers;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -14,14 +14,13 @@ import net.minecraft.util.Identifier;
 
 public class InlineImage extends ElementHostNode
 {
-    private final Identifier imageLocation;
     private final NativeImageBackedTexture texture;
     private int width,
                 height;
+    private RenderLayer renderLayer;
 
     public InlineImage(Identifier imageLocation)
     {
-        this.imageLocation = imageLocation;
         try
         {
             MinecraftClient mc = MinecraftClient.getInstance();
@@ -30,6 +29,7 @@ public class InlineImage extends ElementHostNode
             this.height = image.getHeight();
             this.texture = new NativeImageBackedTexture(image);
             mc.getTextureManager().registerTexture(imageLocation, texture);
+            this.renderLayer = InscribeRenderLayers.textureQuads(imageLocation);
         }
         catch (IOException e)
         {
@@ -40,16 +40,12 @@ public class InlineImage extends ElementHostNode
     @Override
     public void render(VertexConsumerProvider vertices, MatrixStack matrices, float x, float y, int mouseX, int mouseY, float lastFrameDuration)
     {
-        VertexConsumer vertexBuf = vertices.getBuffer(RenderLayer.getText(imageLocation));
+        VertexConsumer vertexBuf = vertices.getBuffer(renderLayer);
         float right = x + width, bottom = y + height;
-        vertexBuf.vertex(x, bottom, 0).color(255, 255, 255, 255)
-            .texture(0.0F, 1.0F).light(Lighting.MAX).next();
-        vertexBuf.vertex(right, bottom, 0).color(255, 255, 255, 255)
-            .texture(1.0F, 1.0F).light(Lighting.MAX).next();
-        vertexBuf.vertex(right, y, 0).color(255, 255, 255, 255)
-            .texture(1.0F, 0.0F).light(Lighting.MAX).next();
-        vertexBuf.vertex(x, y, 0).color(255, 255, 255, 255)
-            .texture(0.0F, 0.0F).light(Lighting.MAX).next();
+        vertexBuf.vertex(x, bottom, 0).texture(0.0F, 1.0F).next();
+        vertexBuf.vertex(right, bottom, 0).texture(1.0F, 1.0F).next();
+        vertexBuf.vertex(right, y, 0).texture(1.0F, 0.0F).next();
+        vertexBuf.vertex(x, y, 0).texture(0.0F, 0.0F).next();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget;
 
-import io.github.daomephsta.inscribe.common.util.Lighting;
-import net.minecraft.client.render.RenderLayer;
+import io.github.daomephsta.inscribe.client.InscribeRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -18,15 +17,15 @@ public class HorizontalRuleWidget extends GuideWidget
     {
         float y = top() + height()  / 2.0F;
         matrices.push();
-        VertexConsumer vertexBuf = vertices.getBuffer(RenderLayer.getLeash());
+        VertexConsumer vertexBuf = vertices.getBuffer(InscribeRenderLayers.COLOUR_QUADS);
         vertexBuf.vertex(matrices.peek().getModel(), left(), y, 0)
-            .color(0, 0, 0, 255).light(Lighting.MAX).next();
-        vertexBuf.vertex(matrices.peek().getModel(),right(), y, 0)
-            .color(0, 0, 0, 255).light(Lighting.MAX).next();
-        vertexBuf.vertex(matrices.peek().getModel(),right(), y + 1, 0)
-            .color(0, 0, 0, 255).light(Lighting.MAX).next();
-        vertexBuf.vertex(matrices.peek().getModel(),left(), y + 1, 0)
-            .color(0, 0, 0, 255).light(Lighting.MAX).next();
+            .color(0, 0, 0, 255).next();
+        vertexBuf.vertex(matrices.peek().getModel(), right(), y, 0)
+            .color(0, 0, 0, 255).next();
+        vertexBuf.vertex(matrices.peek().getModel(), right(), y + 1, 0)
+            .color(0, 0, 0, 255).next();
+        vertexBuf.vertex(matrices.peek().getModel(), left(), y + 1, 0)
+            .color(0, 0, 0, 255).next();
         matrices.pop();
     }
 
