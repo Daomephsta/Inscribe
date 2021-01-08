@@ -9,6 +9,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
@@ -41,11 +42,13 @@ public class InlineImage extends ElementHostNode
     public void render(VertexConsumerProvider vertices, MatrixStack matrices, float x, float y, int mouseX, int mouseY, float lastFrameDuration)
     {
         VertexConsumer vertexBuf = vertices.getBuffer(renderLayer);
+        Matrix4f model = matrices.peek().getModel();
         float right = x + width, bottom = y + height;
-        vertexBuf.vertex(x, bottom, 0).texture(0.0F, 1.0F).next();
-        vertexBuf.vertex(right, bottom, 0).texture(1.0F, 1.0F).next();
-        vertexBuf.vertex(right, y, 0).texture(1.0F, 0.0F).next();
-        vertexBuf.vertex(x, y, 0).texture(0.0F, 0.0F).next();
+
+        vertexBuf.vertex(model, x, bottom, 0).texture(0.0F, 1.0F).next();
+        vertexBuf.vertex(model, right, bottom, 0).texture(1.0F, 1.0F).next();
+        vertexBuf.vertex(model, right, y, 0).texture(1.0F, 0.0F).next();
+        vertexBuf.vertex(model, x, y, 0).texture(0.0F, 0.0F).next();
     }
 
     @Override
