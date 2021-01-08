@@ -47,7 +47,6 @@ public class Tooltip extends WidgetComponent implements RenderableElement
         if (!lines.isEmpty())
         {
             RenderSystem.disableRescaleNormal();
-            RenderSystem.disableDepthTest();
             matrices.push();
             int width = lines.stream()
                 .mapToInt(mc.textRenderer::getStringWidth)
@@ -82,7 +81,6 @@ public class Tooltip extends WidgetComponent implements RenderableElement
             }
             mc.getItemRenderer().zOffset = 0.0F;
             matrices.pop();
-            RenderSystem.enableDepthTest();
             RenderSystem.enableRescaleNormal();
         }
     }
@@ -97,20 +95,12 @@ public class Tooltip extends WidgetComponent implements RenderableElement
         float redEnd = (colourEnd >> 16 & 255) / 255.0F;
         float blueEnd = (colourEnd >> 8 & 255) / 255.0F;
         float greenEnd = (colourEnd & 255) / 255.0F;
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.shadeModel(7425);
+
         VertexConsumer vertexBuf = vertices.getBuffer(InscribeRenderLayers.COLOUR_QUADS);
         Matrix4f model = matrices.peek().getModel();
         vertexBuf.vertex(model, right, top, blitOffset).color(redStart, blueStart, greenStart, alphaStart).light(Lighting.MAX).next();
         vertexBuf.vertex(model, left, top, blitOffset).color(redStart, blueStart, greenStart, alphaStart).light(Lighting.MAX).next();
         vertexBuf.vertex(model, left, bottom, blitOffset).color(redEnd, blueEnd, greenEnd, alphaEnd).light(Lighting.MAX).next();
         vertexBuf.vertex(model, right, bottom, blitOffset).color(redEnd, blueEnd, greenEnd, alphaEnd).light(Lighting.MAX).next();
-        RenderSystem.shadeModel(7424);
-        RenderSystem.disableBlend();
-        RenderSystem.enableAlphaTest();
-        RenderSystem.enableTexture();
     }
 }
