@@ -1,22 +1,24 @@
 {
+  "schemaVersion": 1,
   "id": "inscribe",
   "name": "Inscribe",
   "description": "Data-driven ingame manuals for Fabric",
   "version": "0.0.1",
-  "side": "universal",
-  "initializers": 
-  [
-    "io.github.daomephsta.inscribe.server.InscribeServerInitialiser",
-    "io.github.daomephsta.inscribe.client.InscribeClientInitialiser"
-    
-  ],
+  "entrypoints": 
+  {
+    "server": ["io.github.daomephsta.inscribe.server.InscribeServerInitialiser"],
+    "client": ["io.github.daomephsta.inscribe.client.InscribeClientInitialiser"]
+  },
   "requires": 
   {
     "fabric": "*"
   },
   "mixins": 
-  {
-    "client": "inscribe.client.json",
-    "common": "inscribe.common.json"
-  }
+  [
+    "inscribe.common.json",
+    {
+      "config": "inscribe.client.json",
+      "environment": "client"
+    }
+  ]
 }
