@@ -20,6 +20,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfCo
 import io.github.daomephsta.mosaic.SizeConstraint;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DummyProfiler;
 
@@ -27,9 +28,9 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
 {
     private final TableOfContents toc;
 
-    public OpenTableOfContentsScreen(Guide guide, TableOfContents toc)
+    public OpenTableOfContentsScreen(Guide guide, ItemStack guideStack, TableOfContents toc)
     {
-        super(guide);
+        super(guide, guideStack);
         this.toc = toc;
     }
 
@@ -124,7 +125,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
     {
         Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
         MinecraftClient.getInstance().openScreen(
-            new OpenTableOfContentsScreen(guide, guide.getMainTableOfContents()));
+            new OpenTableOfContentsScreen(guide, guideStack, guide.getMainTableOfContents()));
     }
 
     @Override
@@ -135,7 +136,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
             MinecraftClient mc = MinecraftClient.getInstance();
             GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
                 DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getServerWorkerExecutor(), mc)
-                .thenAccept(guide -> mc.openScreen(new OpenTableOfContentsScreen(guide, guide.getMainTableOfContents())));
+                .thenAccept(guide -> mc.openScreen(new OpenTableOfContentsScreen(guide, guideStack, guide.getMainTableOfContents())));
         }
         catch (GuideLoadingException e)
         {
@@ -155,7 +156,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
             .thenAccept(toc ->
             {
                 Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
-                mc.openScreen(new OpenTableOfContentsScreen(guide, toc));
+                mc.openScreen(new OpenTableOfContentsScreen(guide, guideStack, toc));
             });
         }
         catch (GuideLoadingException e)

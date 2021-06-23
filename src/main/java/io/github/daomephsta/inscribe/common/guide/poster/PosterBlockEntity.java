@@ -6,16 +6,23 @@ import io.github.daomephsta.inscribe.common.Inscribe;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 public class PosterBlockEntity extends BlockEntity implements BlockEntityClientSerializable
 {
     private BlockPos from = BlockPos.ORIGIN,
                      to = BlockPos.ORIGIN;
+    private Spread spread = null;
 
     public PosterBlockEntity()
     {
         super(Inscribe.POSTER_BLOCK_ENTITY);
+    }
+
+    public BlockPos getRenderOrigin()
+    {
+        return from;
     }
 
     public boolean isRenderOrigin()
@@ -32,6 +39,16 @@ public class PosterBlockEntity extends BlockEntity implements BlockEntityClientS
     public Stream<BlockPos> positions()
     {
         return BlockPos.stream(from, to);
+    }
+
+    public Spread getSpread()
+    {
+        return spread;
+    }
+
+    public void setSpread(Identifier guideId, Identifier entryId, int leftPage)
+    {
+        this.spread = new Spread(guideId, entryId, leftPage);
     }
 
     @Override
@@ -75,5 +92,19 @@ public class PosterBlockEntity extends BlockEntity implements BlockEntityClientS
         posTag.putInt("y", pos.getY());
         posTag.putInt("z", pos.getZ());
         tag.put(key, posTag);
+    }
+
+    public static class Spread
+    {
+        public Identifier guideId;
+        public Identifier entryId;
+        public int leftPage;
+
+        Spread(Identifier guideId, Identifier entryId, int leftPage)
+        {
+            this.guideId = guideId;
+            this.entryId = entryId;
+            this.leftPage = leftPage;
+        }
     }
 }

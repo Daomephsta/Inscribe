@@ -1,12 +1,17 @@
 package io.github.daomephsta.inscribe.common.guide.item;
 
+import org.jetbrains.annotations.Nullable;
+
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
+import io.github.daomephsta.inscribe.client.guide.gui.OpenEntryScreen;
 import io.github.daomephsta.inscribe.client.guide.gui.OpenTableOfContentsScreen;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -22,7 +27,8 @@ import net.minecraft.world.World;
 public class GuideItem extends Item
 {
     public static final Identifier INVALID_GUIDE = new Identifier(Inscribe.MOD_ID, "invalid");
-    private static final String GUIDE_ID_TAG = "guide_id";
+    private static final String GUIDE_ID_TAG = "guide_id",
+                                LAST_ENTRY_TAG = "last_entry";
 
     public GuideItem()
     {
@@ -34,12 +40,23 @@ public class GuideItem extends Item
     {
         ItemStack stack = playerEntity.getStackInHand(hand);
         if (world.isClient)
-        {
-            Guide guide = getGuide(stack);
-            MinecraftClient.getInstance().openScreen(
-                new OpenTableOfContentsScreen(guide, guide.getMainTableOfContents()));
-        }
+            MinecraftClient.getInstance().openScreen(createScreen(stack));
         return new TypedActionResult<>(ActionResult.SUCCESS, stack );
+    }
+
+    private Screen createScreen(ItemStack stack)
+    {
+        Guide guide = getGuide(stack);
+        if (stack.getOrCreateTag().contains(LAST_ENTRY_TAG))
+        {
+            Identifier entryId = new Identifier(stack.getTag().getString(LAST_ENTRY_TAG));
+            XmlEntry entry = guide.getEntry(entryId);
+            if (entry != null)
+                return new OpenEntryScreen(guide, stack, entry);
+            else
+                stack.getTag().remove(LAST_ENTRY_TAG);
+        }
+        return new OpenTableOfContentsScreen(guide, stack, guide.getMainTableOfContents());
     }
 
     @Override
@@ -77,7 +94,7 @@ public class GuideItem extends Item
         return GuideManager.INSTANCE.getGuide(getGuideId(guideStack));
     }
 
-    private Identifier getGuideId(ItemStack guideStack)
+    public Identifier getGuideId(ItemStack guideStack)
     {
         if (!guideStack.hasTag() || (guideStack.hasTag() && !guideStack.getTag().contains(GUIDE_ID_TAG)))
             return Guide.INVALID_GUIDE_ID;
@@ -91,5 +108,19 @@ public class GuideItem extends Item
         guideTag.putString(GUIDE_ID_TAG, guide.getIdentifier().toString());
         guideStack.setTag(guideTag);
         return guideStack;
+    }
+
+    @Nullable
+    public Identifier getLastEntry(ItemStack stack)
+    {
+        if (stack.getOrCreateTag().contains(LAST_ENTRY_TAG))
+            return new Identifier(stack.getTag().getString(LAST_ENTRY_TAG));
+        return null;
+    }
+
+    public ItemStack setLastEntry(ItemStack stack, XmlEntry last)
+    {
+        stack.getOrCreateTag().putString(LAST_ENTRY_TAG, last.getId().toString());
+        return stack;
     }
 }

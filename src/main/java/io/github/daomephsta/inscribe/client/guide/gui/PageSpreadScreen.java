@@ -21,6 +21,7 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
@@ -28,13 +29,15 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
 {
     private static final Logger LOGGER = LogManager.getLogger();
     protected final Guide guide;
+    protected final ItemStack guideStack;
     private PageSpreads pageSpreads;
     private AbstractButtonWidget prevPage, nextPage;
 
-    public PageSpreadScreen(Guide guide)
+    public PageSpreadScreen(Guide guide, ItemStack guideStack)
     {
         super(new TranslatableText(guide.getTranslationKey()));
         this.guide = guide;
+        this.guideStack = guideStack;
     }
 
     protected abstract List<GuideFlow> buildPages();
@@ -152,9 +155,9 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
         XmlEntry entry = owningGuide.getEntry(id);
         TableOfContents toc = owningGuide.getTableOfContents(id);
         if (entry != null)
-            MinecraftClient.getInstance().openScreen(new OpenEntryScreen(owningGuide, entry));
+            MinecraftClient.getInstance().openScreen(new OpenEntryScreen(owningGuide, guideStack, entry));
         else if (toc != null)
-            MinecraftClient.getInstance().openScreen(new OpenTableOfContentsScreen(guide, toc));
+            MinecraftClient.getInstance().openScreen(new OpenTableOfContentsScreen(guide, guideStack, toc));
         else
             LOGGER.error("Could not open unknown entry or ToC {}", id);
     }

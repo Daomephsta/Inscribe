@@ -10,8 +10,10 @@ import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
+import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DummyProfiler;
@@ -20,9 +22,9 @@ public class OpenEntryScreen extends PageSpreadScreen
 {
     private final XmlEntry entry;
 
-    public OpenEntryScreen(Guide guide, XmlEntry entry)
+    public OpenEntryScreen(Guide guide, ItemStack guideStack, XmlEntry entry)
     {
-        super(guide);
+        super(guide, guideStack);
         this.entry = entry;
     }
 
@@ -42,11 +44,18 @@ public class OpenEntryScreen extends PageSpreadScreen
     }
 
     @Override
+    public void onClose()
+    {
+        Inscribe.GUIDE_ITEM.setLastEntry(guideStack, entry);
+        super.onClose();
+    }
+
+    @Override
     public void reopen()
     {
         Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
         MinecraftClient.getInstance().openScreen(
-            new OpenEntryScreen(guide, guide.getEntry(entry.getId())));
+            new OpenEntryScreen(guide, guideStack, guide.getEntry(entry.getId())));
     }
 
     @Override
@@ -57,7 +66,7 @@ public class OpenEntryScreen extends PageSpreadScreen
             MinecraftClient mc = MinecraftClient.getInstance();
             GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
                 DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getServerWorkerExecutor(), mc)
-                .thenAccept(guide -> mc.openScreen(new OpenEntryScreen(guide, guide.getEntry(entry.getId()))));
+                .thenAccept(guide -> mc.openScreen(new OpenEntryScreen(guide, guideStack, guide.getEntry(entry.getId()))));
         }
         catch (GuideLoadingException e)
         {
@@ -76,7 +85,7 @@ public class OpenEntryScreen extends PageSpreadScreen
             .thenAccept(entry ->
             {
                 Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
-                mc.openScreen(new OpenEntryScreen(guide, entry));
+                mc.openScreen(new OpenEntryScreen(guide, guideStack, entry));
             });
         }
         catch (GuideLoadingException e)
