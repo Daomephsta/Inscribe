@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vector4f;
 
 public class StackDisplayWidget extends GuideWidget
 {
@@ -21,10 +20,10 @@ public class StackDisplayWidget extends GuideWidget
         MinecraftClient client = MinecraftClient.getInstance();
         ItemStack stack = stacks[(int) ((System.currentTimeMillis() / 2000) % stacks.length)];
         matrices.push();
-        Vector4f a = new Vector4f(x(), y(), 1.0F, 1.0F);
-        a.transform(matrices.peek().getModel());
-        matrices.translate(a.getX(), a.getY(), client.getItemRenderer().zOffset);
-        client.getItemRenderer().renderGuiItemIcon(stack, 0, 0);
+        //Vector4f a = new Vector4f(x(), y(), 1.0F, 1.0F);
+        //a.transform(matrices.peek().getModel());
+        //matrices.translate(a.getX(), a.getY(), client.getItemRenderer().zOffset);
+        client.getItemRenderer().renderGuiItemIcon(stack, x(), y());
         matrices.pop();
     }
 

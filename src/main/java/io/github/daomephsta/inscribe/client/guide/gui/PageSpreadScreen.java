@@ -18,7 +18,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -83,7 +82,6 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta)
     {
         renderBackground(matrices);
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, guide.getTheme().getGuiTexture());
         drawTexture(matrices, (width - 381) / 2, (height - 232) / 2, 0, 0, 401, 232, 440, 256);
 

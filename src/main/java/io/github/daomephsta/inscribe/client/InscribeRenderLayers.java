@@ -19,7 +19,11 @@ public class InscribeRenderLayers extends RenderLayer
     public static final RenderLayer COLOUR_QUADS;
     static
     {
-        MultiPhaseParameters multiPhaseParameters = MultiPhaseParameters.builder().cull(RenderPhase.DISABLE_CULLING).build(false);
+        MultiPhaseParameters multiPhaseParameters = MultiPhaseParameters.builder()
+            .shader(RenderPhase.COLOR_SHADER)
+            .cull(RenderPhase.DISABLE_CULLING)
+            .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
+            .build(false);
         COLOUR_QUADS = RenderLayerAccessors.create(Inscribe.MOD_ID + ":colour_quads", 
             VertexFormats.POSITION_COLOR, DrawMode.QUADS, 256, multiPhaseParameters);
     }
@@ -27,6 +31,7 @@ public class InscribeRenderLayers extends RenderLayer
     public static RenderLayer textureQuads(Identifier texture)
     {
         MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+            .shader(RenderPhase.POSITION_TEXTURE_SHADER)
             .texture(new RenderPhase.Texture(texture, false, false))
             .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
             .build(false);

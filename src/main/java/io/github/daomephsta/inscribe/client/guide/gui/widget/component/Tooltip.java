@@ -1,11 +1,8 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget.component;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import io.github.daomephsta.inscribe.client.InscribeRenderLayers;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderableElement;
@@ -14,6 +11,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.util.math.Matrix4f;
 
 public class Tooltip extends WidgetComponent implements RenderableElement
@@ -21,7 +20,7 @@ public class Tooltip extends WidgetComponent implements RenderableElement
     private static final int TEXT_COLOUR = 0xFFFFFFFF;
     private static final int OUTLINE_DARK = 0x5028007F,
                              OUTLINE_LIGHT = 0x505000FF,
-                             BACKGROUND = 0x00000000;
+                             BACKGROUND = 0xF0100010;
     private final Consumer<Consumer<String>> tooltipAppender;
 
     public Tooltip(Consumer<Consumer<String>> tooltipAppender)
@@ -35,13 +34,15 @@ public class Tooltip extends WidgetComponent implements RenderableElement
         if (!mouseOver)
             return;
         MinecraftClient mc = MinecraftClient.getInstance();
-        List<String> tooltip = new ArrayList<>();
+        List<OrderedText> tooltip = new ArrayList<>();
         int maxLineWidth = mc.getWindow().getScaledWidth() - mouseX - 16;
-        // TODO tooltipAppender.accept(line -> Collections.addAll(tooltip, mc.textRenderer.wrapStringToWidth(line, maxLineWidth).split("\n")));
+        tooltipAppender.accept(line -> 
+            tooltip.addAll(mc.textRenderer.wrapLines(new LiteralText(line), maxLineWidth)));
         drawTooltip(vertices, matrices, mouseX, mouseY, mc, tooltip);
     }
 
-    private void drawTooltip(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, MinecraftClient mc, List<String> lines)
+    private void drawTooltip(VertexConsumerProvider vertices, 
+        MatrixStack matrices, int mouseX, int mouseY, MinecraftClient mc, List<OrderedText> lines)
     {
         if (!lines.isEmpty())
         {
@@ -60,18 +61,21 @@ public class Tooltip extends WidgetComponent implements RenderableElement
                 top = mc.currentScreen.height - height - 6;
 
             mc.getItemRenderer().zOffset = 300.0F;
-            fillGradient(vertices, matrices, left - 3, top - 4, left + width + 3, top - 3, BACKGROUND, BACKGROUND, 300);
-            fillGradient(vertices, matrices, left - 3, top + height + 3, left + width + 3, top + height + 4, BACKGROUND, BACKGROUND, 300);
-            fillGradient(vertices, matrices, left - 3, top - 3, left + width + 3, top + height + 3, BACKGROUND, BACKGROUND, 300);
-            fillGradient(vertices, matrices, left - 4, top - 3, left - 3, top + height + 3, BACKGROUND, BACKGROUND, 300);
-            fillGradient(vertices, matrices, left + width + 3, top - 3, left + width + 4, top + height + 3, BACKGROUND, BACKGROUND, 300);
+            // X bar of the background cross
+            fillGradient(vertices, matrices, left - 3, top - 4, left + width + 3, top + height + 4, BACKGROUND, BACKGROUND, 300);
+            // Y bar of the background cross
+            fillGradient(vertices, matrices, left - 4, top - 3, left + width + 4, top + height + 3, BACKGROUND, BACKGROUND, 300);
+            // Left highlight
             fillGradient(vertices, matrices, left - 3, top - 3 + 1, left - 3 + 1, top + height + 3 - 1, OUTLINE_LIGHT, OUTLINE_DARK, 300);
+            // Right highlight
             fillGradient(vertices, matrices, left + width + 2, top - 3 + 1, left + width + 3, top + height + 3 - 1, OUTLINE_LIGHT, OUTLINE_DARK, 300);
+            // Upper highlight
             fillGradient(vertices, matrices, left - 3, top - 3, left + width + 3, top - 3 + 1, OUTLINE_LIGHT, OUTLINE_LIGHT, 300);
+            // Lower highlight
             fillGradient(vertices, matrices, left - 3, top + height + 2, left + width + 3, top + height + 3, OUTLINE_DARK, OUTLINE_DARK, 300);
             matrices.translate(0.0D, 0.0D, mc.getItemRenderer().zOffset);
             Matrix4f model = matrices.peek().getModel();
-            for (String line : lines)
+            for (OrderedText line : lines)
             {
                 mc.textRenderer.draw(line, left, top, TEXT_COLOUR,
                     true, model, vertices, false, /*No highlight*/ 0, Lighting.MAX);
