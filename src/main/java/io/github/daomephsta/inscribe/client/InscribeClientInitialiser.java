@@ -23,7 +23,7 @@ public class InscribeClientInitialiser implements ClientModInitializer
 
     public void registerModels()
     {
-        ModelLoadingRegistry.INSTANCE.registerAppender((resourceManager, out) ->
+        ModelLoadingRegistry.INSTANCE.registerModelProvider((resourceManager, out) ->
         {
             for (Identifier modelId : GuideManager.INSTANCE.getGuideModelIds())
             {

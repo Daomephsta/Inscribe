@@ -7,7 +7,7 @@ import io.github.daomephsta.inscribe.client.guide.gui.GuideGui;
 import io.github.daomephsta.inscribe.client.input.KeyWatcher.KeyAction;
 import io.github.daomephsta.inscribe.client.input.WatchedKeyBinding.Modifier;
 import io.github.daomephsta.inscribe.common.Inscribe;
-import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
@@ -22,8 +22,7 @@ public class KeyBindings
 
     public static void initialise()
     {
-        KeyBindingRegistry.INSTANCE.addCategory(KEY_CATEGORY);
-        KeyBindingRegistry.INSTANCE.register(BASE_RELOAD_KEY);
+        KeyBindingHelper.registerKeyBinding(BASE_RELOAD_KEY);
         KeyWatcher.INSTANCE.initialise();
         KeyWatcher.INSTANCE.watch(BASE_RELOAD_KEY, KeyBindings::processReloadAllGuidesBinding, Modifier.CTRL, Modifier.SHIFT);
         KeyWatcher.INSTANCE.watch(BASE_RELOAD_KEY, KeyBindings::processReloadOpenGuideBinding, Modifier.CTRL);

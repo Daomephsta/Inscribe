@@ -6,6 +6,7 @@ import org.lwjgl.glfw.GLFW;
 
 import io.github.daomephsta.inscribe.client.input.KeyWatcher.KeyAction;
 import io.github.daomephsta.inscribe.client.input.KeyWatcher.KeyEventCallback;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil.Key;
 
@@ -36,7 +37,7 @@ class WatchedKeyBinding
 
     public boolean matches(Key keyCode, int modifierFlags)
     {
-       if (!delegate.getBoundKey().equals(keyCode))
+       if (!getBoundKey().equals(keyCode))
            return false;
        int uncheckedModifierCount = Integer.bitCount(modifierFlags);
        for (Modifier modifier : modifiers)
@@ -51,7 +52,7 @@ class WatchedKeyBinding
 
     Key getBoundKey()
     {
-        return delegate.getBoundKey();
+        return KeyBindingHelper.getBoundKeyOf(delegate);
     }
 
     int getModifierBits()
@@ -61,7 +62,7 @@ class WatchedKeyBinding
 
     void markDelegateDirty()
     {
-        parent.updateBindingKey(this, delegate.getBoundKey());
+        parent.updateBindingKey(this, getBoundKey());
     }
 
     public static enum Modifier

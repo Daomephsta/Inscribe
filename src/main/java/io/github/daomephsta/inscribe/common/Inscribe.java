@@ -18,7 +18,7 @@ import io.github.daomephsta.inscribe.common.guide.poster.PosterBlockEntity;
 import io.github.daomephsta.inscribe.common.guide.poster.PosterItem;
 import io.github.daomephsta.inscribe.server.DelegatingArgumentType;
 import io.github.daomephsta.inscribe.server.InscribeCommand;
-import net.fabricmc.fabric.api.event.server.ServerStartCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
@@ -41,7 +41,7 @@ public class Inscribe
         Registry.register(Registry.ITEM, MOD_ID + ":guide", GUIDE_ITEM);
         Registry.register(Registry.ITEM, MOD_ID + ":poster", new PosterItem(POSTER_BLOCK));
         ArgumentTypes.register(Inscribe.MOD_ID + ":delegating", DelegatingArgumentType.class, new DelegatingArgumentType.Serialiser());
-        ServerStartCallback.EVENT.register(server ->
+        ServerLifecycleEvents.SERVER_STARTED.register(server ->
         {
             InscribeCommand.register(server.getCommandManager().getDispatcher());
         });
@@ -59,8 +59,8 @@ public class Inscribe
         Appender inscribeLogAppender = FileAppender.newBuilder()
             .withAppend(false)
             .withFileName("logs/inscribe.log")
-            .withName("Inscribe")
-            .withLayout(inscribeLogLayout)
+            .setName("Inscribe")
+            .setLayout(inscribeLogLayout)
             .setConfiguration(config)
             .build();
         inscribeLogAppender.start();
