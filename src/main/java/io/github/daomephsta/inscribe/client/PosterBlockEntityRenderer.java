@@ -8,22 +8,23 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
 import io.github.daomephsta.inscribe.common.guide.poster.PosterBlockEntity;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
-public class PosterBlockEntityRenderer extends BlockEntityRenderer<PosterBlockEntity>
+public class PosterBlockEntityRenderer implements BlockEntityRenderer<PosterBlockEntity>
 {
-    public PosterBlockEntityRenderer(BlockEntityRenderDispatcher renderDispatcher)
+    public PosterBlockEntityRenderer(BlockEntityRendererFactory.Context context)
     {
-        super(renderDispatcher);
+        // TODO Auto-generated constructor stub
     }
-
+    
     @Override
     public void render(PosterBlockEntity blockEntity, float tickDelta, MatrixStack matrices,
         VertexConsumerProvider vertices, int light, int overlay)
@@ -51,12 +52,13 @@ public class PosterBlockEntityRenderer extends BlockEntityRenderer<PosterBlockEn
 
             matrices.push();
             matrices.translate(0.5, 0, 0.5);
-            matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(facing.asRotation() + 180));
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180));
+            matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(facing.asRotation() + 180));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180));
             matrices.translate(-0.5, -3, 6.85F / 16F);
             matrices.scale(0.01F, 0.01F, 0.01F);
             Matrix4f model = matrices.peek().getModel();
-            VertexConsumer buffer = vertices.getBuffer(InscribeRenderLayers.textureQuads(guide.getTheme().getGuiTexture()));
+            RenderLayer renderLayer = InscribeRenderLayers.textureQuads(guide.getTheme().getGuiTexture());
+            VertexConsumer buffer = vertices.getBuffer(renderLayer);
             buffer.vertex(model, minX, minY + height, 0).texture(0, maxV).next();
             buffer.vertex(model, minX + width, minY + height, 0).texture(maxU, maxV).next();
             buffer.vertex(model, minX + width, minY, 0).texture(maxU, 0).next();

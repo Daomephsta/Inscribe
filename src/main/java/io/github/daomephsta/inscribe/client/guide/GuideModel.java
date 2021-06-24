@@ -2,6 +2,7 @@ package io.github.daomephsta.inscribe.client.guide;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -25,15 +26,15 @@ import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.ModelRotation;
 import net.minecraft.client.render.model.UnbakedModel;
-import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
+import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 
 public class GuideModel
 {
@@ -70,12 +71,12 @@ public class GuideModel
         {
             Map<Identifier, BakedModel> modelMap = GuideManager.INSTANCE.streamGuideModelIds()
                 .collect(toMap(id -> id, id -> modelLoader.bake(id, bakeSettings)));
-            ModelItemPropertyOverrideList overrides = new Overrides(modelLoader, modelMap);
+            ModelOverrideList overrides = new Overrides(modelLoader, modelMap);
             return new Baked(overrides);
         }
     }
 
-    private static class Overrides extends ModelItemPropertyOverrideList
+    private static class Overrides extends ModelOverrideList
     {
         private final Map<Identifier, BakedModel> modelMap;
         private final BakedModel missingModel;
@@ -84,13 +85,16 @@ public class GuideModel
         {
             super(modelLoader, null, id -> null, Collections.emptyList());
             this.modelMap = modelMap;
-            this.missingModel = modelLoader.bake(ModelLoader.MISSING, ModelRotation.X0_Y0);
+            this.missingModel = modelLoader.bake(ModelLoader.MISSING_ID, ModelRotation.X0_Y0);
         }
+        
+        
 
         @Override
-        public BakedModel apply(BakedModel baseModel, ItemStack itemStack, World world, LivingEntity livingEntity)
+        public BakedModel apply(BakedModel baseModel, ItemStack stack, 
+            ClientWorld world, LivingEntity entity, int seed)
         {
-            Guide guide = Inscribe.GUIDE_ITEM.getGuide(itemStack);
+            Guide guide = Inscribe.GUIDE_ITEM.getGuide(stack);
             if (!guide.isValid())
                 return missingModel;
 
@@ -104,16 +108,16 @@ public class GuideModel
 
     public static class Baked implements BakedModel
     {
-        private final ModelItemPropertyOverrideList overrides;
+        private final ModelOverrideList overrides;
 
-        public Baked(ModelItemPropertyOverrideList overrides)
+        public Baked(ModelOverrideList overrides)
         {
             this.overrides = overrides;
         }
 
         //Only this method matters, since it redirects to the correct model
         @Override
-        public ModelItemPropertyOverrideList getItemPropertyOverrides()
+        public ModelOverrideList getOverrides()
         {
             return overrides;
         }
@@ -131,7 +135,7 @@ public class GuideModel
         }
 
         @Override
-        public boolean hasDepthInGui()
+        public boolean hasDepth()
         {
             return false;
         }
@@ -152,6 +156,12 @@ public class GuideModel
         public ModelTransformation getTransformation()
         {
             return ModelTransformation.NONE;
+        }
+
+        @Override
+        public boolean isSideLit()
+        {
+            return false;
         }
     }
 }

@@ -2,7 +2,7 @@ package io.github.daomephsta.inscribe.client.input;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
-import net.minecraft.client.util.InputUtil.KeyCode;
+import net.minecraft.client.util.InputUtil.Key;
 
 class WatchedKeyBindingIndex
 {
@@ -13,14 +13,14 @@ class WatchedKeyBindingIndex
         watchedKeyBindings.put(getMapKey(watched), watched);
     }
 
-    WatchedKeyBinding get(KeyCode keyCode, int modifiers)
+    WatchedKeyBinding get(Key key, int modifiers)
     {
-        return watchedKeyBindings.get(getMapKey(keyCode, modifiers));
+        return watchedKeyBindings.get(getMapKey(key, modifiers));
     }
 
-    void updateBindingKeyCode(WatchedKeyBinding watched, KeyCode keyCode)
+    void updateBindingKey(WatchedKeyBinding watched, Key key)
     {
-        watchedKeyBindings.put(getMapKey(keyCode, watched.getModifierBits()), watched);
+        watchedKeyBindings.put(getMapKey(key, watched.getModifierBits()), watched);
     }
 
     private int getMapKey(WatchedKeyBinding watched)
@@ -28,9 +28,9 @@ class WatchedKeyBindingIndex
         return getMapKey(watched.getBoundKey(), watched.getModifierBits());
     }
 
-    private int getMapKey(KeyCode keyCode, int modifiers)
+    private int getMapKey(Key key, int modifiers)
     {
         //Modifiers in last 6 bits, keycode in the rest
-        return (modifiers << 26) | keyCode.getKeyCode();
+        return (modifiers << 26) | key.getCode();
     }
 }

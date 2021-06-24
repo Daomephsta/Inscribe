@@ -12,9 +12,9 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import io.github.daomephsta.inscribe.common.mixin.ArgumentTypesAccessors;
-import net.minecraft.command.arguments.ArgumentTypes;
-import net.minecraft.command.arguments.serialize.ArgumentSerializer;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.command.argument.ArgumentTypes;
+import net.minecraft.command.argument.serialize.ArgumentSerializer;
+import net.minecraft.network.PacketByteBuf;
 
 public class DelegatingArgumentType implements ArgumentType<String>
 {

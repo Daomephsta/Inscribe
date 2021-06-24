@@ -7,10 +7,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
-import net.minecraft.block.MaterialColor;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -31,14 +31,14 @@ import net.minecraft.world.WorldView;
 
 public class PosterBlock extends Block implements BlockEntityProvider
 {
-    private static final VoxelShape NORTH_RAYSHAPE = Block.createCuboidShape(0, 0, 16, 16, 16, 15),
+    private static final VoxelShape NORTH_RAYSHAPE = Block.createCuboidShape(0, 0, 15, 16, 16, 16),
                                     EAST_HITSHAPE = Block.createCuboidShape(0, 0, 0, 1, 16, 16),
                                     SOUTH_HITSHAPE = Block.createCuboidShape(0, 0, 0, 16, 16, 1),
-                                    WEST_HITSHAPE = Block.createCuboidShape(16, 0, 0, 15, 16, 16);
+                                    WEST_HITSHAPE = Block.createCuboidShape(15, 0, 0, 16, 16, 16);
 
     public PosterBlock()
     {
-        super(FabricBlockSettings.of(Material.CARPET, MaterialColor.WHITE)
+        super(FabricBlockSettings.of(Material.CARPET, MapColor.WHITE)
             .breakByHand(true)
             .breakInstantly()
             .nonOpaque());
@@ -71,9 +71,9 @@ public class PosterBlock extends Block implements BlockEntityProvider
             ((PosterBlockEntity) world.getBlockEntity(board)).setBounds(from, to);
         }
     }
-
+    
     @Override
-    public void onBlockRemoved(BlockState replacement, World world, BlockPos pos, BlockState removed, boolean boolean_1)
+    public void onStateReplaced(BlockState replacement, World world, BlockPos pos, BlockState removed, boolean moved)
     {
         // Judging by Mojang code, sometimes the BE is null, or some other BE
         BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -84,7 +84,7 @@ public class PosterBlock extends Block implements BlockEntityProvider
             for (BlockPos board : positions)
                 world.setBlockState(board, Blocks.AIR.getDefaultState());
         }
-        super.onBlockRemoved(replacement, world, pos, removed, boolean_1);
+        super.onStateReplaced(replacement, world, pos, removed, moved);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class PosterBlock extends Block implements BlockEntityProvider
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView blockView, BlockPos pos, EntityContext context)
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context)
     {
         switch (state.get(Properties.HORIZONTAL_FACING))
         {
@@ -130,8 +130,8 @@ public class PosterBlock extends Block implements BlockEntityProvider
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockView blockView)
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
-        return new PosterBlockEntity();
+        return new PosterBlockEntity(pos, state);
     }
 }

@@ -18,7 +18,7 @@ public class KeyBindings
 {
     private static final String KEY_CATEGORY = "category." + Inscribe.MOD_ID + ".keys";
     private static final WatchableKeyBinding BASE_RELOAD_KEY = new WatchableKeyBinding(new Identifier(Inscribe.MOD_ID, "reload_guide_base"),
-        InputUtil.Type.KEYSYM, InputUtil.UNKNOWN_KEYCODE.getKeyCode(), KEY_CATEGORY);
+        InputUtil.Type.KEYSYM, InputUtil.UNKNOWN_KEY.getCode(), KEY_CATEGORY);
 
     public static void initialise()
     {
@@ -36,7 +36,7 @@ public class KeyBindings
             return;
         //Reload all guides
         GuideManager.INSTANCE.reload(CompletableFuture::completedFuture, client.getResourceManager(),
-            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getServerWorkerExecutor(), client)
+            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), client)
             .thenRun(() ->
             {
                 if (client.currentScreen instanceof GuideGui)

@@ -16,7 +16,7 @@ class DefaultNotifier implements Notifier
         ClientPlayerJoinWorldCallback.EVENT.register(player ->
         {
             while (!messages.isEmpty())
-                player.sendMessage(messages.poll());
+                player.sendMessage(messages.poll(), false);
         });
     }
 
@@ -24,7 +24,7 @@ class DefaultNotifier implements Notifier
     public void notify(Text message)
     {
         if (MinecraftClient.getInstance().player != null)
-            MinecraftClient.getInstance().player.sendMessage(message);
+            MinecraftClient.getInstance().player.sendMessage(message, false);
         else
             messages.add(message);
     }

@@ -14,11 +14,11 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEn
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Animation;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Transform;
 import io.github.daomephsta.mosaic.EdgeSpacing;
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
 final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
@@ -37,9 +37,9 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
             if (!Registry.ENTITY_TYPE.containsId(entityId))
                 throw new InscribeSyntaxException("Unknown entity id " + entityId);
             Attr tagAttr = xml.getAttributeNode("tag");
-            CompoundTag nbt = tagAttr != null
+            NbtCompound nbt = tagAttr != null
                 ? StringNbtReader.parse(tagAttr.getValue())
-                : new CompoundTag();
+                : new NbtCompound();
             Transform transform = readTransform(XmlElements.getChildNullable(xml, "transform"));
             Animation animation = readAnimation(XmlElements.getChildNullable(xml, "animate"));
             EdgeSpacing padding = LayoutParameters.readPadding(xml);
@@ -56,7 +56,7 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
     {
         if (xml == null)
             return Transform.NONE;
-        Vector3f translation = XmlElements.asVector3f(xml, "translate", Transform.NONE.translation);
+        Vec3f translation = XmlElements.asVec3f(xml, "translate", Transform.NONE.translation);
         Quaternion rotation = readRotation(xml, Transform.NONE.rotation);
         Element scaleXml = XmlElements.getChildNullable(xml, "scale");
         float scale = scaleXml != null
@@ -70,10 +70,10 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
         Element child = XmlElements.getChildNullable(xml, "rotate");
         if (child != null)
         {
-            Quaternion rotation = Vector3f.POSITIVE_X.getDegreesQuaternion(XmlAttributes.asFloat(child, "x", 0));
-            rotation.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(XmlAttributes.asFloat(child, "y", 0)));
+            Quaternion rotation = Vec3f.POSITIVE_X.getDegreesQuaternion(XmlAttributes.asFloat(child, "x", 0));
+            rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(XmlAttributes.asFloat(child, "y", 0)));
             //180.0F == Flip Z axis
-            rotation.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(XmlAttributes.asFloat(child, "z", 0)));
+            rotation.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(XmlAttributes.asFloat(child, "z", 0)));
             return rotation;
         }
         else
@@ -89,15 +89,13 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
         {
             XmlAttributes.requireAttributes(element, "axis", "speed");
             String axis = element.getAttribute("axis");
-            Vector3f axisVector;
-            if (axis.equals("x"))
-                axisVector = Vector3f.POSITIVE_X;
-            else if (axis.equals("y"))
-                axisVector = Vector3f.POSITIVE_Y;
-            else if (axis.equals("z"))
-                axisVector = Vector3f.POSITIVE_Z;
-            else
-                throw new InscribeSyntaxException("Axis must be x, y, or z");
+            Vec3f axisVector = switch (axis) 
+            {
+                case "x" -> Vec3f.POSITIVE_X;
+                case "y" -> Vec3f.POSITIVE_Y;
+                case "z" -> Vec3f.POSITIVE_Z;
+                default -> throw new InscribeSyntaxException("Axis must be x, y, or z");
+            };
             return new XmlEntityDisplay.Revolve(axisVector, XmlAttributes.asFloat(element, "speed"));
         }
         return Animation.NONE;

@@ -16,12 +16,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class GuideItem extends Item
@@ -104,7 +104,7 @@ public class GuideItem extends Item
     public ItemStack forGuide(Guide guide)
     {
         ItemStack guideStack = new ItemStack(this);
-        CompoundTag guideTag = new CompoundTag();
+        NbtCompound guideTag = new NbtCompound();
         guideTag.putString(GUIDE_ID_TAG, guide.getIdentifier().toString());
         guideStack.setTag(guideTag);
         return guideStack;

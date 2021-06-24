@@ -98,7 +98,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
             GuideFlow linkElement = new GuideFlow(Direction.HORIZONTAL);
             link.addIcon(linkElement);
             LabelWidget label = new LabelWidget(
-                new FormattedTextNode(link.name, MinecraftClient.DEFAULT_TEXT_RENDERER_ID, 0x000000),
+                new FormattedTextNode(link.name, MinecraftClient.DEFAULT_FONT_ID, 0x000000),
                 Alignment.CENTER, Alignment.CENTER, 1.0F);
             label.margin().setLeft(1);
             linkElement.add(label);
@@ -113,7 +113,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         }
         case TEXT:
             return new LabelWidget(
-                new FormattedTextNode(link.name, MinecraftClient.DEFAULT_TEXT_RENDERER_ID, 0x000000),
+                new FormattedTextNode(link.name, MinecraftClient.DEFAULT_FONT_ID, 0x000000),
                 Alignment.LEADING, Alignment.CENTER, 1.0F);
         default:
             throw new IllegalArgumentException("Unknown link style " + link.style);
@@ -135,7 +135,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         {
             MinecraftClient mc = MinecraftClient.getInstance();
             GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
-                DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getServerWorkerExecutor(), mc)
+                DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
                 .thenAccept(guide -> mc.openScreen(new OpenTableOfContentsScreen(guide, guideStack, guide.getMainTableOfContents())));
         }
         catch (GuideLoadingException e)
@@ -152,7 +152,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
             MinecraftClient mc = MinecraftClient.getInstance();
             GuideManager.INSTANCE.reloadTableOfContents(toc, CompletableFuture::completedFuture,
                 mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
-                Util.getServerWorkerExecutor(), mc)
+                Util.getMainWorkerExecutor(), mc)
             .thenAccept(toc ->
             {
                 Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());

@@ -3,7 +3,7 @@ package io.github.daomephsta.inscribe.client.mixinimpl;
 import io.github.daomephsta.inscribe.client.hooks.InputCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.InputUtil.KeyCode;
+import net.minecraft.client.util.InputUtil.Key;
 
 public class InputCallbackDispatcher
 {
@@ -12,7 +12,7 @@ public class InputCallbackDispatcher
         MinecraftClient client = MinecraftClient.getInstance();
         if (windowId == client.getWindow().getHandle())
         {
-            KeyCode keyCode = key != InputUtil.UNKNOWN_KEYCODE.getKeyCode()
+            Key keyCode = key != InputUtil.UNKNOWN_KEY.getCode()
                 ? InputUtil.Type.KEYSYM.createFromCode(key)
                 : InputUtil.Type.SCANCODE.createFromCode(scancode);
             InputCallback.EVENT.invoker().processInput(client, keyCode, action, modifiers);
@@ -24,7 +24,8 @@ public class InputCallbackDispatcher
         MinecraftClient client = MinecraftClient.getInstance();
         if (windowId == client.getWindow().getHandle())
         {
-            InputCallback.EVENT.invoker().processInput(client, InputUtil.Type.MOUSE.createFromCode(button), action, modifiers);
+            Key mouseCode = InputUtil.Type.MOUSE.createFromCode(button);
+            InputCallback.EVENT.invoker().processInput(client, mouseCode, action, modifiers);
         }
     }
 }

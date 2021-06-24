@@ -9,7 +9,8 @@
     "MixinClientPlayNetworkHandler",
     "MixinReloadableResourceManagerImpl",
     "MixinKeyboard",
-    "MixinMouse"
+    "MixinMouse",
+    "RenderLayerAccessors"
   ],
   "injectors": {
     "defaultRequire": 1

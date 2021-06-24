@@ -49,7 +49,7 @@ public class RenderFormatConverter
                 Entity entity = Registry.ENTITY_TYPE.get(intermediate.entityId).create(MinecraftClient.getInstance().world);
                 if (entity != null) //EntityType.create(World) is nullable
                 {
-                    entity.fromTag(intermediate.nbt);
+                    entity.readNbt(intermediate.nbt);
                     EntityDisplayWidget widget = new EntityDisplayWidget(entity, intermediate.transform, intermediate.animation);
                     widget.setPadding(intermediate.padding);
                     widget.setMargin(intermediate.margin);
@@ -66,7 +66,7 @@ public class RenderFormatConverter
         else
         {
             output.add(new LabelWidget(new FormattedTextNode("CONVERT_FAIL",
-                MinecraftClient.DEFAULT_TEXT_RENDERER_ID, 0), Alignment.CENTER, Alignment.CENTER, 1.0F));
+                MinecraftClient.DEFAULT_FONT_ID, 0), Alignment.CENTER, Alignment.CENTER, 1.0F));
         }
     }
 

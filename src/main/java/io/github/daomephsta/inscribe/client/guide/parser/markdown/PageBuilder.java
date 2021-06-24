@@ -48,7 +48,7 @@ public class PageBuilder
         this.output = new ArrayDeque<>();
         this.output.add(output);
         //Default font
-        this.fonts.add(MinecraftClient.DEFAULT_TEXT_RENDERER_ID);
+        this.fonts.add(MinecraftClient.DEFAULT_FONT_ID);
     }
 
     public void pushFormatting(FormatFlags formatFlag)

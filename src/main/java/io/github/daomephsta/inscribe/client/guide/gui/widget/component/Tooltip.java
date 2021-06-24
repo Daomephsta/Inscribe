@@ -13,8 +13,8 @@ import io.github.daomephsta.inscribe.common.util.Lighting;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Matrix4f;
 
 public class Tooltip extends WidgetComponent implements RenderableElement
 {
@@ -37,8 +37,7 @@ public class Tooltip extends WidgetComponent implements RenderableElement
         MinecraftClient mc = MinecraftClient.getInstance();
         List<String> tooltip = new ArrayList<>();
         int maxLineWidth = mc.getWindow().getScaledWidth() - mouseX - 16;
-        tooltipAppender.accept(
-            line -> Collections.addAll(tooltip, mc.textRenderer.wrapStringToWidth(line, maxLineWidth).split("\n")));
+        // TODO tooltipAppender.accept(line -> Collections.addAll(tooltip, mc.textRenderer.wrapStringToWidth(line, maxLineWidth).split("\n")));
         drawTooltip(vertices, matrices, mouseX, mouseY, mc, tooltip);
     }
 
@@ -46,10 +45,9 @@ public class Tooltip extends WidgetComponent implements RenderableElement
     {
         if (!lines.isEmpty())
         {
-            RenderSystem.disableRescaleNormal();
             matrices.push();
             int width = lines.stream()
-                .mapToInt(mc.textRenderer::getStringWidth)
+                .mapToInt(mc.textRenderer::getWidth)
                 .max().orElse(0);
             int left = mouseX + 12;
             int top = mouseY - 12;
@@ -81,7 +79,6 @@ public class Tooltip extends WidgetComponent implements RenderableElement
             }
             mc.getItemRenderer().zOffset = 0.0F;
             matrices.pop();
-            RenderSystem.enableRescaleNormal();
         }
     }
 

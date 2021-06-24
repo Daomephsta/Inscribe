@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import io.github.daomephsta.inscribe.client.hooks.ClientPlayerJoinWorldCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.packet.GameJoinS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public class MixinClientPlayNetworkHandler

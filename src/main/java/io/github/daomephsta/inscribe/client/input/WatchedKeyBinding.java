@@ -7,7 +7,7 @@ import org.lwjgl.glfw.GLFW;
 import io.github.daomephsta.inscribe.client.input.KeyWatcher.KeyAction;
 import io.github.daomephsta.inscribe.client.input.KeyWatcher.KeyEventCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.InputUtil.KeyCode;
+import net.minecraft.client.util.InputUtil.Key;
 
 class WatchedKeyBinding
 {
@@ -34,7 +34,7 @@ class WatchedKeyBinding
         return new WatchedKeyBinding(parent, delegate, modifiers, callback);
     }
 
-    public boolean matches(KeyCode keyCode, int modifierFlags)
+    public boolean matches(Key keyCode, int modifierFlags)
     {
        if (!delegate.getBoundKey().equals(keyCode))
            return false;
@@ -49,7 +49,7 @@ class WatchedKeyBinding
        return uncheckedModifierCount == 0;
     }
 
-    KeyCode getBoundKey()
+    Key getBoundKey()
     {
         return delegate.getBoundKey();
     }
@@ -61,7 +61,7 @@ class WatchedKeyBinding
 
     void markDelegateDirty()
     {
-        parent.updateBindingKeyCode(this, delegate.getBoundKey());
+        parent.updateBindingKey(this, delegate.getBoundKey());
     }
 
     public static enum Modifier

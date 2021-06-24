@@ -3,22 +3,22 @@ package io.github.daomephsta.inscribe.client.guide.xmlformat;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 public class XmlElements
 {
     /**
-     * Gets an xml element as a Vector3f
+     * Gets an xml element as a Vec3f
      * @param xml the parent element
      * @param childName the name of the child element
-     * @throws InscribeSyntaxException if the child element does not exist or could not be parsed as a Vector3f
-     * @return the value of the element as a Vector3f
+     * @throws InscribeSyntaxException if the child element does not exist or could not be parsed as a Vec3f
+     * @return the value of the element as a Vec3f
      */
-    public static Vector3f asVector3f(Element xml, String childName) throws InscribeSyntaxException
+    public static Vec3f asVec3f(Element xml, String childName) throws InscribeSyntaxException
     {
         Element child = getChild(xml, childName);
         XmlAttributes.requireAttributes(xml, "x", "y", "z");
-        return new Vector3f
+        return new Vec3f
         (
             XmlAttributes.asFloat(child, "x", 0.0F),
             XmlAttributes.asFloat(child, "y", 0.0F),
@@ -27,20 +27,20 @@ public class XmlElements
     }
 
     /**
-     * Gets an xml element as a Vector3f
+     * Gets an xml element as a Vec3f
      * @param xml the parent element
      * @param childName the name of the child element
      * @param fallback the return value if the attribute does not exist
-     * @throws InscribeSyntaxException if the child element could not be parsed as a Vector3f
-     * @return the value of the element as a Vector3f or {@code fallback} if it does not exist
+     * @throws InscribeSyntaxException if the child element could not be parsed as a Vec3f
+     * @return the value of the element as a Vec3f or {@code fallback} if it does not exist
      */
-    public static Vector3f asVector3f(Element xml, String childName, Vector3f fallback) throws InscribeSyntaxException
+    public static Vec3f asVec3f(Element xml, String childName, Vec3f fallback) throws InscribeSyntaxException
     {
         Element child = getChildNullable(xml, childName);
         if (child != null)
         {
             XmlAttributes.requireAttributes(child, "x", "y", "z");
-            return new Vector3f
+            return new Vec3f
             (
                 XmlAttributes.asFloat(child, "x", fallback.getX()),
                 XmlAttributes.asFloat(child, "y", fallback.getY()),

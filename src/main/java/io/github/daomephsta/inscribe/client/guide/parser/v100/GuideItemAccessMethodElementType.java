@@ -32,7 +32,7 @@ final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAcc
         {
             for (ItemGroup group : ItemGroup.GROUPS)
             {
-                if (group.getId().equals(itemGroupId))
+                if (group.getName().equals(itemGroupId))
                     return group;
             }
             return null;

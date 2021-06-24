@@ -3,8 +3,8 @@ package io.github.daomephsta.inscribe.client.guide.gui.widget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Vector4f;
 
 public class StackDisplayWidget extends GuideWidget
 {

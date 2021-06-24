@@ -41,7 +41,7 @@ class ListData
             public void addListMarker(Deque<TextNode> textNodes, int indentLevel, int currentItemIndex)
             {
                 textNodes.push(new FormattedTextNode(Integer.toString(currentItemIndex + 1) + ". ",
-                    MinecraftClient.DEFAULT_TEXT_RENDERER_ID, 0x000000));
+                    MinecraftClient.DEFAULT_FONT_ID, 0x000000));
                 textNodes.push(new Indent(indentLevel));
             }
         },
@@ -51,7 +51,7 @@ class ListData
             public void addListMarker(Deque<TextNode> textNodes, int indentLevel, int currentItemIndex)
             {
                 textNodes.push(new FormattedTextNode("\u2022 ",
-                    MinecraftClient.DEFAULT_TEXT_RENDERER_ID, 0x000000));
+                    MinecraftClient.DEFAULT_FONT_ID, 0x000000));
                 textNodes.push(new Indent(indentLevel));
             }
         };

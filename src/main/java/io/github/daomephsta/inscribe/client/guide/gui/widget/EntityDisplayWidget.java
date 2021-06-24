@@ -7,9 +7,9 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEn
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Quaternion;
 
 public class EntityDisplayWidget extends GuideWidget
@@ -44,7 +44,7 @@ public class EntityDisplayWidget extends GuideWidget
         applyTransform(matrices, rotation, transform);
         rotation.conjugate();
         matrices.multiply(rotation);
-        EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
+        EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         entityRenderDispatcher.setRotation(rotation);
         entityRenderDispatcher.setRenderShadows(false);
         VertexConsumerProvider.Immediate entityVertexConsumers = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
@@ -87,7 +87,7 @@ public class EntityDisplayWidget extends GuideWidget
     @Override
     public void dispose()
     {
-        //Kill the entity, just in case
-        entity.remove();
+        // Discard the entity, just in case
+        entity.discard();
     }
 }

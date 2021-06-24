@@ -6,7 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
@@ -16,8 +16,9 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -31,7 +32,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     protected final Guide guide;
     protected final ItemStack guideStack;
     private PageSpreads pageSpreads;
-    private AbstractButtonWidget prevPage, nextPage;
+    private ButtonWidget prevPage, nextPage;
 
     public PageSpreadScreen(Guide guide, ItemStack guideStack)
     {
@@ -43,9 +44,8 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     protected abstract List<GuideFlow> buildPages();
 
     @Override
-    public void init(MinecraftClient minecraft, int width, int height)
+    public void init()
     {
-        super.init(minecraft, width, height);
         this.pageSpreads = new PageSpreads(buildPages());
         int guideHeight = 232;
         int pageWidth = 176;
@@ -60,12 +60,12 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
         }
         int controlsX = pageSpreads.rightPage().right() + 13;
         int controlsY = pageSpreads.rightPage().bottom() - 21;
-        this.prevPage = addButton(new TexturedButtonWidget(controlsX, controlsY, 18, 18, 402, 211, 0, guide.getTheme().getGuiTexture(), 440, 256, b ->
+        this.prevPage = addDrawableChild(new TexturedButtonWidget(controlsX, controlsY, 18, 18, 402, 211, 0, guide.getTheme().getGuiTexture(), 440, 256, b ->
         {
             pageSpreads.previous();
             updateButtonVisibility();
         }));
-        this.nextPage = addButton(new TexturedButtonWidget(controlsX, controlsY - 18, 18, 18, 402, 193, 0, guide.getTheme().getGuiTexture(), 440, 256, b ->
+        this.nextPage = addDrawableChild(new TexturedButtonWidget(controlsX, controlsY - 18, 18, 18, 402, 193, 0, guide.getTheme().getGuiTexture(), 440, 256, b ->
         {
             pageSpreads.next();
             updateButtonVisibility();
@@ -80,23 +80,22 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float lastFrameDuration)
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta)
     {
-        renderBackground();
-        GlStateManager.disableLighting();
-        minecraft.getTextureManager().bindTexture(guide.getTheme().getGuiTexture());
-        blit((width - 381) / 2, (height - 232) / 2, 0, 0, 401, 232, 440, 256);
+        renderBackground(matrices);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShaderTexture(0, guide.getTheme().getGuiTexture());
+        drawTexture(matrices, (width - 381) / 2, (height - 232) / 2, 0, 0, 401, 232, 440, 256);
 
-        VertexConsumerProvider.Immediate vertices = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        MatrixStack matrices = new MatrixStack();
+        VertexConsumerProvider.Immediate vertices = VertexConsumerProvider.immediate(
+            Tessellator.getInstance().getBuffer());
         pageSpreads.leftPage().render(vertices, matrices , mouseX,
-            mouseY, lastFrameDuration, pageSpreads.leftPage().contains(mouseX, mouseY));
+            mouseY, delta, pageSpreads.leftPage().contains(mouseX, mouseY));
         pageSpreads.rightPage().render(vertices, matrices, mouseX,
-            mouseY, lastFrameDuration, pageSpreads.rightPage().contains(mouseX, mouseY));
+            mouseY, delta, pageSpreads.rightPage().contains(mouseX, mouseY));
         vertices.draw();
 
-        super.render(mouseX, mouseY, lastFrameDuration);
-        GlStateManager.enableLighting();
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Override

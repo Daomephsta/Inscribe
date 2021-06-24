@@ -4,10 +4,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.InputUtil.KeyCode;
+import net.minecraft.client.util.InputUtil.Key;
 
-@Mixin(KeyCode.class)
-public interface KeyCodeAccessors
+@Mixin(Key.class)
+public interface KeyAccessors
 {
     @Accessor
     public InputUtil.Type getType();

@@ -11,7 +11,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxExcept
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
 import io.github.daomephsta.mosaic.EdgeSpacing;
-import net.minecraft.command.arguments.ItemStringReader;
+import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.item.ItemStack;
 
 final class XmlItemStackElementType extends XmlElementType<XmlItemStack>
@@ -28,10 +28,10 @@ final class XmlItemStackElementType extends XmlElementType<XmlItemStack>
         {
             String itemId = XmlAttributes.getValue(xml, "item");
             String itemString = itemId + XmlAttributes.getValue(xml, "tag", "");
-            ItemStringReader itemStringReader = new ItemStringReader(new StringReader(itemString), false).consume();
+            ItemStringReader itemReader = new ItemStringReader(new StringReader(itemString), false).consume();
             int amount = XmlAttributes.asInt(xml, "amount", 1);
-            ItemStack stack = new ItemStack(itemStringReader.getItem(), amount);
-            stack.setTag(itemStringReader.getTag());
+            ItemStack stack = new ItemStack(itemReader.getItem(), amount);
+            stack.setTag(itemReader.getNbt());
             EdgeSpacing padding = LayoutParameters.readPadding(xml);
             EdgeSpacing margin = LayoutParameters.readMargin(xml);
             return new XmlItemStack(stack, padding, margin, LayoutParameters.readSize(xml));

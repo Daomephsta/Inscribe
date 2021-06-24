@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.ArgumentType;
 
-import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.command.argument.ArgumentTypes;
 
 @Mixin(ArgumentTypes.class)
 public class ArgumentTypesAccessors

@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.InputUtil.KeyCode;
+import net.minecraft.client.util.InputUtil.Key;
 import net.minecraft.util.Identifier;
 
 public class WatchableKeyBinding extends FabricKeyBinding
@@ -23,9 +23,9 @@ public class WatchableKeyBinding extends FabricKeyBinding
     }
 
     @Override
-    public void setKeyCode(KeyCode keyCode)
+    public void setBoundKey(Key key)
     {
-        super.setKeyCode(keyCode);
+        super.setBoundKey(key);
         for (WatchedKeyBinding child : children)
             child.markDelegateDirty();
     }

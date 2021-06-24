@@ -1,11 +1,10 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -31,7 +30,7 @@ public class ImageWidget extends GuideWidget
         MinecraftClient.getInstance().getTextureManager().bindTexture(src);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder vertexBuf = tessellator.getBuffer();
-        vertexBuf.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
+        vertexBuf.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         vertexBuf.vertex(left(), bottom(), 0).texture(0.0F, 1.0F).next();
         vertexBuf.vertex(right(), bottom(), 0).texture(1.0F, 1.0F).next();
         vertexBuf.vertex(right(), top(), 0).texture(1.0F, 0.0F).next();

@@ -4,8 +4,9 @@ import java.util.stream.Stream;
 
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
@@ -15,9 +16,9 @@ public class PosterBlockEntity extends BlockEntity implements BlockEntityClientS
                      to = BlockPos.ORIGIN;
     private Spread spread = null;
 
-    public PosterBlockEntity()
+    public PosterBlockEntity(BlockPos pos, BlockState state)
     {
-        super(Inscribe.POSTER_BLOCK_ENTITY);
+        super(Inscribe.POSTER_BLOCK_ENTITY, pos, state);
     }
 
     public BlockPos getRenderOrigin()
@@ -52,42 +53,42 @@ public class PosterBlockEntity extends BlockEntity implements BlockEntityClientS
     }
 
     @Override
-    public void fromClientTag(CompoundTag tag)
+    public void fromClientTag(NbtCompound tag)
     {
-        fromTag(tag);
+        readNbt(tag);
     }
 
     @Override
-    public void fromTag(CompoundTag tag)
+    public void readNbt(NbtCompound tag)
     {
         this.from = getBlockPos(tag, "from");
         this.to = getBlockPos(tag, "to");
-        super.fromTag(tag);
+        super.readNbt(tag);
     }
 
-    private BlockPos getBlockPos(CompoundTag tag, String key)
+    private BlockPos getBlockPos(NbtCompound tag, String key)
     {
-        CompoundTag posTag = tag.getCompound(key);
+        NbtCompound posTag = tag.getCompound(key);
         return new BlockPos(posTag.getInt("x"), posTag.getInt("y"), posTag.getInt("z"));
     }
 
     @Override
-    public CompoundTag toClientTag(CompoundTag tag)
+    public NbtCompound toClientTag(NbtCompound tag)
     {
-        return toTag(tag);
+        return writeNbt(tag);
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag)
+    public NbtCompound writeNbt(NbtCompound tag)
     {
         putBlockPos(tag, "from", from);
         putBlockPos(tag, "to", to);
-        return super.toTag(tag);
+        return super.writeNbt(tag);
     }
 
-    private void putBlockPos(CompoundTag tag, String key, BlockPos pos)
+    private void putBlockPos(NbtCompound tag, String key, BlockPos pos)
     {
-        CompoundTag posTag = new CompoundTag();
+        NbtCompound posTag = new NbtCompound();
         posTag.putInt("x", pos.getX());
         posTag.putInt("y", pos.getY());
         posTag.putInt("z", pos.getZ());

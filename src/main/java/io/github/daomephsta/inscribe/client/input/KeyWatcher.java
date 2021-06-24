@@ -8,7 +8,7 @@ import org.lwjgl.glfw.GLFW;
 import io.github.daomephsta.inscribe.client.hooks.InputCallback;
 import io.github.daomephsta.inscribe.client.input.WatchedKeyBinding.Modifier;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.InputUtil.KeyCode;
+import net.minecraft.client.util.InputUtil.Key;
 
 public enum KeyWatcher implements InputCallback
 {
@@ -30,9 +30,9 @@ public enum KeyWatcher implements InputCallback
     }
 
     @Override
-    public void processInput(MinecraftClient client, KeyCode keyCode, int action, int modifiers)
+    public void processInput(MinecraftClient client, Key key, int action, int modifiers)
     {
-        WatchedKeyBinding watchedKey = watchedKeys.get(keyCode, modifiers);
+        WatchedKeyBinding watchedKey = watchedKeys.get(key, modifiers);
         if (watchedKey != null)
         {
             KeyAction keyAction = KeyAction.fromGlConstant(action);
