@@ -13,7 +13,7 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 @Mixin(ClientPlayNetworkHandler.class)
 public class MixinClientPlayNetworkHandler
 {
-    @Inject(method = "onGameJoin(Lnet/minecraft/client/network/packet/GameJoinS2CPacket;)V", at = @At("RETURN"))
+    @Inject(method = "onGameJoin(Lnet/minecraft/network/packet/s2c/play/GameJoinS2CPacket;)V", at = @At("RETURN"))
     private void onPlayerJoinWorld(GameJoinS2CPacket joinPacket, CallbackInfo info)
     {
         ClientPlayerJoinWorldCallback.EVENT.invoker().invoke(MinecraftClient.getInstance().player);
