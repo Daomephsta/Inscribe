@@ -55,15 +55,18 @@ public interface ContentDeserialiser
             for (int i = 0; i < list.getLength(); i++)
             {
                 org.w3c.dom.Node node = list.item(i);
-                switch (node.getNodeType()) {
+                switch (node.getNodeType()) 
+                {
                     case org.w3c.dom.Node.ELEMENT_NODE ->
                     {
                         Element element = (Element) node;
                         XmlElementType<?> deserialiser = deserialisers.get(element.getTagName());
-                        if (deserialiser == null) {
+                        if (deserialiser == null) 
+                        {
                             LOGGER.debug("Ignored unknown element {}", element);
                             continue;
-                        } else
+                        } 
+                        else
                             result.add(deserialiser.fromXml(element));
                     }
                     case org.w3c.dom.Node.TEXT_NODE ->
