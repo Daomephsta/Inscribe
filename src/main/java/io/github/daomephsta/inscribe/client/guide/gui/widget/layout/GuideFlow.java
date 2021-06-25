@@ -58,7 +58,7 @@ public class GuideFlow extends GuideWidget implements ParentWidget
     {
         for (GuideWidget child : elements.getChildren())
         {
-            if (child.contains(mouseX, mouseY) && child instanceof InteractableElement)
+            if (child.contains(mouseX, mouseY))
                 return child.mouseClicked(mouseX, mouseY, button);
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -69,7 +69,7 @@ public class GuideFlow extends GuideWidget implements ParentWidget
     {
         for (GuideWidget child : elements.getChildren())
         {
-            if (child.contains(mouseX, mouseY) && child instanceof InteractableElement)
+            if (child.contains(mouseX, mouseY))
                 return child.mouseReleased(mouseX, mouseY, button);
         }
         return super.mouseReleased(mouseX, mouseY, button);
@@ -80,7 +80,7 @@ public class GuideFlow extends GuideWidget implements ParentWidget
     {
         for (GuideWidget child : elements.getChildren())
         {
-            if (child.contains(mouseX, mouseY) && child instanceof InteractableElement)
+            if (child.contains(mouseX, mouseY))
                 return child.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
@@ -91,7 +91,7 @@ public class GuideFlow extends GuideWidget implements ParentWidget
     {
         for (GuideWidget child : elements.getChildren())
         {
-            if (child.contains(mouseX, mouseY) && child instanceof InteractableElement)
+            if (child.contains(mouseX, mouseY))
                 return child.mouseScrolled(mouseX, mouseY, wheelDelta);
         }
         return super.mouseScrolled(mouseX, mouseY, wheelDelta);
@@ -103,8 +103,7 @@ public class GuideFlow extends GuideWidget implements ParentWidget
         boolean actionPerformed = false;
         for (GuideWidget child : elements.getChildren())
         {
-            if (child instanceof InteractableElement)
-                actionPerformed |= child.keyPressed(key, scancode, modifiers);
+            actionPerformed |= child.keyPressed(key, scancode, modifiers);
         }
         return actionPerformed | super.keyPressed(key, scancode, modifiers);
     }
@@ -115,8 +114,7 @@ public class GuideFlow extends GuideWidget implements ParentWidget
         boolean actionPerformed = false;
         for (GuideWidget child : elements.getChildren())
         {
-            if (child instanceof InteractableElement)
-                actionPerformed |= child.keyReleased(key, scancode, modifiers);
+            actionPerformed |= child.keyReleased(key, scancode, modifiers);
         }
         return actionPerformed | super.keyReleased(key, scancode, modifiers);
     }
@@ -127,8 +125,7 @@ public class GuideFlow extends GuideWidget implements ParentWidget
         boolean actionPerformed = false;
         for (GuideWidget child : elements.getChildren())
         {
-            if (child instanceof InteractableElement)
-                actionPerformed |= child.charTyped(codepoint, modifiers);
+            actionPerformed |= child.charTyped(codepoint, modifiers);
         }
         return actionPerformed | super.charTyped(codepoint, modifiers);
     }

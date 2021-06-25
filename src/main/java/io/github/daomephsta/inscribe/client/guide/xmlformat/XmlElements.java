@@ -66,7 +66,7 @@ public class XmlElements
         if (matchingChildren.getLength() > 1)
         {
             throw new InscribeSyntaxException(String.format("Found %d elements named '%s' in %s. Expected 1.",
-                childName, XmlElements.getDebugString(xml)));
+                matchingChildren.getLength(), childName, XmlElements.getDebugString(xml)));
         }
         return (Element) matchingChildren.item(0);
     }
@@ -87,7 +87,7 @@ public class XmlElements
         else if (matchingChildren.getLength() > 1)
         {
             throw new InscribeSyntaxException(String.format("Found %d elements named '%s' in %s. Expected 1.",
-                childName, XmlElements.getDebugString(xml)));
+                matchingChildren.getLength(), childName, XmlElements.getDebugString(xml)));
         }
         return (Element) matchingChildren.item(0);
     }

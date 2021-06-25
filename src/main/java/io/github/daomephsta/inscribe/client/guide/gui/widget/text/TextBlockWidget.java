@@ -67,7 +67,6 @@ public class TextBlockWidget extends GuideWidget
             }
             else
                 x += node.getWidth();
-            node = node.next;
         }
         return false;
     }

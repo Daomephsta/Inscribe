@@ -28,7 +28,7 @@ public class InscribeClientInitialiser implements ClientModInitializer
             for (Identifier modelId : GuideManager.INSTANCE.getGuideModelIds())
             {
                 if (modelId instanceof ModelIdentifier)
-                    out.accept((ModelIdentifier) modelId);
+                    out.accept(modelId);
             }
         });
         ModelLoadingRegistry.INSTANCE.registerResourceProvider(resourceManager -> new GuideModel.Provider());

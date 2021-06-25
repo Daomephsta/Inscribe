@@ -55,25 +55,21 @@ public interface ContentDeserialiser
             for (int i = 0; i < list.getLength(); i++)
             {
                 org.w3c.dom.Node node = list.item(i);
-                switch (node.getNodeType())
-                {
-                case org.w3c.dom.Node.ELEMENT_NODE:
-                    Element element = (Element) node;
-                    XmlElementType<?> deserialiser = deserialisers.get(element.getTagName());
-                    if (deserialiser == null)
+                switch (node.getNodeType()) {
+                    case org.w3c.dom.Node.ELEMENT_NODE ->
                     {
-                        LOGGER.debug("Ignored unknown element {}", element);
-                        continue;
+                        Element element = (Element) node;
+                        XmlElementType<?> deserialiser = deserialisers.get(element.getTagName());
+                        if (deserialiser == null) {
+                            LOGGER.debug("Ignored unknown element {}", element);
+                            continue;
+                        } else
+                            result.add(deserialiser.fromXml(element));
                     }
-                    else
-                        result.add(deserialiser.fromXml(element));
-                    break;
-                case org.w3c.dom.Node.TEXT_NODE:
-                    result.add(parseMarkDown(node.getTextContent()));
-                    break;
-                default:
-                    LOGGER.debug("Ignored {} as it is not text or an element", node);
-                    break;
+                    case org.w3c.dom.Node.TEXT_NODE ->
+                            result.add(parseMarkDown(node.getTextContent()));
+                    default ->
+                            LOGGER.debug("Ignored {} as it is not text or an element", node);
                 }
             }
             return result;

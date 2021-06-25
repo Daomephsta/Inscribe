@@ -64,9 +64,8 @@ public class EntityDisplayWidget extends GuideWidget
     {
         matrixStack.translate(transform.translation.getX(), transform.translation.getY(), transform.translation.getZ() + 1000.0D);
         matrixStack.scale(30 * transform.scale, -30 * transform.scale, 30 * transform.scale);
-        if (animation instanceof Revolve)
+        if (animation instanceof Revolve revolve)
         {
-            Revolve revolve = (Revolve) animation;
             float angle = (System.currentTimeMillis() % (int) Math.ceil(5000 / revolve.speed)) / (5000.0F / revolve.speed) * 360.0F;
             rotation.hamiltonProduct(revolve.axis.getDegreesQuaternion(angle));
         }

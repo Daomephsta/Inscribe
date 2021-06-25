@@ -15,7 +15,7 @@ class PageSpreads implements Iterable<Pair<GuideFlow, GuideFlow>>
 
     public PageSpreads(List<GuideFlow> pages)
     {
-        this.spreads = new ArrayList<>((int) Math.ceil(pages.size() / 2));
+        this.spreads = new ArrayList<>((int) Math.ceil(pages.size() / 2.0));
         for (Iterator<GuideFlow> iter = pages.iterator(); iter.hasNext();)
             spreads.add(Pair.of(iter.next(), iter.hasNext() ? iter.next() : new GuideFlow(Direction.VERTICAL)));
         this.cursor = 0;

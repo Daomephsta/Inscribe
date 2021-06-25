@@ -77,9 +77,8 @@ public class PosterBlock extends Block implements BlockEntityProvider
     {
         // Judging by Mojang code, sometimes the BE is null, or some other BE
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof PosterBlockEntity)
+        if (blockEntity instanceof PosterBlockEntity poster)
         {
-            PosterBlockEntity poster = (PosterBlockEntity) blockEntity;
             Iterable<BlockPos> positions = poster.positions()::iterator;
             for (BlockPos board : positions)
                 world.setBlockState(board, Blocks.AIR.getDefaultState());

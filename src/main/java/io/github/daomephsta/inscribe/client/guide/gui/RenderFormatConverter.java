@@ -28,22 +28,19 @@ public class RenderFormatConverter
 
     public static void convert(GuideFlow output, Object intermediateForm)
     {
-        if (intermediateForm instanceof XmlImage)
+        if (intermediateForm instanceof XmlImage intermediate)
         {
-            XmlImage intermediate = (XmlImage) intermediateForm;
             ImageWidget widget = new ImageWidget(intermediate.getSrc(), intermediate.getAltText(), intermediate.getWidth(), intermediate.getHeight());
             widget.setPadding(intermediate.padding);
             widget.setMargin(intermediate.margin);
             addWidget(output, widget, intermediate.size);
         }
-        else if (intermediateForm instanceof XmlItemStack)
+        else if (intermediateForm instanceof XmlItemStack intermediate)
         {
-            XmlItemStack intermediate = (XmlItemStack) intermediateForm;
             addWidget(output, new StackDisplayWidget(intermediate.stack), intermediate.size);
         }
-        else if (intermediateForm instanceof XmlEntityDisplay)
+        else if (intermediateForm instanceof XmlEntityDisplay intermediate)
         {
-            XmlEntityDisplay intermediate = (XmlEntityDisplay) intermediateForm;
             try
             {
                 Entity entity = Registry.ENTITY_TYPE.get(intermediate.entityId).create(MinecraftClient.getInstance().world);

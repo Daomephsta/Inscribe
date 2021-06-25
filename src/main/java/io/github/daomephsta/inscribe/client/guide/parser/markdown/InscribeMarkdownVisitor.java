@@ -207,13 +207,10 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
                 return;
             }
             visitChildren(link);
-            if (scheme != null)
-            {
-                if (scheme.equals(Inscribe.MOD_ID))
-                    builder.endEntryLink();
-                else if (ALLOWED_SCHEMES.contains(scheme))
-                    builder.endWebLink();
-            }
+            if (scheme.equals(Inscribe.MOD_ID))
+                builder.endEntryLink();
+            else if (ALLOWED_SCHEMES.contains(scheme))
+                builder.endWebLink();
         }
         catch (URISyntaxException e)
         {
@@ -243,9 +240,8 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     private void error(Node node, String format, Object... args)
     {
         LOGGER.error(format.replaceAll("%\\w+", "{}"), args);
-        if (args[args.length - 1] instanceof Throwable)
+        if (args[args.length - 1] instanceof Throwable t)
         {
-            Throwable t = (Throwable) args[args.length - 1];
             StringWriter stringWriter = new StringWriter();
             t.printStackTrace(new PrintWriter(stringWriter));
             args[args.length - 1] = stringWriter.toString();
