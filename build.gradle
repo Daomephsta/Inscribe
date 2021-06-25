@@ -93,7 +93,7 @@ remapJar {
 }
 
 checkstyle {
-    toolVersion '8.27'
+    toolVersion '8.43'
 }
 
 // configure the maven publication
