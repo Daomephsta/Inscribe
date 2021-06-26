@@ -1,5 +1,7 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -27,7 +29,7 @@ public class ImageWidget extends GuideWidget
     @Override
     public void renderWidget(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration)
     {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(src);
+        RenderSystem.setShaderTexture(0, src);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder vertexBuf = tessellator.getBuffer();
         vertexBuf.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
