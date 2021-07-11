@@ -95,6 +95,7 @@ remapJar {
 
 checkstyle {
     toolVersion '8.44'
+    configDirectory = file("$project.projectDir/config/checkstyle")
 }
 
 test {
