@@ -17,6 +17,7 @@ import io.github.daomephsta.inscribe.common.util.Identifiers;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ButtonWidget.PressAction;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -59,17 +60,29 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
         }
         int controlsX = pageSpreads.rightPage().right() + 13;
         int controlsY = pageSpreads.rightPage().bottom() - 21;
-        this.prevPage = addDrawableChild(new TexturedButtonWidget(controlsX, controlsY, 18, 18, 402, 211, 0, guide.getTheme().getGuiTexture(), 440, 256, b ->
+        this.prevPage = addDrawableChild(createControl(controlsX, controlsY, 0, b ->
         {
             pageSpreads.previous();
             updateButtonVisibility();
         }));
-        this.nextPage = addDrawableChild(new TexturedButtonWidget(controlsX, controlsY - 18, 18, 18, 402, 193, 0, guide.getTheme().getGuiTexture(), 440, 256, b ->
+        this.nextPage = addDrawableChild(createControl(controlsX, controlsY, 18, b ->
         {
             pageSpreads.next();
             updateButtonVisibility();
         }));
+        // Home
+        addDrawableChild(createControl(controlsX, controlsY, 36, b ->
+        {
+            Screen screen = new OpenTableOfContentsScreen(guide, guideStack, guide.getMainTableOfContents());
+            MinecraftClient.getInstance().openScreen(screen);
+        }));
         updateButtonVisibility();
+    }
+
+    private TexturedButtonWidget createControl(int x, int y, int yOffset, PressAction pressAction)
+    {
+        return new TexturedButtonWidget(x, y - yOffset, 18, 18, 402, 211 - yOffset, 
+            0, guide.getTheme().getGuiTexture(), 440, 256, pressAction);
     }
 
     private void updateButtonVisibility()
