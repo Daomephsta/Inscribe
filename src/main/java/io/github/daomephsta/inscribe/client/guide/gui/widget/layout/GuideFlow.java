@@ -57,8 +57,8 @@ public class GuideFlow extends GuideWidget implements ParentWidget
     {
         for (GuideWidget child : elements.getChildren())
         {
-            if (child.contains(mouseX, mouseY))
-                return child.mouseClicked(mouseX, mouseY, button);
+            if (child.contains(mouseX, mouseY) && child.mouseClicked(mouseX, mouseY, button)) 
+                return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
