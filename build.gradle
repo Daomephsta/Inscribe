@@ -1,6 +1,6 @@
 import net.fabricmc.loom.task.RemapJarTask
 plugins {
-    id 'fabric-loom' version '0.8-SNAPSHOT'
+    id 'fabric-loom'
     id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'checkstyle'
@@ -30,13 +30,15 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    
-    //Mosaic for layout
-    shade(implementation(project(':mosaic')))
+
     shade(implementation("com.pivovarit:throwing-function:${project.throwing_function_version}"))
     shade(implementation("org.commonmark:commonmark:${project.common_mark_version}"))
     //Underline
     shade(implementation("org.commonmark:commonmark-ext-ins:${project.common_mark_version}"))
+    
+    // Use JUnit Jupiter for testing
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
 }
 
 processResources {
@@ -75,7 +77,6 @@ shadowJar {
     // Only shade dependencies not provided by Minecraft/FAPI/FLoader
     configurations = [project.configurations.shade]
     relocate 'com.pivovarit.function', 'io.github.daomephsta.inscribe.shadow.com.pivovarit.function'
-    relocate 'io.github.daomephsta.mosaic', 'io.github.daomephsta.inscribe.shadow.mosaic'
     relocate 'org.commonmark', 'io.github.daomephsta.inscribe.shadow.org.commonmark'
 
     //Exclude META-INF entries of shaded deps
@@ -93,7 +94,11 @@ remapJar {
 }
 
 checkstyle {
-    toolVersion '8.43'
+    toolVersion '8.44'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 // configure the maven publication

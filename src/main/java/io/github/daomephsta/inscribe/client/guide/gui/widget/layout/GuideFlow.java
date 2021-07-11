@@ -2,7 +2,6 @@ package io.github.daomephsta.inscribe.client.guide.gui.widget.layout;
 
 import java.util.function.Consumer;
 
-import io.github.daomephsta.inscribe.client.guide.gui.InteractableElement;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.mosaic.ParentWidget;
 import io.github.daomephsta.mosaic.flow.Flow;
