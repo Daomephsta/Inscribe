@@ -9,7 +9,7 @@
     "server": ["io.github.daomephsta.inscribe.server.InscribeServerInitialiser"],
     "client": ["io.github.daomephsta.inscribe.client.InscribeClientInitialiser"]
   },
-  "requires": 
+  "depends": 
   {
     "fabric": "*"
   },
