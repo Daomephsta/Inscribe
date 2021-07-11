@@ -22,7 +22,6 @@ import io.github.daomephsta.inscribe.client.guide.gui.RenderFormatConverter;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.parser.Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser.Impl;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
@@ -106,26 +105,23 @@ public class V100Parser implements Parser
         for (int i = 0; i < linkElements.getLength(); i++)
         {
             Element link = (Element) linkElements.item(i);
-            Element iconXml = XmlElements.getChildNullable(link, "icon");
-            if (style.requiresIcon() && iconXml == null)
-                throw new InscribeSyntaxException("Style " + style + " requires that an icon is specified");
             String name = XmlAttributes.getValue(link, "name");
             String destination = XmlAttributes.getValue(link, "destination");
             Identifier destinationId = destination.startsWith("/")
                 ? new Identifier(directory + destination)
                 : new Identifier(destination);
-            Consumer<GuideFlow> iconFactory = null;
-            if (iconXml != null)
-            {
-                XmlGuideGuiElement icon = GUIDE_GUI_ELEMENT_DESERIALISER.deserialise(iconXml);
-                iconFactory = output -> RenderFormatConverter.convert(output, icon);
-            }
-            links.add(new TableOfContents.Link(iconFactory, name, destinationId, style));
+            links.add(new TableOfContents.Link(getIconFactory(style, link), name, destinationId, style));
         }
         return new TableOfContents(id, filePath, links, XmlAttributes.asInt(root, "columns", 1));
     }
 
-
+    private Consumer<GuideFlow> getIconFactory(LinkStyle style, Element link) throws GuideLoadingException
+    {
+        if (!style.requiresIcon())
+            return null;
+        XmlGuideGuiElement icon = GUIDE_GUI_ELEMENT_DESERIALISER.deserialise(link);
+        return output -> RenderFormatConverter.convert(output, icon);
+    }
 
     @Override
     public XmlEntry loadEntry(Element root, ResourceManager resourceManager,
