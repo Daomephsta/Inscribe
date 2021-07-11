@@ -99,8 +99,8 @@ public class V100Parser implements Parser
     @Override
     public TableOfContents loadTableOfContents(Element root, Identifier id, GuideIdentifier filePath) throws GuideLoadingException
     {
-        LinkStyle style = XmlAttributes.asEnum(root, "link_style", LinkStyle::fromRepresentation);
-
+        String directory = Identifiers.working(id).subIdentifier(0, -2).toIdentifier().toString();
+        LinkStyle style = XmlAttributes.asEnum(root, "link_style", LinkStyle::fromRepresentation);        
         NodeList linkElements = root.getElementsByTagName("link");
         List<TableOfContents.Link> links = Lists.newArrayListWithCapacity(linkElements.getLength());
         for (int i = 0; i < linkElements.getLength(); i++)
@@ -110,14 +110,17 @@ public class V100Parser implements Parser
             if (style.requiresIcon() && iconXml == null)
                 throw new InscribeSyntaxException("Style " + style + " requires that an icon is specified");
             String name = XmlAttributes.getValue(link, "name");
-            Identifier destination = XmlAttributes.asIdentifier(link, "destination");
+            String destination = XmlAttributes.getValue(link, "destination");
+            Identifier destinationId = destination.startsWith("/")
+                ? new Identifier(directory + destination)
+                : new Identifier(destination);
             Consumer<GuideFlow> iconFactory = null;
             if (iconXml != null)
             {
                 XmlGuideGuiElement icon = GUIDE_GUI_ELEMENT_DESERIALISER.deserialise(iconXml);
                 iconFactory = output -> RenderFormatConverter.convert(output, icon);
             }
-            links.add(new TableOfContents.Link(iconFactory, name, destination, style));
+            links.add(new TableOfContents.Link(iconFactory, name, destinationId, style));
         }
         return new TableOfContents(id, filePath, links, XmlAttributes.asInt(root, "columns", 1));
     }
