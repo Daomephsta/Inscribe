@@ -119,6 +119,7 @@ public class PageBuilder
     public void addLabel(Alignment horizontalAlignment, Alignment verticalAlignment, float scale)
     {
         LabelWidget label = new LabelWidget(textNodes.poll(), horizontalAlignment, verticalAlignment, scale);
+        label.margin().setBottom(2);
         if (!interactables.isEmpty())
             label.attach(interactables.peek());
         if (!renderables.isEmpty())
