@@ -82,7 +82,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
     public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor)
     {
         return load(resourceManager, loadProfiler, loadExecutor)
-            .thenAccept(data -> apply(data, resourceManager, applyProfiler, applyExecutor))
+            .thenAcceptAsync(data -> apply(data, resourceManager, applyProfiler, applyExecutor), applyExecutor)
             .thenCompose(synchronizer::whenPrepared);
     }
 
@@ -91,12 +91,12 @@ public class GuideManager implements IdentifiableResourceReloadListener
         Executor applyExecutor) throws GuideLoadingException
     {
         return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
-            findGuideAssets(assets, FOLDER_NAME + '/' + guideId.getPath())))
-        .thenApply(guideAssets ->
+            findGuideAssets(assets, FOLDER_NAME + '/' + guideId.getPath())), loadExecutor)
+        .thenApplyAsync(guideAssets ->
         {
             loadGuideAssets(guideAssets, assets);
             return getGuide(guideId);
-        })
+        }, applyExecutor)
         .exceptionally(thrw ->
         {
             if (thrw instanceof WrappedException)
@@ -105,12 +105,12 @@ public class GuideManager implements IdentifiableResourceReloadListener
             Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_guide"));
             return getGuide(Guide.INVALID_GUIDE_ID);
         })
-        .thenApply(guide ->
+        .thenApplyAsync(guide ->
         {
             this.guides.put(guide.getIdentifier(), guide);
             LOGGER.info("Reloaded guide '{}'", guide.getIdentifier());
             return guide;
-        })
+        }, applyExecutor)
         .thenCompose(synchronizer::whenPrepared);
     }
 
@@ -131,13 +131,13 @@ public class GuideManager implements IdentifiableResourceReloadListener
              Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_entry"));
              return createFallbackEntry(entry.getId(), entry.getFilePath());
         })
-        .thenApply(newEntry ->
+        .thenApplyAsync(newEntry ->
         {
             Guide guide = guides.get(newEntry.getFilePath().getGuideId());
             guide.replaceEntry(newEntry.getId(), newEntry);
             LOGGER.info("Reloaded entry '{}'", newEntry.getId());
             return newEntry;
-        });
+        }, applyExecutor);
     }
 
     public CompletableFuture<TableOfContents> reloadTableOfContents(TableOfContents oldToc,
@@ -150,13 +150,13 @@ public class GuideManager implements IdentifiableResourceReloadListener
                 resourceManager, oldToc.getFilePath()).getDocumentElement();
             return Parsers.loadTableOfContents(root, resourceManager, oldToc.getFilePath());
         }), loadExecutor)
-        .thenApply(toc ->
+        .thenApplyAsync(toc ->
         {
             Guide guide = guides.get(oldToc.getFilePath().getGuideId());
             guide.replaceTableOfContents(toc.getId(), toc);
             LOGGER.info("Reloaded ToC '{}'", toc.getId());
             return toc;
-        })
+        }, applyExecutor)
         .exceptionally(thrw ->
         {
              if (thrw instanceof WrappedException)
