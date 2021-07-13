@@ -5,6 +5,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEn
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Revolve;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay.Transform;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
@@ -44,6 +45,7 @@ public class EntityDisplayWidget extends GuideWidget
         applyTransform(matrices, rotation, transform);
         rotation.conjugate();
         matrices.multiply(rotation);
+        DiffuseLighting.method_34742();
         EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         entityRenderDispatcher.setRotation(rotation);
         entityRenderDispatcher.setRenderShadows(false);
@@ -53,6 +55,7 @@ public class EntityDisplayWidget extends GuideWidget
         entityVertexConsumers.draw();
         entityRenderDispatcher.setRenderShadows(true);
         matrices.pop();
+        DiffuseLighting.enableGuiDepthLighting();
     }
 
     private boolean isOnGui(MatrixStack matrices)
