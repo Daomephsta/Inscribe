@@ -14,7 +14,7 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextBlockWidget;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents.Link;
 import io.github.daomephsta.mosaic.SizeConstraint;
@@ -97,9 +97,8 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         {
             GuideFlow linkElement = new GuideFlow(Direction.HORIZONTAL);
             link.addIcon(linkElement);
-            LabelWidget label = new LabelWidget(
-                new FormattedTextNode(link.name, MinecraftClient.DEFAULT_FONT_ID, 0x000000),
-                Alignment.CENTER, Alignment.CENTER, 1.0F);
+            TextBlockWidget label = new TextBlockWidget(Alignment.LEADING, Alignment.CENTER, 
+                new FormattedTextNode(link.name, MinecraftClient.DEFAULT_FONT_ID, 0x000000));
             label.margin().setLeft(1);
             linkElement.add(label);
             return linkElement;
@@ -112,9 +111,8 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
             return linkElement;
         }
         case TEXT:
-            return new LabelWidget(
-                new FormattedTextNode(link.name, MinecraftClient.DEFAULT_FONT_ID, 0x000000),
-                Alignment.LEADING, Alignment.CENTER, 1.0F);
+            return new TextBlockWidget(Alignment.LEADING, Alignment.CENTER, 
+                new FormattedTextNode(link.name, MinecraftClient.DEFAULT_FONT_ID, 0x000000));
         default:
             throw new IllegalArgumentException("Unknown link style " + link.style);
         }

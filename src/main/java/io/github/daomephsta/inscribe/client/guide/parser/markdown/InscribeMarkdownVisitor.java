@@ -38,10 +38,10 @@ import com.google.common.collect.Sets;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextBlockWidget;
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import io.github.daomephsta.inscribe.client.guide.parser.markdown.ListData.ListType;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlHeading;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import net.minecraft.client.MinecraftClient;
@@ -53,9 +53,14 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.markdown");
     private final PageBuilder builder;
 
+    public InscribeMarkdownVisitor(PageBuilder builder)
+    {
+        this.builder = builder;
+    }
+    
     public InscribeMarkdownVisitor(GuideFlow output)
     {
-        this.builder = new PageBuilder(output);
+        this(new PageBuilder(output));
     }
 
     @Override
@@ -68,14 +73,14 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
     public void visit(Heading heading)
     {
         visitChildren(heading);
-        builder.addLabel(Alignment.LEADING, Alignment.CENTER, (7 - heading.getLevel()) / 6.0F * LabelWidget.MAX_SCALE);
+        builder.addTextBlock(Alignment.LEADING, Alignment.CENTER, XmlHeading.levelToScale(heading.getLevel()));
     }
 
     @Override
     public void visit(Paragraph paragraph)
     {
         visitChildren(paragraph);
-        builder.addTextBlock(Alignment.LEADING, Alignment.LEADING);
+        builder.addTextBlock(Alignment.LEADING, Alignment.LEADING, 1.0F);
     }
 
     @Override
@@ -283,7 +288,7 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
             builder.pushLiteral(lines[i]);
         }
         visitChildren(codeBlock);
-        builder.addTextBlock(Alignment.LEADING, Alignment.LEADING);
+        builder.addTextBlock(Alignment.LEADING, Alignment.LEADING, 1.0F);
         builder.popFont();
     }
 

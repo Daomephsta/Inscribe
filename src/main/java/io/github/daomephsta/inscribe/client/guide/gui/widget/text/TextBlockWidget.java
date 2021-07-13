@@ -1,8 +1,9 @@
 package io.github.daomephsta.inscribe.client.guide.gui.widget.text;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,22 +13,26 @@ import io.github.daomephsta.inscribe.common.Inscribe;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 
 public class TextBlockWidget extends GuideWidget
 {
     public static final Identifier MONO_FONT = new Identifier(Inscribe.MOD_ID, "mono");
+    public static final float MAX_SCALE = 2.0F;
     private final Alignment horizontalAlignment,
                             verticalAlignment;
     private final int widthHint,
                       heightHint;
-    private final Collection<TextNode> content;
+    private final List<TextNode> content;
+    private final float scale;
 
-    public TextBlockWidget(Alignment horizontalAlignment, Alignment verticalAlignment, Collection<TextNode> content)
+    public TextBlockWidget(Alignment horizontalAlignment, Alignment verticalAlignment, List<TextNode> content, float scale)
     {
         this.horizontalAlignment = horizontalAlignment;
         this.verticalAlignment = verticalAlignment;
         this.content = content;
+        this.scale = scale;
         int width = 0, height = 0;
         int lineWidth = 0, lineHeight = 0;
         for (Iterator<TextNode> iter = content.iterator(); iter.hasNext();)
@@ -43,9 +48,14 @@ public class TextBlockWidget extends GuideWidget
                 lineWidth = lineHeight = 0;
             }
         }
-        this.widthHint = width;
-        this.heightHint = height;
+        this.widthHint = MathHelper.ceil(width * scale);
+        this.heightHint = MathHelper.ceil(height * scale);
         margin().setVertical(1);
+    }
+    
+    public TextBlockWidget(Alignment horizontalAlignment, Alignment verticalAlignment, TextNode... content)
+    {
+        this(horizontalAlignment, verticalAlignment, Arrays.asList(content), 1.0F);
     }
 
     @Override
@@ -78,11 +88,13 @@ public class TextBlockWidget extends GuideWidget
         float x = left;
         float y = verticalAlignment.offsetY(y(), this, hintHeight());
         int lineHeight = 0;
+        matrices.push();
+        matrices.scale(scale, scale, scale);
         Map<Vec2f, ElementHostNode> renderables = new HashMap<>();
         for (TextNode node : content)
         {
             lineHeight = Math.max(lineHeight, node.getHeight());
-            node.render(vertices, matrices, x, y, mouseX, mouseY, lastFrameDuration);
+            node.render(vertices, matrices, x / scale, y / scale, mouseX, mouseY, lastFrameDuration);
             if (node instanceof ElementHostNode)
                 renderables.put(new Vec2f(x, y), (ElementHostNode) node);
             if (node instanceof LineBreak)
@@ -94,6 +106,7 @@ public class TextBlockWidget extends GuideWidget
             else
                 x += node.getWidth();
         }
+        matrices.pop();
         // Attached renderables render over/after nodes
         for (Entry<Vec2f, ElementHostNode> entry : renderables.entrySet())
         {

@@ -19,7 +19,6 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.InlineImage;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LineBreak;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextBlockWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextNode;
@@ -116,18 +115,7 @@ public class PageBuilder
         textNodes.add(new LineBreak());
     }
 
-    public void addLabel(Alignment horizontalAlignment, Alignment verticalAlignment, float scale)
-    {
-        LabelWidget label = new LabelWidget(textNodes.poll(), horizontalAlignment, verticalAlignment, scale);
-        label.margin().setBottom(2);
-        if (!interactables.isEmpty())
-            label.attach(interactables.peek());
-        if (!renderables.isEmpty())
-            label.attach(renderables.peek());
-        output.peek().add(label);
-    }
-
-    public void addTextBlock(Alignment horizontalAlignment, Alignment verticalAlignment)
+    public void addTextBlock(Alignment horizontalAlignment, Alignment verticalAlignment, float scale)
     {
         ListData listDatum = listData.peek();
         if (listDatum != null)
@@ -137,8 +125,7 @@ public class PageBuilder
         List<TextNode> nodes = Stream.generate(textNodes::poll)
             .limit(textNodes.size())
             .collect(toList());
-        TextBlockWidget textBlock = new TextBlockWidget(
-            horizontalAlignment, verticalAlignment, nodes);
+        TextBlockWidget textBlock = new TextBlockWidget(horizontalAlignment, verticalAlignment, nodes, scale);
         if (!interactables.isEmpty())
             textBlock.attach(interactables.peek());
         if (!renderables.isEmpty())

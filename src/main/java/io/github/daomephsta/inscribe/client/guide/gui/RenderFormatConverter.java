@@ -11,7 +11,7 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.StackDisplayWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.text.LabelWidget;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextBlockWidget;
 import io.github.daomephsta.inscribe.client.guide.parser.markdown.InscribeMarkdownVisitor;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlImage;
@@ -62,8 +62,8 @@ public class RenderFormatConverter
             ((Node) intermediateForm).accept(new InscribeMarkdownVisitor(output));
         else
         {
-            output.add(new LabelWidget(new FormattedTextNode("CONVERT_FAIL",
-                MinecraftClient.DEFAULT_FONT_ID, 0), Alignment.CENTER, Alignment.CENTER, 1.0F));
+            output.add(new TextBlockWidget(Alignment.CENTER, Alignment.CENTER, 
+                new FormattedTextNode("CONVERT_FAIL", MinecraftClient.DEFAULT_FONT_ID, 0)));
         }
     }
 
