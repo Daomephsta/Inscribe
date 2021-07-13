@@ -21,7 +21,7 @@ public class FormattedTextNode extends ElementHostNode
         this.text = new LiteralText(text).styled(style -> 
         {
             for (FormatFlags flag : formatFlags)
-                flag.apply(style);
+                style = flag.apply(style);
             return style.withFont(font);
         });
     }

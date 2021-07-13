@@ -1,7 +1,9 @@
 package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
@@ -20,8 +22,12 @@ import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.LinkStyle;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderFormatConverter;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextNode;
+import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import io.github.daomephsta.inscribe.client.guide.parser.Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser.Impl;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
@@ -36,6 +42,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -52,19 +59,11 @@ public class V100Parser implements Parser
         .registerDeserialiser(V100ElementTypes.ITEMSTACK)
         .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
     private static final ContentDeserialiser ENTRY_DESERIALISER = new ContentDeserialiser.Impl()
-            .registerDeserialiser(V100ElementTypes.PARAGRAPH)
-            .registerDeserialiser(V100ElementTypes.ITALICS)
-            .registerDeserialiser(V100ElementTypes.EMPHASIS)
-            .registerDeserialiser(V100ElementTypes.BOLD)
-            .registerDeserialiser(V100ElementTypes.STRONG)
-            .registerDeserialiser(V100ElementTypes.DEL)
-            .registerDeserialiser(V100ElementTypes.LINE_BREAK)
-            .registerDeserialiser(V100ElementTypes.WEB_LINK)
-            .registerDeserialiser(V100ElementTypes.ENTRY_LINK)
-            .registerDeserialiser(V100ElementTypes.ANCHOR)
-            .registerDeserialiser(V100ElementTypes.IMAGE)
-            .registerDeserialiser(V100ElementTypes.ITEMSTACK)
-            .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
+        .registerDeserialisers(V100ElementTypes.PARAGRAPH, V100ElementTypes.ITALICS, V100ElementTypes.EMPHASIS, 
+            V100ElementTypes.BOLD, V100ElementTypes.STRONG, V100ElementTypes.DEL, V100ElementTypes.LINE_BREAK, 
+            V100ElementTypes.WEB_LINK, V100ElementTypes.ENTRY_LINK, V100ElementTypes.ANCHOR, V100ElementTypes.IMAGE, 
+            V100ElementTypes.ITEMSTACK, V100ElementTypes.ENTITY_DISPLAY)
+        .registerDeserialisers(V100ElementTypes.HEADINGS);
 
     @Override
     public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
@@ -144,5 +143,39 @@ public class V100Parser implements Parser
             pages.add(new XmlPage(ENTRY_DESERIALISER.deserialise(page.getChildNodes())));
         }
         return pages;
+    }
+
+    static List<TextNode> parseContentAsText0(Element xml, List<TextNode> text, Deque<FormatFlags> formatting) throws InscribeSyntaxException
+    {
+        for (int i = 0; i < xml.getChildNodes().getLength(); i++)
+        {
+            Node node = xml.getChildNodes().item(i);
+            switch (node.getNodeType())
+            {
+            case Node.TEXT_NODE -> 
+                text.add(new FormattedTextNode(node.getNodeValue(), MinecraftClient.DEFAULT_FONT_ID, 
+                    0x000000, formatting.toArray(new FormatFlags[0])));
+            case Node.ELEMENT_NODE ->
+                {
+                    Element element = (Element) node;
+                    formatting.push(switch (element.getTagName())
+                    {
+                    case "b" -> FormatFlags.BOLD;
+                    case "i" -> FormatFlags.ITALIC;
+                    case "u" -> FormatFlags.UNDERLINE;
+                    case "del" -> FormatFlags.STRIKETHROUGH;
+                    default -> 
+                        throw new InscribeSyntaxException("Unexpected tag " + element.getTagName());
+                    });
+                    parseContentAsText0(element, text, formatting);
+                }
+            }
+        }
+        return text;
+    }
+
+    static List<TextNode> parseContentAsText(Element xml) throws InscribeSyntaxException
+    {
+        return V100Parser.parseContentAsText0(xml, new ArrayList<>(), new ArrayDeque<>());
     }
 }

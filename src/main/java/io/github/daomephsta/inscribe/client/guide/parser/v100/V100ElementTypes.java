@@ -1,10 +1,25 @@
 package io.github.daomephsta.inscribe.client.guide.parser.v100;
 
-import io.github.daomephsta.inscribe.client.guide.parser.*;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent.*;
+import java.util.stream.IntStream;
+
+import io.github.daomephsta.inscribe.client.guide.parser.SimpleXmlElementType;
+import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent.XmlBold;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent.XmlDel;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent.XmlEmphasis;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent.XmlItalics;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent.XmlParagraph;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.base.XmlMixedContent.XmlStrong;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.NoGuideAccessMethod;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.*;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlAnchor;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntryLink;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlImage;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlLineBreak;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlWebLink;
 
 public class V100ElementTypes
 {
@@ -18,6 +33,13 @@ public class V100ElementTypes
     static final XmlElementType<XmlBold> BOLD = new TextFormattingXmlElementType<>("b", XmlBold.class, XmlBold::new);
     static final XmlElementType<XmlEmphasis> EMPHASIS = new TextFormattingXmlElementType<>("em", XmlEmphasis.class, XmlEmphasis::new);
     static final XmlElementType<XmlItalics> ITALICS = new TextFormattingXmlElementType<>("i", XmlItalics.class, XmlItalics::new);
+    static final XmlHeadingElementType[] HEADINGS = IntStream.rangeClosed(1, 6)
+        .mapToObj(XmlHeadingElementType::new)
+        .toArray(XmlHeadingElementType[]::new);
+    static final ContentDeserialiser TEXT_FORMATTING = new ContentDeserialiser.Impl()
+        .registerDeserialisers(V100ElementTypes.BOLD, V100ElementTypes.STRONG, 
+            V100ElementTypes.EMPHASIS, V100ElementTypes.ITALICS, V100ElementTypes.DEL)
+        .registerDeserialisers(V100ElementTypes.HEADINGS);
     static final XmlElementType<XmlParagraph> PARAGRAPH = new XmlParagraphElementType();
     static final XmlElementType<XmlItemStack> ITEMSTACK = new XmlItemStackElementType();
     static final XmlElementType<XmlEntityDisplay> ENTITY_DISPLAY = new XmlEntityDisplayElementType();

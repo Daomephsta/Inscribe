@@ -41,6 +41,13 @@ public interface ContentDeserialiser
         private static final Unindenter UNINDENTER = new Unindenter();
         private final Map<String, XmlElementType<?>> deserialisers = new HashMap<>();
 
+        public Impl registerDeserialisers(XmlElementType<?>... elementTypes)
+        {
+            for (var type : elementTypes)
+                registerDeserialiser(type);
+            return this;
+        }
+        
         public Impl registerDeserialiser(XmlElementType<?> elementType)
         {
             deserialisers.put(elementType.getElementName(), elementType);

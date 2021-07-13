@@ -13,11 +13,12 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextNode;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextBlockWidget;
 import io.github.daomephsta.inscribe.client.guide.parser.markdown.InscribeMarkdownVisitor;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentation;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlImage;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
-import io.github.daomephsta.mosaic.flow.FlowLayoutData;
 import io.github.daomephsta.mosaic.Size;
+import io.github.daomephsta.mosaic.flow.FlowLayoutData;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.registry.Registry;
@@ -58,6 +59,8 @@ public class RenderFormatConverter
                 LOGGER.error(e);
             }
         }
+        else if (intermediateForm instanceof IXmlRepresentation representation)
+            representation.acceptPage(output);
         else if (intermediateForm instanceof Node)
             ((Node) intermediateForm).accept(new InscribeMarkdownVisitor(output));
         else
