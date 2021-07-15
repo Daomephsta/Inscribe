@@ -1,3 +1,4 @@
-<toc link_style="text" parser_version="1.0.0">
+<?parser_version 1.0.0?>
+<toc link_style="text">
 	<link name="README" destination="inscribe:invalid/invalid_guide_notice"/>
 </toc>

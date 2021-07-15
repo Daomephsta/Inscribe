@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.google.common.collect.Sets;
@@ -121,7 +122,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
         return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
         {
             return Parsers.loadEntry(XmlResources.readDocument(XmlResources.GENERAL, resourceManager,
-                entry.getFilePath()).getDocumentElement(), resourceManager, entry.getFilePath());
+                entry.getFilePath()), resourceManager, entry.getFilePath());
         }), loadExecutor)
         .exceptionally(thrw ->
         {
@@ -146,9 +147,8 @@ public class GuideManager implements IdentifiableResourceReloadListener
     {
         return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
         {
-            Element root = XmlResources.readDocument(XmlResources.GENERAL,
-                resourceManager, oldToc.getFilePath()).getDocumentElement();
-            return Parsers.loadTableOfContents(root, resourceManager, oldToc.getFilePath());
+            Document doc = XmlResources.readDocument(XmlResources.GENERAL, resourceManager, oldToc.getFilePath());
+            return Parsers.loadTableOfContents(doc, resourceManager, oldToc.getFilePath());
         }), loadExecutor)
         .thenApplyAsync(toc ->
         {
@@ -168,7 +168,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
     }
 
 
-    public CompletableFuture<Map<GuideIdentifier, Element>> load(
+    public CompletableFuture<Map<GuideIdentifier, Document>> load(
         ResourceManager assets, Profiler profiler, Executor executor)
     {
         return CompletableFuture.supplyAsync(() -> findGuideAssets(assets, FOLDER_NAME), executor)
@@ -182,9 +182,9 @@ public class GuideManager implements IdentifiableResourceReloadListener
         });
     }
 
-    public Map<GuideIdentifier, Element> findGuideAssets(ResourceManager assets, String folder)
+    public Map<GuideIdentifier, Document> findGuideAssets(ResourceManager assets, String folder)
     {
-        Map<GuideIdentifier, Element> guideAssets = new TreeMap<>((a, b) ->
+        Map<GuideIdentifier, Document> guideAssets = new TreeMap<>((a, b) ->
         {
             // Guide definitions first
             if (isGuideDefinition(a) && !isGuideDefinition(b))
@@ -206,13 +206,13 @@ public class GuideManager implements IdentifiableResourceReloadListener
                 {
                     // Universal or user language assets override any existing assets
                     guideAssets.put(guideAsset, XmlResources.readDocument(
-                        XmlResources.GENERAL, assets, file).getDocumentElement());
+                        XmlResources.GENERAL, assets, file));
                 }
                 else if (guideAsset.getLangCode().equals("en_us"))
                 {
                     // en_us assets don't override
                     guideAssets.putIfAbsent(guideAsset, XmlResources.readDocument(
-                        XmlResources.GENERAL, assets, file).getDocumentElement());
+                        XmlResources.GENERAL, assets, file));
                 }
             }
             catch (GuideLoadingException e)
@@ -228,7 +228,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
         return filePath.getPath().endsWith(GUIDE_DEFINITION_FILENAME);
     }
 
-    public void apply(Map<GuideIdentifier, Element> guideAssets,
+    public void apply(Map<GuideIdentifier, Document> guideAssets,
         ResourceManager assets, Profiler profiler, Executor executor)
     {
         Set<Identifier> oldGuides = new HashSet<>(guides.keySet());
@@ -238,17 +238,18 @@ public class GuideManager implements IdentifiableResourceReloadListener
         LOGGER.info("Loaded {} guides", guides.size());
     }
 
-    private void loadGuideAssets(Map<GuideIdentifier, Element> guideAssets, ResourceManager assets)
+    private void loadGuideAssets(Map<GuideIdentifier, Document> guideAssets, ResourceManager assets)
     {
-        for (Entry<GuideIdentifier, Element> entry : guideAssets.entrySet())
+        for (Entry<GuideIdentifier, Document> entry : guideAssets.entrySet())
         {
             GuideIdentifier file = entry.getKey();
-            Element xml = entry.getValue();
+            Document doc = entry.getValue();
+            Element root = doc.getDocumentElement();
             try
             {
                 if (isGuideDefinition(file))
-                    guides.put(file.getGuideId(), new Guide(Parsers.loadGuideDefinition(xml, assets, file)));
-                else if (xml.getTagName().equals("entry"))
+                    guides.put(file.getGuideId(), new Guide(Parsers.loadGuideDefinition(doc, assets, file)));
+                else if (root.getTagName().equals("entry"))
                 {
                     Guide guide = guides.get(file.getGuideId());
                     if (guide == null)
@@ -257,9 +258,9 @@ public class GuideManager implements IdentifiableResourceReloadListener
                             file, file.getGuideId());
                         continue;
                     }
-                    guide.addEntry(Parsers.loadEntry(xml, assets, file));
+                    guide.addEntry(Parsers.loadEntry(doc, assets, file));
                 }
-                else if (xml.getTagName().equals("toc"))
+                else if (root.getTagName().equals("toc"))
                 {
                     Guide guide = guides.get(file.getGuideId());
                     if (guide == null)
@@ -268,7 +269,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
                             file, file.getGuideId());
                         continue;
                     }
-                    guide.addTableOfContents(Parsers.loadTableOfContents(xml, assets, file));
+                    guide.addTableOfContents(Parsers.loadTableOfContents(doc, assets, file));
                 }
             }
             catch (GuideLoadingException e)

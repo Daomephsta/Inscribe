@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -63,18 +64,19 @@ public class V100Parser implements Parser
         .registerDeserialisers(V100ElementTypes.HEADINGS);
 
     @Override
-    public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
+    public GuideDefinition loadGuideDefinition(Document doc, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
     {
+        Element root = doc.getDocumentElement();
         Identifier guideId = filePath.getGuideId();
         Identifier mainTocPath = Identifiers.working(guideId)
             .addPathSegment(XmlAttributes.getValue(
-                XmlElements.getChild(xml, "main_table_of_contents"), "location"))
+                XmlElements.getChild(root, "main_table_of_contents"), "location"))
             .editPathSegment(-1, FilenameUtils::removeExtension)
             .toIdentifier();
         try
         {
-            GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(XmlElements.getChild(xml, "access_method"));
-            Element themeXml = XmlElements.getChildNullable(xml, "theme");
+            GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(XmlElements.getChild(root, "access_method"));
+            Element themeXml = XmlElements.getChildNullable(root, "theme");
             Theme theme = themeXml != null ? Theme.fromXml(themeXml) : Theme.DEFAULT;
             return new GuideDefinition(guideId, guideAccess, mainTocPath, theme);
         }
@@ -92,8 +94,9 @@ public class V100Parser implements Parser
     }
 
     @Override
-    public TableOfContents loadTableOfContents(Element root, Identifier id, GuideIdentifier filePath) throws GuideLoadingException
+    public TableOfContents loadTableOfContents(Document doc, Identifier id, GuideIdentifier filePath) throws GuideLoadingException
     {
+        Element root = doc.getDocumentElement();
         String directory = Identifiers.working(id).subIdentifier(0, -2).toIdentifier().toString();
         LinkStyle style = XmlAttributes.asEnum(root, "link_style", LinkStyle::fromRepresentation);        
         NodeList linkElements = root.getElementsByTagName("link");
@@ -120,9 +123,10 @@ public class V100Parser implements Parser
     }
 
     @Override
-    public XmlEntry loadEntry(Element root, ResourceManager resourceManager,
+    public XmlEntry loadEntry(Document doc, ResourceManager resourceManager,
         Identifier id, GuideIdentifier filePath) throws GuideLoadingException
     {
+        Element root = doc.getDocumentElement();
         List<String> tags = XmlAttributes.asStringList(root, "tags", Collections::emptyList);
         List<XmlPage> pages = readPages(root, id);
         return new XmlEntry(id, filePath, new HashSet<>(tags), pages);

@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
+import org.w3c.dom.Document;
+import org.w3c.dom.ProcessingInstruction;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Ints;
@@ -17,6 +17,7 @@ import io.github.daomephsta.inscribe.client.guide.GuideIdentifier;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.v100.V100Parser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlNodes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
@@ -32,19 +33,19 @@ public class Parsers
     private static final ThreadLocal<String> LAST_VERSION = ThreadLocal.withInitial(() -> "");
     private static final ThreadLocal<Parser> LAST_PARSER = new ThreadLocal<>();
 
-    public static GuideDefinition loadGuideDefinition(Element root, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
+    public static GuideDefinition loadGuideDefinition(Document doc, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
     {
-        return getParser(root).loadGuideDefinition(root, resourceManager, filePath);
+        return getParser(doc).loadGuideDefinition(doc, resourceManager, filePath);
     }
 
-    public static XmlEntry loadEntry(Element root, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
+    public static XmlEntry loadEntry(Document doc, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
     {
-        return getParser(root).loadEntry(root, resourceManager, deriveId(filePath), filePath);
+        return getParser(doc).loadEntry(doc, resourceManager, deriveId(filePath), filePath);
     }
 
-    public static TableOfContents loadTableOfContents(Element root, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
+    public static TableOfContents loadTableOfContents(Document doc, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
     {
-        return getParser(root).loadTableOfContents(root, deriveId(filePath), filePath);
+        return getParser(doc).loadTableOfContents(doc, deriveId(filePath), filePath);
     }
 
     private static Identifier deriveId(GuideIdentifier filePath) throws GuideLoadingException
@@ -55,20 +56,19 @@ public class Parsers
             .toIdentifier();
     }
 
-    private static Parser getParser(Element root) throws InscribeSyntaxException
+    private static Parser getParser(Document doc) throws InscribeSyntaxException
     {
-        Attr versionAttribute = root.getAttributeNode("parser_version");
-        if (versionAttribute == null)
-            throw new InscribeSyntaxException(root.getTagName() + " missing 'parser_version' attribute");
-        if (LAST_VERSION.get().equals(versionAttribute.getValue()))
+        ProcessingInstruction version = XmlNodes.getProcessingInstruction(doc, "parser_version");
+        if (version == null)
+            throw new InscribeSyntaxException(doc + " missing 'parser_version' processing instruction");
+        if (LAST_VERSION.get().equals(version.getData()))
             return LAST_PARSER.get();
         try
         {
-            ParserVersion version = ParserVersion.parse(versionAttribute.getValue());
-            Parser parser = PARSERS.get(version);
+            Parser parser = PARSERS.get(ParserVersion.parse(version.getData()));
             if (parser == null)
-                throw invalidVersionException(versionAttribute.getValue());
-            LAST_VERSION.set(versionAttribute.getValue());
+                throw invalidVersionException(version.getData());
+            LAST_VERSION.set(version.getData());
             LAST_PARSER.set(parser);
             return parser;
         }

@@ -1,6 +1,6 @@
 package io.github.daomephsta.inscribe.client.guide.parser;
 
-import org.w3c.dom.Element;
+import org.w3c.dom.Document;
 
 import io.github.daomephsta.inscribe.client.guide.GuideIdentifier;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
@@ -12,9 +12,9 @@ import net.minecraft.util.Identifier;
 
 public interface Parser
 {
-    public GuideDefinition loadGuideDefinition(Element xml, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException;
+    public GuideDefinition loadGuideDefinition(Document doc, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException;
 
-    public XmlEntry loadEntry(Element root, ResourceManager resourceManager, Identifier id, GuideIdentifier filePath) throws GuideLoadingException;
+    public XmlEntry loadEntry(Document doc, ResourceManager resourceManager, Identifier id, GuideIdentifier filePath) throws GuideLoadingException;
 
-    public TableOfContents loadTableOfContents(Element root, Identifier id, GuideIdentifier filePath) throws GuideLoadingException;
+    public TableOfContents loadTableOfContents(Document doc, Identifier id, GuideIdentifier filePath) throws GuideLoadingException;
 }
