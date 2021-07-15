@@ -6,22 +6,16 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextBlockWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextNode;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentation;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlGuideGuiElement;
 
-public class XmlHeading implements IXmlRepresentation
-{ 
-    private final List<TextNode> text;
-    private final int level; 
-    private final Alignment horizontal, vertical;
-    
-    public XmlHeading(List<TextNode> text, int level, Alignment horizontal, Alignment vertical)
-    {
-        this.text = text;
-        this.level = level;
-        this.horizontal = horizontal;
-        this.vertical = vertical;
-    }
-    
+public record XmlHeading(
+    List<TextNode> text, 
+    int level,           
+    Alignment horizontal,
+    Alignment vertical   
+)
+implements XmlGuideGuiElement
+{  
     @Override
     public void acceptPage(GuideFlow output)
     {

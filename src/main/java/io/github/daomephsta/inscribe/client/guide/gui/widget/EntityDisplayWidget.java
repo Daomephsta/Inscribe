@@ -41,7 +41,7 @@ public class EntityDisplayWidget extends GuideWidget
         matrices.push();
         matrices.translate(left() + width() / 2, bottom() - (entity.getHeight() * 30 / 2), zOffset);
         matrices.scale(1, 1, 0.001F);
-        Quaternion rotation = transform.rotation.copy();
+        Quaternion rotation = transform.rotation().copy();
         applyTransform(matrices, rotation, transform);
         rotation.conjugate();
         matrices.multiply(rotation);
@@ -65,25 +65,25 @@ public class EntityDisplayWidget extends GuideWidget
 
     private void applyTransform(MatrixStack matrixStack, Quaternion rotation, Transform transform)
     {
-        matrixStack.translate(transform.translation.getX(), transform.translation.getY(), transform.translation.getZ() + 1000.0D);
-        matrixStack.scale(30 * transform.scale, -30 * transform.scale, 30 * transform.scale);
+        matrixStack.translate(transform.translation().getX(), transform.translation().getY(), transform.translation().getZ() + 1000.0D);
+        matrixStack.scale(30 * transform.scale(), -30 * transform.scale(), 30 * transform.scale());
         if (animation instanceof Revolve revolve)
         {
-            float angle = (System.currentTimeMillis() % (int) Math.ceil(5000 / revolve.speed)) / (5000.0F / revolve.speed) * 360.0F;
-            rotation.hamiltonProduct(revolve.axis.getDegreesQuaternion(angle));
+            float angle = (System.currentTimeMillis() % (int) Math.ceil(5000 / revolve.speed())) / (5000.0F / revolve.speed()) * 360.0F;
+            rotation.hamiltonProduct(revolve.axis().getDegreesQuaternion(angle));
         }
     }
 
     @Override
     public int hintHeight()
     {
-        return (int) Math.ceil(32 * entity.getHeight() * transform.scale);
+        return (int) Math.ceil(32 * entity.getHeight() * transform.scale());
     }
 
     @Override
     public int hintWidth()
     {
-        return (int) Math.ceil(32 * entity.getWidth() * transform.scale);
+        return (int) Math.ceil(32 * entity.getWidth() * transform.scale());
     }
 
     @Override

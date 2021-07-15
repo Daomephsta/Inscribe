@@ -56,8 +56,8 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
     {
         if (xml == null)
             return Transform.NONE;
-        Vec3f translation = XmlElements.asVec3f(xml, "translate", Transform.NONE.translation);
-        Quaternion rotation = readRotation(xml, Transform.NONE.rotation);
+        Vec3f translation = XmlElements.asVec3f(xml, "translate", Transform.NONE.translation());
+        Quaternion rotation = readRotation(xml, Transform.NONE.rotation());
         Element scaleXml = XmlElements.getChildNullable(xml, "scale");
         float scale = scaleXml != null
             ? XmlAttributes.asFloat(scaleXml, "s", 1.0F)
