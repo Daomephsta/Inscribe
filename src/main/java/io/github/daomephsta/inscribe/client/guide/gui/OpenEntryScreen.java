@@ -34,7 +34,7 @@ public class OpenEntryScreen extends PageSpreadScreen
         List<GuideFlow> pageFlows = new ArrayList<>(entry.getPages().size());
         for (XmlPage xmlPage : entry.getPages())
         {
-            GuideFlow page = new GuideFlow(Direction.VERTICAL);
+            GuideFlow page = new GuideFlow(guide, Direction.VERTICAL);
             page.padding().setAll(4);
             for (Object element : xmlPage.getContent())
                 RenderFormatConverter.convert(page, element);

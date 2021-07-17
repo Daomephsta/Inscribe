@@ -43,7 +43,7 @@ public class PosterBlockEntityRenderer implements BlockEntityRenderer<PosterBloc
         {
             XmlPage source = entry.getPages().get(blockEntity.getSpread().leftPage);
 
-            GuideFlow page = new GuideFlow(Direction.VERTICAL);
+            GuideFlow page = new GuideFlow(guide, Direction.VERTICAL);
             page.padding().setAll(4);
             for (Object element : source.getContent())
                 RenderFormatConverter.convert(page, element);

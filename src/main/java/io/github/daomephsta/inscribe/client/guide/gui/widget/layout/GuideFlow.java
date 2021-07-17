@@ -2,6 +2,7 @@ package io.github.daomephsta.inscribe.client.guide.gui.widget.layout;
 
 import java.util.function.Consumer;
 
+import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.mosaic.ParentWidget;
 import io.github.daomephsta.mosaic.flow.Flow;
@@ -13,7 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 public class GuideFlow extends GuideWidget implements ParentWidget
 {
     private final Flow<GuideWidget> elements;
-
+    
     public GuideFlow(Direction direction)
     {
         this.elements = new Flow<>(direction);
@@ -21,19 +22,28 @@ public class GuideFlow extends GuideWidget implements ParentWidget
         setMargin(elements.margin());
     }
 
+    public GuideFlow(Guide guide, Direction direction)
+    {
+        this(direction);
+        setGuide(guide);
+    }
+
     public void add(GuideWidget element, FlowLayoutData layoutData)
     {
+        element.setGuide(this.getGuide());
         elements.add(element, layoutData);
     }
 
     public void add(GuideWidget element, Consumer<FlowLayoutData> layoutDataConfig)
     {
+        element.setGuide(this.getGuide());
         elements.add(element, layoutDataConfig);
     }
 
-    public Flow<GuideWidget> add(GuideWidget mosaicWidget)
+    public Flow<GuideWidget> add(GuideWidget element)
     {
-        return elements.add(mosaicWidget);
+        element.setGuide(this.getGuide());
+        return elements.add(element);
     }
 
     @Override

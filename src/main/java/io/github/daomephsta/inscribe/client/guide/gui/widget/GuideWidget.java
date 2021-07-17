@@ -3,21 +3,23 @@ package io.github.daomephsta.inscribe.client.guide.gui.widget;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.gui.InteractableElement;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderableElement;
 import io.github.daomephsta.mosaic.MosaicWidget;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat.DrawMode;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 
 public abstract class GuideWidget extends MosaicWidget implements GuideGuiElement
 {
     private final Collection<InteractableElement> attachedInteractables = new ArrayList<>();
     private final Collection<RenderableElement> attachedRenderables = new ArrayList<>();
+    private Guide guide;
 
     public void attach(InteractableElement component)
     {
@@ -40,30 +42,32 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
             element.render(vertices, matrices, mouseX, mouseY, lastFrameDuration, contains(mouseX, mouseY));
         renderWidget(vertices, matrices, mouseX, mouseY, lastFrameDuration);
         if (Screen.hasAltDown())
-            drawDebugBounds();
+            drawDebugBounds(vertices, matrices);
     }
 
-    private void drawDebugBounds()
+    private void drawDebugBounds(VertexConsumerProvider vertices, MatrixStack matrices)
     {
-        drawBox(0, left() - margin().left(), top() - margin().top(), right() + margin().right(), bottom() + margin().bottom(), 0xFF0000FF);
-        drawBox(1, left() + padding().left(), top() + padding().top(), right() - padding().right(), bottom() - padding().bottom(), 0x00FF00FF);
-        drawBox(2, left(), top(), right(), bottom(), 0x0000FFFF);
+        drawBox(vertices, matrices, 0, left() - margin().left(), top() - margin().top(), 
+            right() + margin().right(), bottom() + margin().bottom(), 0xFF0000FF);
+        drawBox(vertices, matrices, 1, left() + padding().left(), top() + padding().top(), 
+            right() - padding().right(), bottom() - padding().bottom(), 0x00FF00FF);
+        drawBox(vertices, matrices, 2, left(), top(), right(), bottom(), 0x0000FFFF);
     }
 
-    private void drawBox(double z, int left, int top, int right, int bottom, int color)
+    private void drawBox(VertexConsumerProvider verticesProvider, MatrixStack matrices, float z, 
+        int left, int top, int right, int bottom, int color)
     {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder boxBuilder = tessellator.getBuffer();
-        boxBuilder.begin(DrawMode.LINE_STRIP, VertexFormats.POSITION_COLOR);
+        VertexConsumer boxBuilder = verticesProvider.getBuffer(RenderLayer.LINES);
         int r = (color & 0xFF000000) >> 24;
         int g = (color & 0x00FF0000) >> 16;
         int b = (color & 0x0000FF00) >> 8;
         int a =  color & 0x000000FF;
-        boxBuilder.vertex(left, top, z).color(r, g, b, a).next();
-        boxBuilder.vertex(right, top, z).color(r, g, b, a).next();
-        boxBuilder.vertex(right, bottom, z).color(r, g, b, a).next();
-        boxBuilder.vertex(left, bottom, z).color(r, g, b, a).next();
-        tessellator.draw();
+        Matrix4f model = matrices.peek().getModel();
+        Matrix3f normal = matrices.peek().getNormal();
+        boxBuilder.vertex(model, left, top, z).color(r, g, b, a).normal(normal, 0, 0, 0).next();
+        boxBuilder.vertex(model, right, top, z).color(r, g, b, a).normal(normal, 0, 0, 0).next();
+        boxBuilder.vertex(model, right, bottom, z).color(r, g, b, a).normal(normal, 0, 0, 0).next();
+        boxBuilder.vertex(model, left, bottom, z).color(r, g, b, a).normal(normal, 0, 0, 0).next();
     }
 
     protected abstract void renderWidget(VertexConsumerProvider vertices, MatrixStack matrices, int mouseX, int mouseY, float lastFrameDuration);
@@ -164,5 +168,15 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
     public int bottom()
     {
         return y() + height();
+    }
+
+    protected Guide getGuide()
+    {
+        return guide;
+    }
+
+    public void setGuide(Guide guide)
+    {
+        this.guide = guide;
     }
 }

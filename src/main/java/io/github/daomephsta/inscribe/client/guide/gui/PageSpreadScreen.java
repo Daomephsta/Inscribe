@@ -46,7 +46,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     @Override
     public void init()
     {
-        this.pageSpreads = new PageSpreads(buildPages());
+        this.pageSpreads = new PageSpreads(guide, buildPages());
         int guideHeight = 232;
         int pageWidth = 176;
         int guideTop = (height - guideHeight) / 2;
@@ -82,7 +82,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     private TexturedButtonWidget createControl(int x, int y, int yOffset, PressAction pressAction)
     {
         return new TexturedButtonWidget(x, y - yOffset, 18, 18, 402, 211 - yOffset, 
-            0, guide.getTheme().getGuiTexture(), 440, 256, pressAction);
+            0, guide.getTheme().getGuiTexture(), 440, 290, pressAction);
     }
 
     private void updateButtonVisibility()
@@ -96,7 +96,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     {
         renderBackground(matrices);
         RenderSystem.setShaderTexture(0, guide.getTheme().getGuiTexture());
-        drawTexture(matrices, (width - 381) / 2, (height - 232) / 2, 0, 0, 401, 232, 440, 256);
+        drawTexture(matrices, (width - 381) / 2, (height - 232) / 2, 0, 0, 401, 232, 440, 290);
 
         VertexConsumerProvider.Immediate vertices = VertexConsumerProvider.immediate(
             Tessellator.getInstance().getBuffer());

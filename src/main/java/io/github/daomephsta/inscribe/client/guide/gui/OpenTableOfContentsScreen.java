@@ -73,7 +73,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
 
     private GuideFlow addPage(List<GuideFlow> pageFlows)
     {
-        GuideFlow page = new GuideFlow(Direction.HORIZONTAL);
+        GuideFlow page = new GuideFlow(guide, Direction.HORIZONTAL);
         page.padding().setVertical(2).setHorizontal(4);
         pageFlows.add(page);
         return page;
@@ -81,7 +81,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
 
     private GuideFlow addColumn(GuideFlow columns)
     {
-        GuideFlow column = new GuideFlow(Direction.VERTICAL);
+        GuideFlow column = new GuideFlow(guide, Direction.VERTICAL);
         columns.add(column, layout ->
         {
             layout.setPreferredSize(SizeConstraint.percentage(100D / toc.getColumns()));
@@ -95,7 +95,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         {
         case ICON_WITH_TEXT:
         {
-            GuideFlow linkElement = new GuideFlow(Direction.HORIZONTAL);
+            GuideFlow linkElement = new GuideFlow(guide, Direction.HORIZONTAL);
             link.addIcon(linkElement);
             TextBlockWidget label = new TextBlockWidget(Alignment.LEADING, Alignment.CENTER, 
                 new FormattedTextNode(link.name, MinecraftClient.DEFAULT_FONT_ID, 0x000000));
@@ -105,7 +105,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         }
         case ICON_WITH_TOOLTIP:
         {
-            GuideFlow linkElement = new GuideFlow(Direction.HORIZONTAL);
+            GuideFlow linkElement = new GuideFlow(guide, Direction.HORIZONTAL);
             link.addIcon(linkElement);
             linkElement.attach(new Tooltip(tooltip -> tooltip.accept(link.name)));
             return linkElement;

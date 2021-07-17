@@ -60,7 +60,8 @@ public class V100Parser implements Parser
         .registerDeserialiser(V100ElementTypes.ITEMSTACK)
         .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
     private static final ContentDeserialiser ENTRY_DESERIALISER = new ContentDeserialiser.Impl()
-        .registerDeserialisers(V100ElementTypes.IMAGE, V100ElementTypes.ITEMSTACK, V100ElementTypes.ENTITY_DISPLAY)
+        .registerDeserialisers(V100ElementTypes.IMAGE, V100ElementTypes.ITEMSTACK, V100ElementTypes.ENTITY_DISPLAY,
+            V100ElementTypes.RECIPE_DISPLAY)
         .registerDeserialisers(V100ElementTypes.HEADINGS);
 
     @Override
