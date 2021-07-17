@@ -1,8 +1,10 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.commonmark.ext.ins.InsExtension;
 import org.commonmark.node.Node;
@@ -14,6 +16,7 @@ import com.google.common.collect.Lists;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
+import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.Unindenter;
 
 /**
@@ -37,7 +40,7 @@ public interface ContentDeserialiser
         private static final Parser MARKDOWN_PARSER = Parser.builder()
             .extensions(Lists.newArrayList(InsExtension.create()))
             .build();
-        private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.content_deserialiser.default");
+        private static final Logger LOGGER = Inscribe.getDedicatedLogger("content_deserialiser.default");
         private static final Unindenter UNINDENTER = new Unindenter();
         private final Map<String, XmlElementType<?>> deserialisers = new HashMap<>();
 

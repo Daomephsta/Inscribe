@@ -13,22 +13,22 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.google.common.collect.Sets;
 import com.pivovarit.function.ThrowingSupplier;
-import com.pivovarit.function.exception.WrappedException;
 
 import io.github.daomephsta.inscribe.client.guide.parser.Parsers;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlResources;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
 import io.github.daomephsta.inscribe.common.Inscribe;
+import io.github.daomephsta.inscribe.common.util.ExceptionHandling;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
@@ -44,7 +44,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 {
     public static final GuideManager INSTANCE = new GuideManager();
     public static final String FOLDER_NAME = Inscribe.MOD_ID + "_guides";
-    private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.guide_manager");
+    private static final Logger LOGGER = Inscribe.getDedicatedLogger("guide_manager");
     private static final Identifier ID = new Identifier(Inscribe.MOD_ID, "guide_manager");
     static final String GUIDE_DEFINITION_FILENAME = "guide_definition.xml";
 
@@ -80,7 +80,8 @@ public class GuideManager implements IdentifiableResourceReloadListener
     }
 
     @Override
-    public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor)
+    public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager resourceManager, 
+        Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor, Executor applyExecutor)
     {
         return load(resourceManager, loadProfiler, loadExecutor)
             .thenAcceptAsync(data -> apply(data, resourceManager, applyProfiler, applyExecutor), applyExecutor)
@@ -89,7 +90,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 
     public CompletableFuture<Guide> reloadGuide(Identifier guideId, Synchronizer synchronizer,
         ResourceManager assets, Profiler loadProfiler, Profiler applyProfiler, Executor loadExecutor,
-        Executor applyExecutor) throws GuideLoadingException
+        Executor applyExecutor)
     {
         return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
             findGuideAssets(assets, FOLDER_NAME + '/' + guideId.getPath())), loadExecutor)
@@ -100,9 +101,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
         }, applyExecutor)
         .exceptionally(thrw ->
         {
-            if (thrw instanceof WrappedException)
-                thrw = thrw.getCause();
-            LOGGER.error("An error occured while reloading guide '{}'", guideId, thrw);
+            handleLoadingError(guideId, thrw);
             Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_guide"));
             return getGuide(Guide.INVALID_GUIDE_ID);
         })
@@ -117,7 +116,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 
     public CompletableFuture<XmlEntry> reloadEntry(XmlEntry entry, Synchronizer synchronizer,
         ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler,
-        Executor loadExecutor, Executor applyExecutor) throws GuideLoadingException
+        Executor loadExecutor, Executor applyExecutor)
     {
         return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
         {
@@ -126,11 +125,9 @@ public class GuideManager implements IdentifiableResourceReloadListener
         }), loadExecutor)
         .exceptionally(thrw ->
         {
-             if (thrw instanceof WrappedException)
-                thrw = thrw.getCause();
-             LOGGER.error("An error occured while reloading entry '{}'", entry.getId(), thrw);
-             Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_entry"));
-             return createFallbackEntry(entry.getId(), entry.getFilePath());
+            handleLoadingError(entry.getId(), thrw);
+            Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_entry"));
+            return createFallbackEntry(entry.getId(), entry.getFilePath());
         })
         .thenApplyAsync(newEntry ->
         {
@@ -143,7 +140,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
 
     public CompletableFuture<TableOfContents> reloadTableOfContents(TableOfContents oldToc,
         Synchronizer synchronizer, ResourceManager resourceManager, Profiler loadProfiler, Profiler applyProfiler,
-        Executor loadExecutor, Executor applyExecutor) throws GuideLoadingException
+        Executor loadExecutor, Executor applyExecutor)
     {
         return CompletableFuture.supplyAsync(ThrowingSupplier.unchecked(() ->
         {
@@ -159,10 +156,8 @@ public class GuideManager implements IdentifiableResourceReloadListener
         }, applyExecutor)
         .exceptionally(thrw ->
         {
-             if (thrw instanceof WrappedException)
-                thrw = thrw.getCause();
-             LOGGER.error("An error occured while reloading ToC '{}'", oldToc.getId(), thrw);
-             Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_toc"));
+             handleLoadingError(oldToc.getFilePath(), thrw);
+             Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.reload_failure.open_entry"));
              return getGuide(Guide.INVALID_GUIDE_ID).getMainTableOfContents();
         });
     }
@@ -174,9 +169,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
         return CompletableFuture.supplyAsync(() -> findGuideAssets(assets, FOLDER_NAME), executor)
         .exceptionally(thrw ->
         {
-            if (thrw instanceof WrappedException)
-                thrw = thrw.getCause();
-            LOGGER.error("An unexpected error occured during the LOAD stage of guide loading", thrw);
+            LOGGER.error("An unexpected error occured during the LOAD stage of guide loading", ExceptionHandling.unwrap(thrw));
             Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.guide"));
             return null;
         });
@@ -217,7 +210,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
             }
             catch (GuideLoadingException e)
             {
-                e.printStackTrace();
+                LOGGER.error("Parsing '{}' into XML failed", guideAsset, e);
             }
         }
         return guideAssets;
@@ -274,9 +267,19 @@ public class GuideManager implements IdentifiableResourceReloadListener
             }
             catch (GuideLoadingException e)
             {
-                e.printStackTrace();
+                handleLoadingError(file, e);
+                Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.entry"));
             }
         }
+    }
+
+    private static void handleLoadingError(Identifier id, Throwable e)
+    {
+        Throwable unwrapped = ExceptionHandling.unwrap(e);
+        if (unwrapped instanceof InscribeSyntaxException)
+            LOGGER.error("Error in '{}':\n{}", id, unwrapped.getMessage());
+        else    
+            LOGGER.error("Error in '{}'", id, unwrapped);
     }
 
     private void editSearchCache(Set<Identifier> oldGuides)

@@ -1,6 +1,5 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.github.daomephsta.inscribe.client.guide.gui.widget.CraftingRecipeDisplayWidget;
@@ -17,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 public record XmlRecipeDisplay(Identifier recipeId) implements XmlGuideGuiElement
 {
-    private static final Logger LOGGER = LogManager.getLogger(Inscribe.MOD_ID);
+    private static final Logger LOGGER = Inscribe.getDedicatedLogger();
     
     @Override
     public void acceptPage(GuideFlow output)

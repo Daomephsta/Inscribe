@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.daomephsta.inscribe.client.guide.Guide;
-import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoEntry;
@@ -129,37 +128,23 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
     @Override
     public void reloadOpenGuide()
     {
-        try
-        {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
-                DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
-                .thenAccept(guide -> mc.openScreen(new OpenTableOfContentsScreen(guide, guideStack, guide.getMainTableOfContents())));
-        }
-        catch (GuideLoadingException e)
-        {
-            e.printStackTrace();
-        }
+        MinecraftClient mc = MinecraftClient.getInstance();
+        GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
+            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
+            .thenAccept(guide -> mc.openScreen(new OpenTableOfContentsScreen(guide, guideStack, guide.getMainTableOfContents())));
     }
 
     @Override
     public void reloadOpenEntry()
     {
-        try
+        MinecraftClient mc = MinecraftClient.getInstance();
+        GuideManager.INSTANCE.reloadTableOfContents(toc, CompletableFuture::completedFuture,
+            mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
+            Util.getMainWorkerExecutor(), mc)
+        .thenAccept(toc ->
         {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            GuideManager.INSTANCE.reloadTableOfContents(toc, CompletableFuture::completedFuture,
-                mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
-                Util.getMainWorkerExecutor(), mc)
-            .thenAccept(toc ->
-            {
-                Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
-                mc.openScreen(new OpenTableOfContentsScreen(guide, guideStack, toc));
-            });
-        }
-        catch (GuideLoadingException e)
-        {
-            e.printStackTrace();
-        }
+            Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
+            mc.openScreen(new OpenTableOfContentsScreen(guide, guideStack, toc));
+        });
     }
 }

@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.commonmark.ext.ins.Ins;
 import org.commonmark.node.AbstractVisitor;
@@ -50,7 +49,7 @@ import net.minecraft.util.InvalidIdentifierException;
 
 public class InscribeMarkdownVisitor extends AbstractVisitor
 {
-    private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.markdown");
+    private static final Logger LOGGER = Inscribe.getDedicatedLogger("markdown");
     private final PageBuilder builder;
 
     public InscribeMarkdownVisitor(PageBuilder builder)

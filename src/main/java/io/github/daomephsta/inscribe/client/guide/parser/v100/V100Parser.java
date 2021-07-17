@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -51,7 +50,7 @@ import net.minecraft.util.Identifier;
 public class V100Parser implements Parser
 {
     public static final Parser INSTANCE = new V100Parser();
-    private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.parserV100");
+    private static final Logger LOGGER = Inscribe.getDedicatedLogger("parser.v100");
     private static final SubtypeDeserialiser<GuideAccessMethod> GUIDE_ACCESS_METHOD_DESERIALISER = new Impl<>(GuideAccessMethod.class)
                 .registerDeserialiser(V100ElementTypes.NO_GUIDE_ACCESS_METHOD)
                 .registerDeserialiser(V100ElementTypes.GUIDE_ITEM_ACCESS_METHOD);

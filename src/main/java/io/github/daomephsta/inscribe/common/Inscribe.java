@@ -32,7 +32,6 @@ public class Inscribe
     public static final Block POSTER_BLOCK = new PosterBlock();
     public static final BlockEntityType<PosterBlockEntity> POSTER_BLOCK_ENTITY =
         FabricBlockEntityTypeBuilder.create(PosterBlockEntity::new, POSTER_BLOCK).build();
-    public static final Logger LOGGER = LogManager.getLogger();
 
     public void onInitialise()
     {
@@ -71,5 +70,15 @@ public class Inscribe
         loggerConfig.addAppender(inscribeLogAppender, null, null);
         config.addLogger("inscribe.dedicated", loggerConfig);
         ctx.updateLoggers();
+    }
+    
+    public static Logger getDedicatedLogger(String name)
+    {
+        return LogManager.getLogger("inscribe.dedicated." + name);
+    }
+    
+    public static Logger getDedicatedLogger()
+    {
+        return LogManager.getLogger("inscribe.dedicated");
     }
 }

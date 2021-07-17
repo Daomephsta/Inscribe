@@ -5,13 +5,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentation;
+import io.github.daomephsta.inscribe.common.Inscribe;
 
 /**
  * Deserialises a single child node of a node into a subtype of {@code T}.
@@ -33,7 +33,7 @@ public interface SubtypeDeserialiser<T extends IXmlRepresentation>
 
     public static class Impl<T extends IXmlRepresentation> implements SubtypeDeserialiser<T>
     {
-        private static final Logger LOGGER = LogManager.getLogger("inscribe.dedicated.subtype_deserialiser.default");
+        private static final Logger LOGGER = Inscribe.getDedicatedLogger("subtype_deserialiser.default");
         private final Class<T> parentType;
         private final Map<String, XmlElementType<? extends T>> deserialisers = new HashMap<>();
 

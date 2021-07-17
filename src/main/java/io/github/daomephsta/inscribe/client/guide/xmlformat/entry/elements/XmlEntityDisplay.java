@@ -1,11 +1,11 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.github.daomephsta.inscribe.client.guide.gui.widget.EntityDisplayWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlGuideGuiElement;
+import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.mosaic.EdgeSpacing;
 import io.github.daomephsta.mosaic.Size;
 import net.minecraft.client.MinecraftClient;
@@ -27,7 +27,7 @@ public record XmlEntityDisplay(
 )
 implements XmlGuideGuiElement
 {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = Inscribe.getDedicatedLogger();
     
     public record Transform(Vec3f translation, Quaternion rotation, float scale)
     {
@@ -44,21 +44,35 @@ implements XmlGuideGuiElement
     @Override
     public void acceptPage(GuideFlow output)
     {
+         Entity entity;
+         try
+         {
+             entity = Registry.ENTITY_TYPE.get(entityId).create(MinecraftClient.getInstance().world);
+             entity.readNbt(nbt);
+         }
+         catch (Exception e)
+         {
+             LOGGER.error("Error creating entity {}{} {}", entityId, nbt, e);
+             return;
+         }
+         EntityDisplayWidget widget = new EntityDisplayWidget(entity, transform, animation);
+         widget.setPadding(padding);
+         widget.setMargin(margin);
+         addWidget(output, widget, size);
+    }
+    
+    public Entity createEntity()
+    {
         try
         {
             Entity entity = Registry.ENTITY_TYPE.get(entityId).create(MinecraftClient.getInstance().world);
-            if (entity != null) //EntityType.create(World) is nullable
-            {
-                entity.readNbt(nbt);
-                EntityDisplayWidget widget = new EntityDisplayWidget(entity, transform, animation);
-                widget.setPadding(padding);
-                widget.setMargin(margin);
-                addWidget(output, widget, size);
-            }
+            entity.readNbt(nbt);
+            return entity;
         }
         catch (Exception e)
         {
-            LOGGER.error(e);
+            LOGGER.error("Error creating entity {}{} {}", entityId, nbt, e);
+            return null;
         }
     }
 }

@@ -28,7 +28,7 @@ import net.minecraft.util.Identifier;
 
 public abstract class PageSpreadScreen extends Screen implements GuideGui
 {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger("Inscribe");
     protected final Guide guide;
     protected final ItemStack guideStack;
     private PageSpreads pageSpreads;

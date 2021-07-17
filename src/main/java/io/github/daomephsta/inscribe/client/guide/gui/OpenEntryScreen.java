@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.daomephsta.inscribe.client.guide.Guide;
-import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
@@ -61,37 +60,23 @@ public class OpenEntryScreen extends PageSpreadScreen
     @Override
     public void reloadOpenGuide()
     {
-        try
-        {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
-                DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
-                .thenAccept(guide -> mc.openScreen(new OpenEntryScreen(guide, guideStack, guide.getEntry(entry.getId()))));
-        }
-        catch (GuideLoadingException e)
-        {
-            e.printStackTrace();
-        }
+        MinecraftClient mc = MinecraftClient.getInstance();
+        GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
+            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
+            .thenAccept(guide -> mc.openScreen(new OpenEntryScreen(guide, guideStack, guide.getEntry(entry.getId()))));
     }
 
     @Override
     public void reloadOpenEntry()
     {
-        try
+        MinecraftClient mc = MinecraftClient.getInstance();
+        GuideManager.INSTANCE.reloadEntry(entry, CompletableFuture::completedFuture, mc.getResourceManager(),
+            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
+        .thenAccept(entry ->
         {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            GuideManager.INSTANCE.reloadEntry(entry, CompletableFuture::completedFuture, mc.getResourceManager(),
-                DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
-            .thenAccept(entry ->
-            {
-                Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
-                mc.openScreen(new OpenEntryScreen(guide, guideStack, entry));
-            });
-        }
-        catch (GuideLoadingException e)
-        {
-            e.printStackTrace();
-        }
+            Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
+            mc.openScreen(new OpenEntryScreen(guide, guideStack, entry));
+        });
     }
 
     Identifier getEntryId()

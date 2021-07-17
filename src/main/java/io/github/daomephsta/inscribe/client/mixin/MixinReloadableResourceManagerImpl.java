@@ -34,7 +34,7 @@ public abstract class MixinReloadableResourceManagerImpl implements ReloadableRe
     @Shadow
     private @Final List<ResourceReloader> reloaders;
     @Unique
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger("Inscribe");
 
     @Inject(at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;isDebugEnabled()Z", remap = false), method = "reload")
     public void inscribe_reload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs, CallbackInfoReturnable<ResourceReload> info)
@@ -44,10 +44,10 @@ public abstract class MixinReloadableResourceManagerImpl implements ReloadableRe
             ActionResult injectionResult = injectListenerBefore(
                 reloaders, GuideManager.INSTANCE, BakedModelManager.class);
             if (injectionResult == ActionResult.SUCCESS)
-                LOGGER.info("[Inscribe] Registered Guide Manager as a resource reload listener");
+                LOGGER.info("Registered Guide Manager as a resource reload listener");
             else if (injectionResult == ActionResult.FAIL)
             {
-                LOGGER.error("[Inscribe] Failed to register Guide Manager as a resource reload listener. "
+                LOGGER.error("Failed to register Guide Manager as a resource reload listener. "
                     + "Listeners: {}", reloaders);
             }
         }
