@@ -103,9 +103,14 @@ public class GuideItem extends Item
 
     public ItemStack forGuide(Guide guide)
     {
+        return forGuide(guide.getIdentifier());
+    }
+
+    public ItemStack forGuide(Identifier id)
+    {
         ItemStack guideStack = new ItemStack(this);
         NbtCompound guideTag = new NbtCompound();
-        guideTag.putString(GUIDE_ID_TAG, guide.getIdentifier().toString());
+        guideTag.putString(GUIDE_ID_TAG, id.toString());
         guideStack.setTag(guideTag);
         return guideStack;
     }
