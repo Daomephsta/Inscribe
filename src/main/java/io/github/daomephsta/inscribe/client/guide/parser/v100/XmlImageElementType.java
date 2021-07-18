@@ -13,7 +13,7 @@ final class XmlImageElementType extends XmlElementType<XmlImage>
 {
     XmlImageElementType()
     {
-        super("image", XmlImage.class);
+        super("image");
     }
 
     @Override

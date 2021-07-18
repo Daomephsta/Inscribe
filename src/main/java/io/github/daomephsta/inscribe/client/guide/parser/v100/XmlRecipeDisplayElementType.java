@@ -11,7 +11,7 @@ public class XmlRecipeDisplayElementType extends XmlElementType<XmlRecipeDisplay
 {
     protected XmlRecipeDisplayElementType()
     {
-        super("recipe", XmlRecipeDisplay.class);
+        super("recipe");
     }
 
     @Override

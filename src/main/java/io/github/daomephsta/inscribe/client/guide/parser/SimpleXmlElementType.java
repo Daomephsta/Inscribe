@@ -13,7 +13,7 @@ public class SimpleXmlElementType<T extends IXmlRepresentation> extends XmlEleme
 
     public SimpleXmlElementType(String elementName, Class<T> clazz, Supplier<T> constructorHandle)
     {
-        super(elementName, clazz);
+        super(elementName);
         this.constructorHandle = constructorHandle;
     }
 

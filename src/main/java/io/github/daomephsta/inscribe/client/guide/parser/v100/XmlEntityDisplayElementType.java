@@ -25,7 +25,7 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
 {
     XmlEntityDisplayElementType()
     {
-        super("entity_display", XmlEntityDisplay.class);
+        super("entity_display");
     }
 
     @Override

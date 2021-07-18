@@ -20,7 +20,7 @@ final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAcc
 
     GuideItemAccessMethodElementType()
     {
-        super("guide_item", GuideItemAccessMethod.class);
+        super("guide_item");
     }
 
     @Override

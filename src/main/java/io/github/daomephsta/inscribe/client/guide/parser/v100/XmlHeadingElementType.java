@@ -16,7 +16,7 @@ public class XmlHeadingElementType extends XmlElementType<XmlHeading>
 
     protected XmlHeadingElementType(int level)
     {
-        super("h" + level, XmlHeading.class);
+        super("h" + level);
         this.level = level;
     }
 

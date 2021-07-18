@@ -18,7 +18,7 @@ final class XmlItemStackElementType extends XmlElementType<XmlItemStack>
 {
     XmlItemStackElementType()
     {
-        super("itemstack", XmlItemStack.class);
+        super("itemstack");
     }
 
     @Override
