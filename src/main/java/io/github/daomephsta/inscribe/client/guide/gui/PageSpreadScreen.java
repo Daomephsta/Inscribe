@@ -22,23 +22,20 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public abstract class PageSpreadScreen extends Screen implements GuideGui
 {
     private static final Logger LOGGER = LogManager.getLogger("Inscribe");
-    protected final Guide guide;
-    protected final ItemStack guideStack;
+    protected final GuideSession session;
     private PageSpreads pageSpreads;
-    private ButtonWidget prevPage, nextPage;
+    private ButtonWidget prevPage, nextPage, back;
 
-    public PageSpreadScreen(Guide guide, ItemStack guideStack)
+    public PageSpreadScreen(GuideSession session)
     {
-        super(new TranslatableText(guide.getTranslationKey()));
-        this.guide = guide;
-        this.guideStack = guideStack;
+        super(new TranslatableText(session.getGuide().getTranslationKey()));
+        this.session = session;
     }
 
     protected abstract List<GuideFlow> buildPages();
@@ -46,7 +43,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     @Override
     public void init()
     {
-        this.pageSpreads = new PageSpreads(guide, buildPages());
+        this.pageSpreads = new PageSpreads(session.getGuide(), buildPages());
         int guideHeight = 232;
         int pageWidth = 176;
         int guideTop = (height - guideHeight) / 2;
@@ -58,44 +55,49 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
             spread.getRight().setLayoutParameters(guideLeft + pageWidth + 4, guideTop, pageWidth, guideHeight);
             spread.getRight().layoutChildren();
         }
-        int controlsX = pageSpreads.rightPage().right() + 13;
-        int controlsY = pageSpreads.rightPage().bottom() - 21;
-        this.prevPage = addDrawableChild(createControl(controlsX, controlsY, 0, b ->
+        int controlsX = pageSpreads.rightPage().right() + 12;
+        int controlsY = pageSpreads.rightPage().bottom() - 22;
+        this.prevPage = addDrawableChild(createControl(controlsX, controlsY, 0 * 18, b ->
         {
             pageSpreads.previous();
             updateButtonVisibility();
         }));
-        this.nextPage = addDrawableChild(createControl(controlsX, controlsY, 18, b ->
+        this.nextPage = addDrawableChild(createControl(controlsX, controlsY, 1 * 18, b ->
         {
             pageSpreads.next();
             updateButtonVisibility();
         }));
         // Home
-        addDrawableChild(createControl(controlsX, controlsY, 36, b ->
+        addDrawableChild(createControl(controlsX, controlsY, 2 * 18, b ->
         {
-            Screen screen = new OpenTableOfContentsScreen(guide, guideStack, guide.getMainTableOfContents());
-            MinecraftClient.getInstance().openScreen(screen);
+            open(session.getGuide().getMainTableOfContentsId());
+        }));
+        this.back = addDrawableChild(createControl(controlsX, controlsY, 3 * 18, b ->
+        {
+            session.openLast();
+            updateButtonVisibility();
         }));
         updateButtonVisibility();
     }
 
     private TexturedButtonWidget createControl(int x, int y, int yOffset, PressAction pressAction)
     {
-        return new TexturedButtonWidget(x, y - yOffset, 18, 18, 402, 211 - yOffset, 
-            0, guide.getTheme().getGuiTexture(), 440, 290, pressAction);
+        return new TexturedButtonWidget(x, y - yOffset, 18, 18, 402, 210 - yOffset, 
+            0, session.getGuide().getTheme().getGuiTexture(), 440, 290, pressAction);
     }
 
     private void updateButtonVisibility()
     {
         prevPage.visible = pageSpreads.hasPrevious();
         nextPage.visible = pageSpreads.hasNext();
+        back.visible = session.hasHistory();
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta)
     {
         renderBackground(matrices);
-        RenderSystem.setShaderTexture(0, guide.getTheme().getGuiTexture());
+        RenderSystem.setShaderTexture(0, session.getGuide().getTheme().getGuiTexture());
         drawTexture(matrices, (width - 381) / 2, (height - 232) / 2, 0, 0, 401, 232, 440, 290);
 
         VertexConsumerProvider.Immediate vertices = VertexConsumerProvider.immediate(
@@ -163,18 +165,24 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
         Identifier guideId = Identifiers.working(id).subIdentifier(0, 1).toIdentifier();
         Guide owningGuide = GuideManager.INSTANCE.getGuide(guideId);
         XmlEntry entry = owningGuide.getEntry(id);
-        TableOfContents toc = owningGuide.getTableOfContents(id);
         if (entry != null)
-            MinecraftClient.getInstance().openScreen(new OpenEntryScreen(owningGuide, guideStack, entry));
-        else if (toc != null)
-            MinecraftClient.getInstance().openScreen(new OpenTableOfContentsScreen(guide, guideStack, toc));
-        else
-            LOGGER.error("Could not open unknown entry or ToC {}", id);
+        {
+            MinecraftClient.getInstance().openScreen(new OpenEntryScreen(session.openEntry(entry)));
+            return;
+        }
+        TableOfContents toc = owningGuide.getTableOfContents(id);
+        if (toc != null)
+        {
+            MinecraftClient.getInstance().openScreen(new OpenTableOfContentsScreen(session.openToC(toc)));
+            return;
+        }
+        LOGGER.error("Could not open unknown entry or ToC {}", id);
     }
 
     @Override
     public void onClose()
     {
+        session.end();
         for (Pair<GuideFlow, GuideFlow> spread : pageSpreads)
         {
             spread.getLeft().dispose();
@@ -186,6 +194,6 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     @Override
     public Identifier getOpenGuideId()
     {
-        return guide.getIdentifier();
+        return session.getGuide().getIdentifier();
     }
 }

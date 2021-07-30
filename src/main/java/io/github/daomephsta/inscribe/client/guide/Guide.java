@@ -80,7 +80,12 @@ public class Guide
 
     public TableOfContents getMainTableOfContents()
     {
-        return tablesOfContents.get(definition.getMainTableOfContents());
+        return tablesOfContents.get(getMainTableOfContentsId());
+    }
+
+    public Identifier getMainTableOfContentsId()
+    {
+        return definition.getMainTableOfContents();
     }
 
     public Theme getTheme()

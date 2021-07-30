@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoEntry;
@@ -19,7 +18,6 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfCo
 import io.github.daomephsta.mosaic.SizeConstraint;
 import io.github.daomephsta.mosaic.flow.Flow.Direction;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DummyProfiler;
 
@@ -27,10 +25,10 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
 {
     private final TableOfContents toc;
 
-    public OpenTableOfContentsScreen(Guide guide, ItemStack guideStack, TableOfContents toc)
+    public OpenTableOfContentsScreen(GuideSession session)
     {
-        super(guide, guideStack);
-        this.toc = toc;
+        super(session);
+        this.toc = session.getOpenToC();
     }
 
     @Override
@@ -72,7 +70,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
 
     private GuideFlow addPage(List<GuideFlow> pageFlows)
     {
-        GuideFlow page = new GuideFlow(guide, Direction.HORIZONTAL);
+        GuideFlow page = new GuideFlow(session.getGuide(), Direction.HORIZONTAL);
         page.padding().setVertical(2).setHorizontal(4);
         pageFlows.add(page);
         return page;
@@ -80,7 +78,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
 
     private GuideFlow addColumn(GuideFlow columns)
     {
-        GuideFlow column = new GuideFlow(guide, Direction.VERTICAL);
+        GuideFlow column = new GuideFlow(session.getGuide(), Direction.VERTICAL);
         columns.add(column, layout ->
         {
             layout.setPreferredSize(SizeConstraint.percentage(100D / toc.getColumns()));
@@ -94,7 +92,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         {
         case ICON_WITH_TEXT:
         {
-            GuideFlow linkElement = new GuideFlow(guide, Direction.HORIZONTAL);
+            GuideFlow linkElement = new GuideFlow(session.getGuide(), Direction.HORIZONTAL);
             link.addIcon(linkElement);
             TextBlockWidget label = new TextBlockWidget(Alignment.LEADING, Alignment.CENTER, 
                 new FormattedTextNode(link.name, MinecraftClient.DEFAULT_FONT_ID, 0x000000));
@@ -104,7 +102,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         }
         case ICON_WITH_TOOLTIP:
         {
-            GuideFlow linkElement = new GuideFlow(guide, Direction.HORIZONTAL);
+            GuideFlow linkElement = new GuideFlow(session.getGuide(), Direction.HORIZONTAL);
             link.addIcon(linkElement);
             linkElement.attach(new Tooltip(tooltip -> tooltip.accept(link.name)));
             return linkElement;
@@ -120,9 +118,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
     @Override
     public void reopen()
     {
-        Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
-        MinecraftClient.getInstance().openScreen(
-            new OpenTableOfContentsScreen(guide, guideStack, guide.getMainTableOfContents()));
+        MinecraftClient.getInstance().openScreen(new OpenTableOfContentsScreen(session.reload()));
     }
 
     @Override
@@ -131,7 +127,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         MinecraftClient mc = MinecraftClient.getInstance();
         GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
             DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
-            .thenAccept(guide -> mc.openScreen(new OpenTableOfContentsScreen(guide, guideStack, guide.getMainTableOfContents())));
+            .thenAccept(guide -> mc.openScreen(new OpenTableOfContentsScreen(session.reload())));
     }
 
     @Override
@@ -141,10 +137,6 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         GuideManager.INSTANCE.reloadTableOfContents(toc, CompletableFuture::completedFuture,
             mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
             Util.getMainWorkerExecutor(), mc)
-        .thenAccept(toc ->
-        {
-            Guide guide = GuideManager.INSTANCE.getGuide(getOpenGuideId());
-            mc.openScreen(new OpenTableOfContentsScreen(guide, guideStack, toc));
-        });
+        .thenAccept(toc -> mc.openScreen(new OpenTableOfContentsScreen(session.reload())));
     }
 }
