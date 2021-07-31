@@ -19,6 +19,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget.PressAction;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -30,7 +31,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     private static final Logger LOGGER = LogManager.getLogger("Inscribe");
     protected final GuideSession session;
     private PageSpreads pageSpreads;
-    private ButtonWidget prevPage, nextPage, back;
+    private ButtonWidget prevPage, nextPage, home, back;
 
     public PageSpreadScreen(GuideSession session)
     {
@@ -67,8 +68,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
             pageSpreads.next();
             updateButtonVisibility();
         }));
-        // Home
-        addDrawableChild(createControl(controlsX, controlsY, 2 * 18, b ->
+        this.home = addDrawableChild(createControl(controlsX, controlsY, 2 * 18, b ->
         {
             open(session.getGuide().getMainTableOfContentsId());
         }));
@@ -157,6 +157,23 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
         if (pageSpreads.rightPage().contains(mouseX, mouseY))
             return pageSpreads.rightPage().mouseScrolled(mouseX, mouseY, wheelDelta);
         return false;
+    }
+
+    @Override
+    public boolean keyPressed(int key, int scancode, int modifiers)
+    {
+        GameOptions options = MinecraftClient.getInstance().options;
+        if (pageSpreads.hasPrevious() && options.keyLeft.matchesKey(key, scancode))
+            prevPage.onPress();
+        else if (pageSpreads.hasNext() && options.keyRight.matchesKey(key, scancode))
+            nextPage.onPress();
+        else if (session.hasHistory() && options.keyForward.matchesKey(key, scancode))
+            back.onPress();
+        else if (options.keyJump.matchesKey(key, scancode))
+            home.onPress();
+        else
+            return super.keyPressed(key, scancode, modifiers);
+        return true;
     }
 
     @Override
