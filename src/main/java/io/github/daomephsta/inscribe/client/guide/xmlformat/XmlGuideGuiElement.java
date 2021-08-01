@@ -8,7 +8,7 @@ import io.github.daomephsta.mosaic.flow.FlowLayoutData;
 
 public interface XmlGuideGuiElement extends IXmlRepresentation
 {
-    void acceptPage(GuideFlow output);
+    public void acceptPage(GuideFlow output);
 
     public default void addWidget(GuideFlow output, GuideWidget widget, Size size)
     {
