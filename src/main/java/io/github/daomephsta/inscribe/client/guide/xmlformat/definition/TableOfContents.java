@@ -35,6 +35,7 @@ public class TableOfContents implements GuidePart
         return id;
     }
 
+    @Override
     public GuideIdentifier getFilePath()
     {
         return filePath;

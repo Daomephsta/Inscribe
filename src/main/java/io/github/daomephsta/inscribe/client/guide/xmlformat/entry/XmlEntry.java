@@ -38,6 +38,7 @@ public class XmlEntry implements IXmlRepresentation, GuidePart
         return id;
     }
 
+    @Override
     public GuideIdentifier getFilePath()
     {
         return filePath;

@@ -30,7 +30,8 @@ public class GuideSession
         for (int i = 0; i < history.size(); i++)
         {
             GuidePart part = history.pop();
-            history.addLast(guide.getPart(part.getId()));
+            Guide partGuide = GuideManager.INSTANCE.getGuide(part.getFilePath().getGuideId());
+            history.addLast(partGuide.getPart(part.getId()));
         }
         return this;
     }
@@ -55,11 +56,11 @@ public class GuideSession
         return history.size() > 1;
     }
     
-    public GuideSession open(GuidePart element)
+    public GuideSession open(GuidePart part)
     {
         if (history.size() == MAX_HISTORY_SIZE)
             history.removeLast();
-        history.push(element);
+        history.push(part);
         return this;
     }
     
