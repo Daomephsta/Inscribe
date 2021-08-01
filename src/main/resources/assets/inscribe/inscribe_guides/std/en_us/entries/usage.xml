@@ -1,0 +1,17 @@
+<?parser_version 1.0.0?>
+<entry>
+    <page>
+    ## Buttons
+    From top to bottom  
+    **Go Back**  
+    Opens the previous guide part    
+    in the history (max 5)  
+    **Home**  
+    Opens the current guide's  
+    main table of contents  
+    **Next Page**  
+    Turns to the next page  
+    **Previous Page**  
+    Turns to the previous page  
+    </page>
+</entry>
