@@ -38,7 +38,7 @@ public class PosterBlockEntityRenderer implements BlockEntityRenderer<PosterBloc
               minY = (300F - height) / 2F;
 
         Guide guide = GuideManager.INSTANCE.getGuide(blockEntity.getSpread().guideId);
-        XmlEntry entry = guide.getEntry(blockEntity.getSpread().entryId);
+        XmlEntry entry = guide.getEntry(blockEntity.getSpread().partId);
         if (entry != null && entry.getPages().size() >= blockEntity.getSpread().leftPage)
         {
             XmlPage source = entry.getPages().get(blockEntity.getSpread().leftPage);

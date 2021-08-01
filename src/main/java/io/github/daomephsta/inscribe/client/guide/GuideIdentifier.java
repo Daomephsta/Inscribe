@@ -28,7 +28,7 @@ public class GuideIdentifier extends Identifier
             this.guideId = working.subIdentifier(1, -2).toIdentifier();
         }
         else
-            throw new InvalidIdentifierException(identifier + " isn't an entry or guide definition identifier");
+            throw new InvalidIdentifierException(identifier + " isn't a guide part or guide definition identifier");
     }
 
     public Identifier getGuideId()

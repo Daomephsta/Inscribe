@@ -11,11 +11,11 @@ import net.minecraft.util.Identifier;
  */
 public interface GuideGui
 {
-    public void open(Identifier entryId);
+    public void open(Identifier partId);
 
     public void reloadOpenGuide();
 
-    public void reloadOpenEntry();
+    public void reloadOpenPart();
 
     public void reopen();
 

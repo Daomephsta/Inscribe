@@ -5,8 +5,7 @@ import java.util.Deque;
 
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.GuidePart;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
@@ -16,7 +15,7 @@ public class GuideSession
     private static final int MAX_HISTORY_SIZE = 6;
     private Guide guide;
     private final ItemStack guideStack;
-    private final Deque<Object> history;
+    private final Deque<GuidePart> history;
 
     public GuideSession(Guide guide, ItemStack guideStack)
     {
@@ -27,14 +26,11 @@ public class GuideSession
     
     public GuideSession reload()
     {
-        this.guide = GuideManager.INSTANCE.getGuide(getGuide().getIdentifier());
+        this.guide = GuideManager.INSTANCE.getGuide(guide.getIdentifier());
         for (int i = 0; i < history.size(); i++)
         {
-            Object element = history.pop();
-            if (element instanceof XmlEntry entry)
-                history.addLast(getGuide().getEntry(entry.getId()));
-            else if (element instanceof TableOfContents toc)
-                history.addLast(getGuide().getTableOfContents(toc.getId()));
+            GuidePart part = history.pop();
+            history.addLast(guide.getPart(part.getId()));
         }
         return this;
     }
@@ -48,13 +44,10 @@ public class GuideSession
     {
         if (!hasHistory())
             return;
-        // Close current opened entry
+        // Close open part 
         history.pop();
-        Object last = history.peek();
-        if (last instanceof XmlEntry entry)
-            MinecraftClient.getInstance().openScreen(new OpenEntryScreen(this));
-        else if (last instanceof TableOfContents toc)
-            MinecraftClient.getInstance().openScreen(new OpenTableOfContentsScreen(this));
+        GuidePart last = history.peek();
+        MinecraftClient.getInstance().openScreen(last.toScreen(this));
     }
 
     public boolean hasHistory()
@@ -62,48 +55,22 @@ public class GuideSession
         return history.size() > 1;
     }
     
-    public GuideSession openEntry(XmlEntry entry)
-    {
-        open(entry);
-        return this;
-    }
-
-    public GuideSession openToC(TableOfContents toc)
-    {
-        open(toc);
-        return this;
-    }
-
-    private void open(Object element)
+    public GuideSession open(GuidePart element)
     {
         if (history.size() == MAX_HISTORY_SIZE)
             history.removeLast();
         history.push(element);
+        return this;
     }
     
-    public XmlEntry getOpenEntry()
+    public GuidePart getOpenPart()
     {
-        if (history.peek() instanceof XmlEntry entry)
-            return entry;
-        throw new IllegalStateException("Entry expected");
+        return history.peek();
     }
-
-    public TableOfContents getOpenToC()
-    {
-        if (history.peek() instanceof TableOfContents toc)
-            return toc;
-        throw new IllegalStateException("Table of contents expected");
-    }
-
+    
     public void end()
     {
         if (!history.isEmpty())
-        {
-            Object last = history.pop();
-            if (last instanceof XmlEntry entry)
-                Inscribe.GUIDE_ITEM.setLastOpen(guideStack, entry);
-            else if (last instanceof TableOfContents toc)
-                Inscribe.GUIDE_ITEM.setLastOpen(guideStack, toc);
-        }
+            Inscribe.GUIDE_ITEM.setLastOpen(guideStack, history.pop());
     }
 }

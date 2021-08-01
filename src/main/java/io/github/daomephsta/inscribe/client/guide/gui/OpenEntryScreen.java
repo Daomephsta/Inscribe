@@ -21,7 +21,10 @@ public class OpenEntryScreen extends PageSpreadScreen
     public OpenEntryScreen(GuideSession session)
     {
         super(session);
-        this.entry = session.getOpenEntry();
+        if (session.getOpenPart() instanceof XmlEntry entry)
+            this.entry = entry;
+        else
+            throw new IllegalStateException("Expected entry as open part");
     }
 
     @Override
@@ -46,21 +49,12 @@ public class OpenEntryScreen extends PageSpreadScreen
     }
 
     @Override
-    public void reloadOpenGuide()
-    {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
-            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
-            .thenAccept(guide -> mc.openScreen(new OpenEntryScreen(session.reload())));
-    }
-
-    @Override
-    public void reloadOpenEntry()
+    public void reloadOpenPart()
     {
         MinecraftClient mc = MinecraftClient.getInstance();
         GuideManager.INSTANCE.reloadEntry(entry, CompletableFuture::completedFuture, mc.getResourceManager(),
             DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
-        .thenAccept(entry -> mc.openScreen(new OpenEntryScreen(session.reload())));
+        .thenRun(this::reopen);
     }
 
     Identifier getEntryId()

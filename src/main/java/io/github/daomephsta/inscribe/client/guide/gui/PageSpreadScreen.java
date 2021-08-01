@@ -1,6 +1,7 @@
 package io.github.daomephsta.inscribe.client.guide.gui;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -11,8 +12,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.GuidePart;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -25,6 +25,8 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import net.minecraft.util.profiler.DummyProfiler;
 
 public abstract class PageSpreadScreen extends Screen implements GuideGui
 {
@@ -177,23 +179,24 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     }
 
     @Override
-    public void open(Identifier id)
+    public void open(Identifier partId)
     {
-        Identifier guideId = Identifiers.working(id).subIdentifier(0, 1).toIdentifier();
+        Identifier guideId = Identifiers.working(partId).subIdentifier(0, 1).toIdentifier();
         Guide owningGuide = GuideManager.INSTANCE.getGuide(guideId);
-        XmlEntry entry = owningGuide.getEntry(id);
-        if (entry != null)
-        {
-            MinecraftClient.getInstance().openScreen(new OpenEntryScreen(session.openEntry(entry)));
-            return;
-        }
-        TableOfContents toc = owningGuide.getTableOfContents(id);
-        if (toc != null)
-        {
-            MinecraftClient.getInstance().openScreen(new OpenTableOfContentsScreen(session.openToC(toc)));
-            return;
-        }
-        LOGGER.error("Could not open unknown entry or ToC {}", id);
+        GuidePart part = owningGuide.getPart(partId);
+        if (part != null)
+            MinecraftClient.getInstance().openScreen(part.toScreen(session));
+        else
+            LOGGER.error("Could not open unknown guide part {}", partId);
+    }
+
+    @Override
+    public void reloadOpenGuide()
+    {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
+            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
+        .thenRun(this::reopen);
     }
 
     @Override

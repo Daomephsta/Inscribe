@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
+import io.github.daomephsta.inscribe.client.guide.xmlformat.GuidePart;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
@@ -61,6 +64,18 @@ public class Guide
     public Stream<Identifier> getEntryIds()
     {
         return entries.keySet().stream();
+    }
+    
+    @Nullable
+    public GuidePart getPart(Identifier partId)
+    {
+        XmlEntry entry = getEntry(partId);
+        if (entry != null)
+            return entry;
+        TableOfContents toc = getTableOfContents(partId);
+        if (toc != null)
+            return toc;
+        return null;
     }
 
     public Identifier getIdentifier()

@@ -58,6 +58,6 @@ public class KeyBindings
             return;
         //Reload open entry
         if (client.currentScreen instanceof GuideGui)
-            ((GuideGui) client.currentScreen).reloadOpenEntry();
+            ((GuideGui) client.currentScreen).reloadOpenPart();
     }
 }

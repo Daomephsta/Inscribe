@@ -4,10 +4,14 @@ import java.util.List;
 import java.util.Set;
 
 import io.github.daomephsta.inscribe.client.guide.GuideIdentifier;
+import io.github.daomephsta.inscribe.client.guide.gui.GuideSession;
+import io.github.daomephsta.inscribe.client.guide.gui.OpenEntryScreen;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.GuidePart;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.base.IXmlRepresentation;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.Identifier;
 
-public class XmlEntry implements IXmlRepresentation
+public class XmlEntry implements IXmlRepresentation, GuidePart
 {
     private final Identifier id;
     private final GuideIdentifier filePath;
@@ -28,6 +32,7 @@ public class XmlEntry implements IXmlRepresentation
         return String.format("XmlEntry [id=%s, tags=%s]", id, tags);
     }
 
+    @Override
     public Identifier getId()
     {
         return id;
@@ -46,5 +51,11 @@ public class XmlEntry implements IXmlRepresentation
     public List<XmlPage> getPages()
     {
         return pages;
+    }
+
+    @Override
+    public Screen toScreen(GuideSession session)
+    {
+        return new OpenEntryScreen(session.open(this));
     }
 }

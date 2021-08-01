@@ -188,9 +188,9 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
                 }
                 try
                 {
-                    Identifier entryId = new Identifier(split[0], split[1] + uri.getPath());
-                    String tooltipText = link.getTitle() != null ? link.getTitle() : entryId.toString();
-                    builder.startEntryLink(entryId, tooltipText);
+                    Identifier partId = new Identifier(split[0], split[1] + uri.getPath());
+                    String tooltipText = link.getTitle() != null ? link.getTitle() : partId.toString();
+                    builder.startPartLink(partId, tooltipText);
                 }
                 catch (InvalidIdentifierException e)
                 {
@@ -212,7 +212,7 @@ public class InscribeMarkdownVisitor extends AbstractVisitor
             }
             visitChildren(link);
             if (scheme.equals(Inscribe.MOD_ID))
-                builder.endEntryLink();
+                builder.endPartLink();
             else if (ALLOWED_SCHEMES.contains(scheme))
                 builder.endWebLink();
         }

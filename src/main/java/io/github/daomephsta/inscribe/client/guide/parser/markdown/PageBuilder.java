@@ -12,7 +12,7 @@ import io.github.daomephsta.inscribe.client.guide.gui.InteractableElement;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderableElement;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.HorizontalRuleWidget;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.VerticalRuleWidget;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoEntry;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoPart;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoURI;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
@@ -162,14 +162,14 @@ public class PageBuilder
         popInteractable();
     }
 
-    public void startEntryLink(Identifier entryId, String tooltipText)
+    public void startPartLink(Identifier partId, String tooltipText)
     {
         pushColour(0x0033FF);
         pushRenderable(new Tooltip(tooltip -> tooltip.accept(tooltipText)));
-        pushInteractable(new GotoEntry(entryId));
+        pushInteractable(new GotoPart(partId));
     }
 
-    public void endEntryLink()
+    public void endPartLink()
     {
         popColour();
         popRenderable();

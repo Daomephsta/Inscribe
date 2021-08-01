@@ -47,9 +47,9 @@ public class PosterBlockEntity extends BlockEntity implements BlockEntityClientS
         return spread;
     }
 
-    public void setSpread(Identifier guideId, Identifier entryId, int leftPage)
+    public void setSpread(Identifier guideId, Identifier partId, int leftPage)
     {
-        this.spread = new Spread(guideId, entryId, leftPage);
+        this.spread = new Spread(guideId, partId, leftPage);
     }
 
     @Override
@@ -98,13 +98,13 @@ public class PosterBlockEntity extends BlockEntity implements BlockEntityClientS
     public static class Spread
     {
         public Identifier guideId;
-        public Identifier entryId;
+        public Identifier partId;
         public int leftPage;
 
-        Spread(Identifier guideId, Identifier entryId, int leftPage)
+        Spread(Identifier guideId, Identifier partId, int leftPage)
         {
             this.guideId = guideId;
-            this.entryId = entryId;
+            this.partId = partId;
             this.leftPage = leftPage;
         }
     }

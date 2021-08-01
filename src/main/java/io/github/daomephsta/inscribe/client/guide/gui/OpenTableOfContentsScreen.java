@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.GuideWidget;
-import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoEntry;
+import io.github.daomephsta.inscribe.client.guide.gui.widget.component.GotoPart;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.component.Tooltip;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
@@ -28,7 +28,10 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
     public OpenTableOfContentsScreen(GuideSession session)
     {
         super(session);
-        this.toc = session.getOpenToC();
+        if (session.getOpenPart() instanceof TableOfContents toc)
+            this.toc = toc;
+        else
+            throw new IllegalStateException("Expected table of contents as open part");
     }
 
     @Override
@@ -44,7 +47,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         {
             Link link = iter.next();
             GuideWidget linkElement = createLinkElement(link);
-            linkElement.attach(new GotoEntry(link.destination));
+            linkElement.attach(new GotoPart(link.destination));
             linkElement.margin().setVertical(2);
             usedY += linkElement.hintHeight();
             column.add(linkElement);
@@ -122,21 +125,12 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
     }
 
     @Override
-    public void reloadOpenGuide()
-    {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        GuideManager.INSTANCE.reloadGuide(getOpenGuideId(), CompletableFuture::completedFuture, mc.getResourceManager(),
-            DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, Util.getMainWorkerExecutor(), mc)
-            .thenAccept(guide -> mc.openScreen(new OpenTableOfContentsScreen(session.reload())));
-    }
-
-    @Override
-    public void reloadOpenEntry()
+    public void reloadOpenPart()
     {
         MinecraftClient mc = MinecraftClient.getInstance();
         GuideManager.INSTANCE.reloadTableOfContents(toc, CompletableFuture::completedFuture,
             mc.getResourceManager(), DummyProfiler.INSTANCE, DummyProfiler.INSTANCE,
             Util.getMainWorkerExecutor(), mc)
-        .thenAccept(toc -> mc.openScreen(new OpenTableOfContentsScreen(session.reload())));
+        .thenRun(this::reopen);
     }
 }

@@ -1,6 +1,5 @@
 package io.github.daomephsta.inscribe.common.guide.poster;
 
-import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.BlockEntities;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
@@ -20,6 +19,7 @@ import net.minecraft.state.StateManager.Builder;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -96,10 +96,9 @@ public class PosterBlock extends Block implements BlockEntityProvider
                 .flatMap(pbe -> BlockEntities.get(world, pbe.getRenderOrigin(), PosterBlockEntity.class))
                 .ifPresent(pbe ->
                 {
-                    // TODO revisit
-                    XmlEntry lastEntry = Inscribe.GUIDE_ITEM.getLastEntry(stack);
-                    if (lastEntry != null)
-                        pbe.setSpread(Inscribe.GUIDE_ITEM.getGuideId(stack), lastEntry.getId(), 0);
+                    Identifier lastOpen = Inscribe.GUIDE_ITEM.getLastOpenId(stack);
+                    if (lastOpen != null)
+                        pbe.setSpread(Inscribe.GUIDE_ITEM.getGuideId(stack), lastOpen, 0);
                 });
         }
         return ActionResult.PASS;

@@ -6,13 +6,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.Identifier;
 
-public class GotoEntry extends WidgetComponent implements InteractableElement
+public class GotoPart extends WidgetComponent implements InteractableElement
 {
-    private final Identifier entryId;
+    private final Identifier partId;
 
-    public GotoEntry(Identifier entryId)
+    public GotoPart(Identifier partId)
     {
-        this.entryId = entryId;
+        this.partId = partId;
     }
 
     @Override
@@ -21,7 +21,7 @@ public class GotoEntry extends WidgetComponent implements InteractableElement
         Screen currentScreen = MinecraftClient.getInstance().currentScreen;
         if (currentScreen instanceof GuideGui)
         {
-            ((GuideGui) currentScreen).open(entryId);
+            ((GuideGui) currentScreen).open(partId);
             return true;
         }
         return false;

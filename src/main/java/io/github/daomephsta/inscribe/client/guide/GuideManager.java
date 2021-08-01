@@ -184,7 +184,7 @@ public class GuideManager implements IdentifiableResourceReloadListener
                 return -1;
             if (!isGuideDefinition(a) && isGuideDefinition(b))
                 return 1;
-            // Translations of the same entry are equivalent, for the purposes of this map
+            // Translations of the same part are equivalent, for the purposes of this map
             if (a.getGuideId().equals(b.getGuideId()) && a.getSectionPath().equals(b.getSectionPath()))
                 return 0;
             return a.compareTo(b);

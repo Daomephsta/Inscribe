@@ -5,12 +5,10 @@ import org.jetbrains.annotations.Nullable;
 import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.gui.GuideSession;
-import io.github.daomephsta.inscribe.client.guide.gui.OpenEntryScreen;
 import io.github.daomephsta.inscribe.client.guide.gui.OpenTableOfContentsScreen;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.GuidePart;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItemAccessMethod;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -49,14 +47,12 @@ public class GuideItem extends Item
     private Screen createScreen(ItemStack stack)
     {
         Guide guide = getGuide(stack);
-        Object lastOpen = getLastOpen(stack);
-        if (lastOpen instanceof XmlEntry entry)
-            return new OpenEntryScreen(new GuideSession(guide, stack).openEntry(entry));
-        else if (lastOpen instanceof TableOfContents toc)
-            return new OpenTableOfContentsScreen(new GuideSession(guide, stack).openToC(toc));
+        GuidePart lastOpen = getLastOpen(stack);
+        if (lastOpen != null)
+            return lastOpen.toScreen(new GuideSession(guide, stack));
         else
         {
-            GuideSession session = new GuideSession(guide, stack).openToC(guide.getMainTableOfContents());
+            GuideSession session = new GuideSession(guide, stack).open(guide.getMainTableOfContents());
             return new OpenTableOfContentsScreen(session);
         }
     }
@@ -118,45 +114,27 @@ public class GuideItem extends Item
     }
 
     @Nullable
-    private Object getLastOpen(ItemStack stack)
+    private GuidePart getLastOpen(ItemStack stack)
     {
         if (stack.getOrCreateTag().contains(LAST_OPEN_TAG))
         {
-            Identifier entryId = new Identifier(stack.getTag().getString(LAST_OPEN_TAG));
-            XmlEntry entry = getGuide(stack).getEntry(entryId);
-            if (entry != null)
-                return entry;
-            TableOfContents toc = getGuide(stack).getTableOfContents(entryId);
-            if (toc != null)
-                return toc;
-            stack.getTag().remove(LAST_OPEN_TAG);
+            Identifier partId = new Identifier(stack.getTag().getString(LAST_OPEN_TAG));
+            GuidePart lastOpen = getGuide(stack).getPart(partId);
+            if (lastOpen != null)
+                return lastOpen;
+            else
+                stack.getTag().remove(LAST_OPEN_TAG);
         }
         return null;
     }
     
-    public XmlEntry getLastEntry(ItemStack stack)
+    public Identifier getLastOpenId(ItemStack stack)
     {
-        Object lastOpen = getLastOpen(stack);
-        if (lastOpen instanceof XmlEntry lastEntry)
-            return lastEntry;
-        return null;
-    }
-    
-    public TableOfContents getLastToC(ItemStack stack)
-    {
-        Object lastOpen = getLastOpen(stack);
-        if (lastOpen instanceof TableOfContents lastToC)
-            return lastToC;
-        return null;
+        GuidePart lastOpen = getLastOpen(stack);
+        return lastOpen != null ? lastOpen.getId() : null;
     }
 
-    public ItemStack setLastOpen(ItemStack stack, XmlEntry last)
-    {
-        stack.getOrCreateTag().putString(LAST_OPEN_TAG, last.getId().toString());
-        return stack;
-    }
-
-    public ItemStack setLastOpen(ItemStack stack, TableOfContents last)
+    public ItemStack setLastOpen(ItemStack stack, GuidePart last)
     {
         stack.getOrCreateTag().putString(LAST_OPEN_TAG, last.getId().toString());
         return stack;
