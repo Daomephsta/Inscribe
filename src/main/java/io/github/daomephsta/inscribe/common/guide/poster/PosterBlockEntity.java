@@ -4,16 +4,22 @@ import java.util.stream.Stream;
 
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 
 public class PosterBlockEntity extends BlockEntity implements BlockEntityClientSerializable
 {
     private BlockPos from = BlockPos.ORIGIN,
                      to = BlockPos.ORIGIN;
+    private VoxelShape outline = null;
     private Spread spread = null;
 
     public PosterBlockEntity(BlockPos pos, BlockState state)
@@ -40,6 +46,24 @@ public class PosterBlockEntity extends BlockEntity implements BlockEntityClientS
     public Stream<BlockPos> positions()
     {
         return BlockPos.stream(from, to);
+    }
+
+    public VoxelShape getOutlineShape(BlockState state)
+    {
+        if (outline == null)
+        {
+            Direction facing = state.get(Properties.HORIZONTAL_FACING);
+            BlockPos offset = getRenderOrigin().subtract(pos);
+            this.outline = (switch (facing)
+            {
+                case NORTH -> Block.createCuboidShape(-16 * 3, 0, 15, 16, 16 * 3, 16);
+                case EAST -> Block.createCuboidShape(0, 0, -16 * 3, 1, 16 * 3, 16);
+                case SOUTH -> Block.createCuboidShape(0, 0, 0, 16 * 4, 16 * 3, 1);
+                case WEST -> Block.createCuboidShape(15, 0, 0, 16, 16 * 3, 16 * 4);
+                default -> VoxelShapes.fullCube();
+            }).offset(offset.getX(), offset.getY(), offset.getZ());
+        }
+        return outline;
     }
 
     public Spread getSpread()

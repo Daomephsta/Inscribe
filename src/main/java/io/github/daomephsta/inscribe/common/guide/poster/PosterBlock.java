@@ -1,5 +1,6 @@
 package io.github.daomephsta.inscribe.common.guide.poster;
 
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.BlockEntities;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
@@ -19,7 +20,6 @@ import net.minecraft.state.StateManager.Builder;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -31,11 +31,6 @@ import net.minecraft.world.WorldView;
 
 public class PosterBlock extends Block implements BlockEntityProvider
 {
-    private static final VoxelShape NORTH_RAYSHAPE = Block.createCuboidShape(0, 0, 15, 16, 16, 16),
-                                    EAST_HITSHAPE = Block.createCuboidShape(0, 0, 0, 1, 16, 16),
-                                    SOUTH_HITSHAPE = Block.createCuboidShape(0, 0, 0, 16, 16, 1),
-                                    WEST_HITSHAPE = Block.createCuboidShape(15, 0, 0, 16, 16, 16);
-
     public PosterBlock()
     {
         super(FabricBlockSettings.of(Material.CARPET, MapColor.WHITE)
@@ -75,9 +70,8 @@ public class PosterBlock extends Block implements BlockEntityProvider
     @Override
     public void onStateReplaced(BlockState replacement, World world, BlockPos pos, BlockState removed, boolean moved)
     {
-        // Judging by Mojang code, sometimes the BE is null, or some other BE
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof PosterBlockEntity poster)
+        // Judging by Mojang code the BE may be null or some other BE
+        if (world.getBlockEntity(pos) instanceof PosterBlockEntity poster)
         {
             Iterable<BlockPos> positions = poster.positions()::iterator;
             for (BlockPos board : positions)
@@ -96,9 +90,9 @@ public class PosterBlock extends Block implements BlockEntityProvider
                 .flatMap(pbe -> BlockEntities.get(world, pbe.getRenderOrigin(), PosterBlockEntity.class))
                 .ifPresent(pbe ->
                 {
-                    Identifier lastOpen = Inscribe.GUIDE_ITEM.getLastOpenId(stack);
-                    if (lastOpen != null)
-                        pbe.setSpread(Inscribe.GUIDE_ITEM.getGuideId(stack), lastOpen, 0);
+                    // ToCs are renderable, but there's no point
+                    if (Inscribe.GUIDE_ITEM.getLastOpen(stack) instanceof XmlEntry lastEntry)
+                        pbe.setSpread(Inscribe.GUIDE_ITEM.getGuideId(stack), lastEntry, 0);
                 });
         }
         return ActionResult.PASS;
@@ -107,19 +101,9 @@ public class PosterBlock extends Block implements BlockEntityProvider
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context)
     {
-        switch (state.get(Properties.HORIZONTAL_FACING))
-        {
-        case NORTH:
-            return NORTH_RAYSHAPE;
-        case EAST:
-            return EAST_HITSHAPE;
-        case SOUTH:
-            return SOUTH_HITSHAPE;
-        case WEST:
-            return WEST_HITSHAPE;
-        default:
-            return VoxelShapes.fullCube();
-        }
+        if (world.getBlockEntity(pos) instanceof PosterBlockEntity poster)
+            return poster.getOutlineShape(state);
+        return VoxelShapes.fullCube();
     }
 
     @Override
