@@ -32,7 +32,7 @@ public class PosterBlockEntityRenderer implements BlockEntityRenderer<PosterBloc
         if (blockEntity.getSpread() == null || !blockEntity.isRenderOrigin())
             return;
         net.minecraft.util.math.Direction facing = blockEntity.getCachedState().get(Properties.HORIZONTAL_FACING);
-        float maxU = 381F / 440F, maxV = 232F / 256F,
+        float maxU = 381F / 440F, maxV = 232F / 290F,
               width = 381F, height = 232F,
               minX = (400F - width) / 2F,
               minY = (300F - height) / 2F;
