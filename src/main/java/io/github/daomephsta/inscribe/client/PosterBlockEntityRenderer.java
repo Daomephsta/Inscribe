@@ -20,10 +20,7 @@ import net.minecraft.util.math.Vec3f;
 
 public class PosterBlockEntityRenderer implements BlockEntityRenderer<PosterBlockEntity>
 {
-    public PosterBlockEntityRenderer(BlockEntityRendererFactory.Context context)
-    {
-        // TODO Auto-generated constructor stub
-    }
+    public PosterBlockEntityRenderer(BlockEntityRendererFactory.Context context) {}
     
     @Override
     public void render(PosterBlockEntity blockEntity, float tickDelta, MatrixStack matrices,
@@ -63,7 +60,7 @@ public class PosterBlockEntityRenderer implements BlockEntityRenderer<PosterBloc
             buffer.vertex(model, minX + width, minY + height, 0).texture(maxU, maxV).next();
             buffer.vertex(model, minX + width, minY, 0).texture(maxU, 0).next();
             buffer.vertex(model, minX, minY, 0).texture(0, 0).next();
-            matrices.translate(0, 0, -100);
+            matrices.translate(0, 0, -1); // Small offset to prevent z-fighting
             page.render(vertices, matrices, 0, 0, 0, false);
             matrices.pop();
         }
