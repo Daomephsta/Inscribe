@@ -57,6 +57,12 @@ public class TableOfContents implements GuidePart
         return new OpenTableOfContentsScreen(session.open(this));
     }
     
+    @Override
+    public String toString()
+    {
+        return String.format("TableOfContents %s", id);
+    }
+
     public static class Link
     {
         public final String name;

@@ -47,7 +47,7 @@ public class GuideSession
             return;
         // Close open part 
         history.pop();
-        GuidePart last = history.peek();
+        GuidePart last = history.pop();
         MinecraftClient.getInstance().openScreen(last.toScreen(this));
     }
 
