@@ -1,6 +1,7 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat.definition;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 import com.google.common.collect.ImmutableList;
@@ -43,7 +44,7 @@ public class TableOfContents implements GuidePart
 
     public Iterable<Link> getLinks()
     {
-        return links;
+        return () -> links.stream().filter(Link::visible).iterator();
     }
 
     public int getColumns()
@@ -69,13 +70,21 @@ public class TableOfContents implements GuidePart
         public final Identifier destination;
         public final LinkStyle style;
         private final Consumer<GuideFlow> iconFactory;
+        private final BooleanSupplier visible;
 
-        public Link(Consumer<GuideFlow> iconFactory, String name, Identifier destination, LinkStyle style)
+        public Link(Consumer<GuideFlow> iconFactory, String name, Identifier destination, LinkStyle style,
+            BooleanSupplier visible)
         {
             this.iconFactory = iconFactory;
             this.name = name;
             this.destination = destination;
             this.style = style;
+            this.visible = visible;
+        }
+
+        public boolean visible()
+        {
+            return visible.getAsBoolean();
         }
 
         public void addIcon(GuideFlow output)

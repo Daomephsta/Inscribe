@@ -10,7 +10,8 @@
     "MixinReloadableResourceManagerImpl",
     "MixinKeyboard",
     "MixinMouse",
-    "RenderLayerAccessors"
+    "RenderLayerAccessors",
+    "ClientAdvancementManagerAccessors"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.FilenameUtils;
@@ -15,7 +16,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.google.common.collect.Lists;
+import com.pivovarit.function.ThrowingFunction;
 
 import io.github.daomephsta.inscribe.client.guide.GuideIdentifier;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
@@ -30,19 +31,25 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser.Impl;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XPaths;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlElements;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlGuideGuiElement;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents.Link;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
+import io.github.daomephsta.inscribe.client.mixin.ClientAdvancementManagerAccessors;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
+import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -98,20 +105,23 @@ public class V100Parser implements Parser
     {
         Element root = doc.getDocumentElement();
         String directory = Identifiers.working(id).subIdentifier(0, -2).toIdentifier().toString();
-        LinkStyle style = XmlAttributes.asEnum(root, "link_style", LinkStyle::fromRepresentation);        
-        NodeList linkElements = root.getElementsByTagName("link");
-        List<TableOfContents.Link> links = Lists.newArrayListWithCapacity(linkElements.getLength());
-        for (int i = 0; i < linkElements.getLength(); i++)
-        {
-            Element link = (Element) linkElements.item(i);
-            String name = XmlAttributes.getValue(link, "name");
-            String destination = XmlAttributes.getValue(link, "destination");
-            Identifier destinationId = destination.startsWith("/")
-                ? new Identifier(directory + destination)
-                : new Identifier(destination);
-            links.add(new TableOfContents.Link(getIconFactory(style, link), name, destinationId, style));
-        }
+        LinkStyle style = XmlAttributes.asEnum(root, "link_style", LinkStyle::fromRepresentation);
+        List<TableOfContents.Link> links = XPaths.streamElements(root, "./link")
+            .map(ThrowingFunction.unchecked(e -> readLink(e, style, directory)))
+            .toList();
         return new TableOfContents(id, filePath, links, XmlAttributes.asInt(root, "columns", 1));
+    }
+
+    private Link readLink(Element link, LinkStyle style, String directory) throws GuideLoadingException
+    {
+        String name = XmlAttributes.getValue(link, "name");
+        String destination = XmlAttributes.getValue(link, "destination");
+        Identifier destinationId = destination.startsWith("/")
+            ? new Identifier(directory + destination)
+            : new Identifier(destination);
+        Consumer<GuideFlow> iconFactory = getIconFactory(style, link);
+        BooleanSupplier visibilityPredicate = readVisibilityPredicate(link);
+        return new TableOfContents.Link(iconFactory, name, destinationId, style, visibilityPredicate);
     }
 
     private Consumer<GuideFlow> getIconFactory(LinkStyle style, Element link) throws GuideLoadingException
@@ -120,6 +130,32 @@ public class V100Parser implements Parser
             return null;
         XmlGuideGuiElement icon = GUIDE_GUI_ELEMENT_DESERIALISER.deserialise(link);
         return output -> RenderFormatConverter.convert(output, icon);
+    }
+
+    private BooleanSupplier readVisibilityPredicate(Element link) throws InscribeSyntaxException
+    {
+        if (link.hasAttribute("if"))
+        {
+            Identifier researchId = XmlAttributes.asIdentifier(link, "if");
+            return () -> advancementComplete(researchId);
+        }
+        else if (link.hasAttribute("if_not"))
+        {
+            Identifier researchId = XmlAttributes.asIdentifier(link, "if_not");
+            return () -> !advancementComplete(researchId);
+        }
+        else
+            return () -> true;
+    }
+
+    private boolean advancementComplete(Identifier researchId)
+    {
+        ClientAdvancementManager advancementManager =
+            MinecraftClient.getInstance().player.networkHandler.getAdvancementHandler();
+        Advancement research = advancementManager.getManager().get(researchId);
+        AdvancementProgress progress = ((ClientAdvancementManagerAccessors) advancementManager)
+            .getAdvancementsProgress().get(research);
+        return progress != null && progress.isDone();
     }
 
     @Override
