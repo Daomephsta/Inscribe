@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import io.github.daomephsta.inscribe.api.GuideFlags;
+import io.github.daomephsta.inscribe.api.IGuide;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.GuidePart;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
@@ -15,18 +17,20 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import net.minecraft.util.Identifier;
 
-public class Guide
+public class Guide implements IGuide
 {
     public static final Identifier INVALID_GUIDE_ID = new Identifier(Inscribe.MOD_ID, "invalid");
     private final GuideDefinition definition;
     private final Map<Identifier, XmlEntry> entries;
     private final Map<Identifier, TableOfContents> tablesOfContents;
+    private final GuideFlags flags;
 
     public Guide(GuideDefinition definition)
     {
         this.definition = definition;
         this.entries = new HashMap<>();
         this.tablesOfContents = new HashMap<>();
+        this.flags = new GuideFlags();
     }
 
     public XmlEntry getEntry(Identifier entryId)
@@ -76,6 +80,12 @@ public class Guide
         if (toc != null)
             return toc;
         return null;
+    }
+
+    @Override
+    public GuideFlags getFlags()
+    {
+        return flags;
     }
 
     public Identifier getIdentifier()

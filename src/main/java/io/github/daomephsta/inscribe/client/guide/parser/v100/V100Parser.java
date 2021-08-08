@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +18,7 @@ import org.w3c.dom.NodeList;
 
 import com.pivovarit.function.ThrowingFunction;
 
+import io.github.daomephsta.inscribe.api.GuideFlags;
 import io.github.daomephsta.inscribe.client.guide.GuideIdentifier;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
 import io.github.daomephsta.inscribe.client.guide.LinkStyle;
@@ -42,14 +43,10 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfCo
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlEntry;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
-import io.github.daomephsta.inscribe.client.mixin.ClientAdvancementManagerAccessors;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -120,7 +117,7 @@ public class V100Parser implements Parser
             ? new Identifier(directory + destination)
             : new Identifier(destination);
         Consumer<GuideFlow> iconFactory = getIconFactory(style, link);
-        BooleanSupplier visibilityPredicate = readVisibilityPredicate(link);
+        Predicate<GuideFlags> visibilityPredicate = readVisibilityPredicate(link);
         return new TableOfContents.Link(iconFactory, name, destinationId, style, visibilityPredicate);
     }
 
@@ -132,30 +129,20 @@ public class V100Parser implements Parser
         return output -> RenderFormatConverter.convert(output, icon);
     }
 
-    private BooleanSupplier readVisibilityPredicate(Element link) throws InscribeSyntaxException
+    private Predicate<GuideFlags> readVisibilityPredicate(Element link) throws InscribeSyntaxException
     {
         if (link.hasAttribute("if"))
         {
-            Identifier researchId = XmlAttributes.asIdentifier(link, "if");
-            return () -> advancementComplete(researchId);
+            Identifier flagId = XmlAttributes.asIdentifier(link, "if");
+            return flags -> flags.isTrue(flagId);
         }
         else if (link.hasAttribute("if_not"))
         {
-            Identifier researchId = XmlAttributes.asIdentifier(link, "if_not");
-            return () -> !advancementComplete(researchId);
+            Identifier flagId = XmlAttributes.asIdentifier(link, "if_not");
+            return flags -> flags.isFalse(flagId);
         }
         else
-            return () -> true;
-    }
-
-    private boolean advancementComplete(Identifier researchId)
-    {
-        ClientAdvancementManager advancementManager =
-            MinecraftClient.getInstance().player.networkHandler.getAdvancementHandler();
-        Advancement research = advancementManager.getManager().get(researchId);
-        AdvancementProgress progress = ((ClientAdvancementManagerAccessors) advancementManager)
-            .getAdvancementsProgress().get(research);
-        return progress != null && progress.isDone();
+            return flags -> true;
     }
 
     @Override

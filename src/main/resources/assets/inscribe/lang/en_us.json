@@ -1,6 +1,8 @@
 {
     "inscribe.guide.invalid.name": "Invalid Guide",
-    "inscribe.command.give-guide.invalid_guide_name": "Unknown guide '%s'",
+    "inscribe.command.invalid_guide_id": "Unknown guide '%s'",
+    "inscribe.command.flags.invalid_flag_id": "Unknown flag '%s'",
+    "inscribe.command.flags.print_flag": "%s = %s",
     "inscribe.chat_message.invalid_guide": "[Inscribe] This guide is invalid",
     "inscribe.chat_message.reload_failure.open_entry": "[Inscribe] The open entry failed to reload properly. Check logs/inscribe.log for details.",
     "inscribe.chat_message.reload_failure.open_guide": "[Inscribe] The open guide failed to reload properly. Check logs/inscribe.log for details.",

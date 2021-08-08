@@ -1,12 +1,15 @@
 package io.github.daomephsta.inscribe.client.guide.xmlformat.definition;
 
 import java.util.List;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import com.google.common.collect.ImmutableList;
 
+import io.github.daomephsta.inscribe.api.GuideFlags;
+import io.github.daomephsta.inscribe.client.guide.Guide;
 import io.github.daomephsta.inscribe.client.guide.GuideIdentifier;
+import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.LinkStyle;
 import io.github.daomephsta.inscribe.client.guide.gui.GuideSession;
 import io.github.daomephsta.inscribe.client.guide.gui.OpenTableOfContentsScreen;
@@ -44,7 +47,7 @@ public class TableOfContents implements GuidePart
 
     public Iterable<Link> getLinks()
     {
-        return () -> links.stream().filter(Link::visible).iterator();
+        return () -> links.stream().filter(link -> link.visible(this)).iterator();
     }
 
     public int getColumns()
@@ -70,10 +73,10 @@ public class TableOfContents implements GuidePart
         public final Identifier destination;
         public final LinkStyle style;
         private final Consumer<GuideFlow> iconFactory;
-        private final BooleanSupplier visible;
+        private final Predicate<GuideFlags> visible;
 
         public Link(Consumer<GuideFlow> iconFactory, String name, Identifier destination, LinkStyle style,
-            BooleanSupplier visible)
+            Predicate<GuideFlags> visible)
         {
             this.iconFactory = iconFactory;
             this.name = name;
@@ -82,9 +85,10 @@ public class TableOfContents implements GuidePart
             this.visible = visible;
         }
 
-        public boolean visible()
+        public boolean visible(TableOfContents parent)
         {
-            return visible.getAsBoolean();
+            Guide guide = GuideManager.INSTANCE.getGuide(parent.getFilePath().getGuideId());
+            return visible.test(guide.getFlags());
         }
 
         public void addIcon(GuideFlow output)

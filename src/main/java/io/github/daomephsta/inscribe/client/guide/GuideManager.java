@@ -20,6 +20,7 @@ import org.w3c.dom.Element;
 import com.google.common.collect.Sets;
 import com.pivovarit.function.ThrowingSupplier;
 
+import io.github.daomephsta.inscribe.api.GuideConfigurator;
 import io.github.daomephsta.inscribe.client.guide.parser.Parsers;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlResources;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
@@ -31,6 +32,7 @@ import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.ExceptionHandling;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchableContainer;
@@ -241,7 +243,11 @@ public class GuideManager implements IdentifiableResourceReloadListener
             try
             {
                 if (isGuideDefinition(file))
-                    guides.put(file.getGuideId(), new Guide(Parsers.loadGuideDefinition(doc, assets, file)));
+                {
+                    Guide guide = new Guide(Parsers.loadGuideDefinition(doc, assets, file));
+                    configureGuide(guide);
+                    guides.put(file.getGuideId(), guide);
+                }
                 else if (root.getTagName().equals("entry"))
                 {
                     Guide guide = guides.get(file.getGuideId());
@@ -271,6 +277,13 @@ public class GuideManager implements IdentifiableResourceReloadListener
                 Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.entry"));
             }
         }
+    }
+
+    private void configureGuide(Guide guide)
+    {
+        String entrypointId = "inscribe:configure/" + guide.getIdentifier().toString().replace(':', '/');
+        for (var configurator : FabricLoader.getInstance().getEntrypoints(entrypointId, GuideConfigurator.class))
+            configurator.configure(guide);
     }
 
     private static void handleLoadingError(Identifier id, Throwable e)
