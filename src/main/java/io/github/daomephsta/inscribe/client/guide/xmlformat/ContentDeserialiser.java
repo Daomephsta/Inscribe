@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.commonmark.ext.ins.InsExtension;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import com.google.common.collect.Lists;
 
@@ -29,11 +29,11 @@ public interface ContentDeserialiser
     /**
      * Deserialises a list of nodes. Tag names not registered with this deserialiser
      * are ignored.
-     * @param list the nodes to be deserialised
+     * @param nodes the nodes to be deserialised
      * @return a list of the nodes in deserialised form, in encounter order
      * @throws GuideLoadingException if any error occurs during deserialisation
      */
-    public List<Object> deserialise(NodeList list) throws GuideLoadingException;
+    public List<Object> deserialise(Iterable<org.w3c.dom.Node> nodes) throws GuideLoadingException;
 
     public static class Impl implements ContentDeserialiser
     {
@@ -59,12 +59,11 @@ public interface ContentDeserialiser
 
         /**@inheritDoc*/
         @Override
-        public List<Object> deserialise(NodeList list) throws GuideLoadingException
+        public List<Object> deserialise(Iterable<org.w3c.dom.Node> nodes) throws GuideLoadingException
         {
             List<Object> result = new ArrayList<>();
-            for (int i = 0; i < list.getLength(); i++)
+            for (org.w3c.dom.Node node : nodes)
             {
-                org.w3c.dom.Node node = list.item(i);
                 switch (node.getNodeType()) 
                 {
                     case org.w3c.dom.Node.ELEMENT_NODE ->
@@ -79,8 +78,12 @@ public interface ContentDeserialiser
                         else
                             result.add(deserialiser.fromXml(element));
                     }
-                    case org.w3c.dom.Node.TEXT_NODE ->
-                            result.add(parseMarkDown(node.getTextContent()));
+                    case org.w3c.dom.Node.TEXT_NODE -> 
+                    {
+                        String text = node.getTextContent();
+                        if (!Strings.isBlank(text))
+                            result.add(parseMarkDown(text));
+                    }
                     default ->
                             LOGGER.debug("Ignored {} as it is not text or an element", node);
                 }

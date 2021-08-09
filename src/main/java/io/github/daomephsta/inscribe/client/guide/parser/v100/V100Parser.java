@@ -62,9 +62,9 @@ public class V100Parser implements Parser
         .registerDeserialiser(V100ElementTypes.IMAGE)
         .registerDeserialiser(V100ElementTypes.ITEMSTACK)
         .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
-    private static final ContentDeserialiser ENTRY_DESERIALISER = new ContentDeserialiser.Impl()
+    public static final ContentDeserialiser ENTRY_DESERIALISER = new ContentDeserialiser.Impl()
         .registerDeserialisers(V100ElementTypes.IMAGE, V100ElementTypes.ITEMSTACK, V100ElementTypes.ENTITY_DISPLAY,
-            V100ElementTypes.RECIPE_DISPLAY, V100ElementTypes.BUTTON)
+            V100ElementTypes.RECIPE_DISPLAY, V100ElementTypes.BUTTON, V100ElementTypes.IF_ELSE)
         .registerDeserialisers(V100ElementTypes.HEADINGS);
 
     @Override
@@ -164,7 +164,7 @@ public class V100Parser implements Parser
         for (int i = 0; i < pageElements.getLength(); i++)
         {
             Node page = pageElements.item(i);
-            pages.add(new XmlPage(ENTRY_DESERIALISER.deserialise(page.getChildNodes())));
+            pages.add(new XmlPage(ENTRY_DESERIALISER.deserialise(XPaths.nodes((Element) page, "./node()"))));
         }
         return pages;
     }

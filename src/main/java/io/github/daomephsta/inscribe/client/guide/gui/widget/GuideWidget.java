@@ -170,7 +170,7 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
         return y() + height();
     }
 
-    protected Guide getGuide()
+    public Guide getGuide()
     {
         return guide;
     }

@@ -9,6 +9,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItem
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.NoGuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlButton;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlEntityDisplay;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlIfElse;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlImage;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlItemStack;
 
@@ -22,6 +23,7 @@ public class V100ElementTypes
     static final XmlElementType<XmlEntityDisplay> ENTITY_DISPLAY = new XmlEntityDisplayElementType();
     static final XmlElementType<XmlRecipeDisplay> RECIPE_DISPLAY = new XmlRecipeDisplayElementType();
     static final XmlElementType<XmlButton> BUTTON = new XmlButtonElementType();
+    static final XmlElementType<XmlIfElse> IF_ELSE = new XmlIfElseElementType();
 
     static final XmlElementType<GuideItemAccessMethod> GUIDE_ITEM_ACCESS_METHOD = new GuideItemAccessMethodElementType();
     static final XmlElementType<NoGuideAccessMethod> NO_GUIDE_ACCESS_METHOD = new SimpleXmlElementType<>("none", NoGuideAccessMethod.class, NoGuideAccessMethod::new);

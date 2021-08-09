@@ -40,7 +40,7 @@ public class XPaths
         }
     }
 
-    private static Stream<Node> streamNodes(Element source, String xpath)
+    public static Stream<Node> streamNodes(Element source, String xpath)
     {
         return Streams.stream(nodes(source, xpath));
     }
