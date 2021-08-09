@@ -64,7 +64,7 @@ public class V100Parser implements Parser
         .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
     private static final ContentDeserialiser ENTRY_DESERIALISER = new ContentDeserialiser.Impl()
         .registerDeserialisers(V100ElementTypes.IMAGE, V100ElementTypes.ITEMSTACK, V100ElementTypes.ENTITY_DISPLAY,
-            V100ElementTypes.RECIPE_DISPLAY)
+            V100ElementTypes.RECIPE_DISPLAY, V100ElementTypes.BUTTON)
         .registerDeserialisers(V100ElementTypes.HEADINGS);
 
     @Override
@@ -169,7 +169,8 @@ public class V100Parser implements Parser
         return pages;
     }
 
-    static List<TextNode> parseContentAsText0(Element xml, List<TextNode> text, Deque<FormatFlags> formatting) throws InscribeSyntaxException
+    static List<TextNode> parseContentAsText0(Element xml, List<TextNode> text, 
+        Deque<FormatFlags> formatting, int colour) throws InscribeSyntaxException
     {
         for (int i = 0; i < xml.getChildNodes().getLength(); i++)
         {
@@ -178,7 +179,7 @@ public class V100Parser implements Parser
             {
             case Node.TEXT_NODE -> 
                 text.add(new FormattedTextNode(node.getNodeValue(), MinecraftClient.DEFAULT_FONT_ID, 
-                    0x000000, formatting.toArray(new FormatFlags[0])));
+                    colour, formatting.toArray(new FormatFlags[0])));
             case Node.ELEMENT_NODE ->
                 {
                     Element element = (Element) node;
@@ -191,15 +192,15 @@ public class V100Parser implements Parser
                     default -> 
                         throw new InscribeSyntaxException("Unexpected tag " + element.getTagName());
                     });
-                    parseContentAsText0(element, text, formatting);
+                    parseContentAsText0(element, text, formatting, colour);
                 }
             }
         }
         return text;
     }
 
-    static List<TextNode> parseContentAsText(Element xml) throws InscribeSyntaxException
+    static List<TextNode> parseContentAsText(Element xml, int colour) throws InscribeSyntaxException
     {
-        return V100Parser.parseContentAsText0(xml, new ArrayList<>(), new ArrayDeque<>());
+        return V100Parser.parseContentAsText0(xml, new ArrayList<>(), new ArrayDeque<>(), colour);
     }
 }

@@ -29,7 +29,7 @@ public class XmlHeadingElementType extends XmlElementType<XmlHeading>
         Alignment vAlign = Optional.ofNullable(xml.getAttributeNode("vAlign"))
             .map(attr -> Alignment.valueOf(attr.getValue().toUpperCase(Locale.ROOT)))
             .orElse(Alignment.CENTER);
-        return new XmlHeading(V100Parser.parseContentAsText(xml), level, hAlign, vAlign);
+        return new XmlHeading(V100Parser.parseContentAsText(xml, 0x000000), level, hAlign, vAlign);
     }
 }
 
