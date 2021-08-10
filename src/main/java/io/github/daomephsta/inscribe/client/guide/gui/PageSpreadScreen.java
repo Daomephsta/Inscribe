@@ -116,6 +116,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
+        if (pageSpreads == null) return false; // Not initialised
         if (super.mouseClicked(mouseX, mouseY, button))
             return true;
         if (pageSpreads.leftPage().contains(mouseX, mouseY))
@@ -128,6 +129,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button)
     {
+        if (pageSpreads == null) return false; // Not initialised
         if (super.mouseReleased(mouseX, mouseY, button))
             return true;
         if (pageSpreads.leftPage().contains(mouseX, mouseY))
@@ -140,6 +142,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY)
     {
+        if (pageSpreads == null) return false; // Not initialised
         if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY))
             return true;
         if (pageSpreads.leftPage().contains(mouseX, mouseY))
@@ -152,6 +155,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double wheelDelta)
     {
+        if (pageSpreads == null) return false; // Not initialised
         if (super.mouseScrolled(mouseX, mouseY, wheelDelta))
             return true;
         if (pageSpreads.leftPage().contains(mouseX, mouseY))
@@ -164,6 +168,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     @Override
     public boolean keyPressed(int key, int scancode, int modifiers)
     {
+        if (pageSpreads == null) return false; // Not initialised
         GameOptions options = MinecraftClient.getInstance().options;
         if (pageSpreads.hasPrevious() && options.keyLeft.matchesKey(key, scancode))
             prevPage.onPress();

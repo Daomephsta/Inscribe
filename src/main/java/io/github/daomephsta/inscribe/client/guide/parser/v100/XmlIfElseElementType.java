@@ -23,7 +23,7 @@ public class XmlIfElseElementType extends XmlElementType<XmlIfElse>
     {
         Identifier condition = XmlAttributes.asIdentifier(xml, "condition");
         List<Object> trueBranch = V100Parser.ENTRY_DESERIALISER.deserialise(
-            XPaths.nodes(xml, "./node()[local-name() != 'else']"));
+            XPaths.nodes(xml, "./node()[not(self::else)]"));
         List<Object> falseBranch = V100Parser.ENTRY_DESERIALISER.deserialise(
             XPaths.nodes(xml, "./else/node()"));
         return new XmlIfElse(condition, trueBranch, falseBranch);

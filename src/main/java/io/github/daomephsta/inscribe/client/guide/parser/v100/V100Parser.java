@@ -15,12 +15,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ProcessingInstruction;
 
 import com.pivovarit.function.ThrowingFunction;
 
 import io.github.daomephsta.inscribe.api.GuideFlags;
 import io.github.daomephsta.inscribe.client.guide.GuideIdentifier;
 import io.github.daomephsta.inscribe.client.guide.GuideLoadingException;
+import io.github.daomephsta.inscribe.client.guide.GuideManager;
 import io.github.daomephsta.inscribe.client.guide.LinkStyle;
 import io.github.daomephsta.inscribe.client.guide.gui.RenderFormatConverter;
 import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.GuideFlow;
@@ -28,6 +30,8 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.text.FormattedTextN
 import io.github.daomephsta.inscribe.client.guide.gui.widget.text.TextNode;
 import io.github.daomephsta.inscribe.client.guide.parser.FormatFlags;
 import io.github.daomephsta.inscribe.client.guide.parser.Parser;
+import io.github.daomephsta.inscribe.client.guide.template.Template;
+import io.github.daomephsta.inscribe.client.guide.template.TemplateLoader;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser;
@@ -36,6 +40,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.XPaths;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlElements;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlGuideGuiElement;
+import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlNodes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideAccessMethod;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideDefinition;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.TableOfContents;
@@ -45,6 +50,7 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.XmlPage;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.theme.Theme;
 import io.github.daomephsta.inscribe.common.Inscribe;
 import io.github.daomephsta.inscribe.common.util.Identifiers;
+import io.github.daomephsta.inscribe.common.util.Identifiers.Working;
 import io.github.daomephsta.inscribe.common.util.messaging.Notifier;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
@@ -149,10 +155,31 @@ public class V100Parser implements Parser
     public XmlEntry loadEntry(Document doc, ResourceManager resourceManager,
         Identifier id, GuideIdentifier filePath) throws GuideLoadingException
     {
+        applyTemplates(doc, resourceManager);
         Element root = doc.getDocumentElement();
         List<String> tags = XmlAttributes.asStringList(root, "tags", Collections::emptyList);
         List<XmlPage> pages = readPages(root, id);
         return new XmlEntry(id, filePath, new HashSet<>(tags), pages);
+    }
+
+    public void applyTemplates(Document doc, ResourceManager resourceManager)
+    {
+        Element root = doc.getDocumentElement();
+        for (var insn : XmlNodes.iterateChildren(doc, ProcessingInstruction.class))
+        {
+            if (!insn.getTarget().equals("import"))
+                continue;
+            Working initial = Identifiers.working(insn.getData());
+            String shortName = initial.getSegment(-1);
+            Identifier longName = initial
+                .addPathSegment(0, GuideManager.FOLDER_NAME)
+                .addPathSegments(1, "en_us", "templates")
+                .editPathSegment(-1, s -> s + ".xml")
+                .toIdentifier();
+            Template template = TemplateLoader.INSTANCE.get(resourceManager, longName);
+            for (Element usage : XmlNodes.iterate(root.getElementsByTagName(shortName), Element.class))
+                template.replaceUsage(usage);
+        }
     }
 
     private List<XmlPage> readPages(Element root, Identifier entryId) throws GuideLoadingException

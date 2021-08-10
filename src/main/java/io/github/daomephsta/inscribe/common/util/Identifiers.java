@@ -74,6 +74,8 @@ public class Identifiers
 
         public String getSegment(int index)
         {
+            if (index < 0)
+                index += pathSegments.size();
             return pathSegments.get(index);
         }
 

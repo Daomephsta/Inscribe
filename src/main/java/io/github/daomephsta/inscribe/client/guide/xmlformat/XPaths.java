@@ -16,7 +16,7 @@ public class XPaths
 {
     private static final XPath XPATH = XPathFactory.newInstance().newXPath();
 
-    public static Node node(Element source, String xpath)
+    public static Node node(Node source, String xpath)
     {
         try
         {
@@ -28,7 +28,7 @@ public class XPaths
         }
     }
 
-    public static XPathNodes nodes(Element source, String xpath)
+    public static XPathNodes nodes(Node source, String xpath)
     {
         try
         {
@@ -40,7 +40,7 @@ public class XPaths
         }
     }
 
-    public static Stream<Node> streamNodes(Element source, String xpath)
+    public static Stream<Node> streamNodes(Node source, String xpath)
     {
         return Streams.stream(nodes(source, xpath));
     }

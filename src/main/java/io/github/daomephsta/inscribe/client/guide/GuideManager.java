@@ -270,6 +270,8 @@ public class GuideManager implements IdentifiableResourceReloadListener
                     }
                     guide.addTableOfContents(Parsers.loadTableOfContents(doc, assets, file));
                 }
+                else if (root.getTagName().equals("template"))
+                   continue; // Templates are lazy-loaded as needed
             }
             catch (GuideLoadingException e)
             {

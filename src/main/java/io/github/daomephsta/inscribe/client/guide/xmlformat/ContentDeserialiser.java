@@ -80,7 +80,7 @@ public interface ContentDeserialiser
                     }
                     case org.w3c.dom.Node.TEXT_NODE -> 
                     {
-                        String text = node.getTextContent();
+                        String text = ((org.w3c.dom.Text)node).getWholeText();
                         if (!Strings.isBlank(text))
                             result.add(parseMarkDown(text));
                     }

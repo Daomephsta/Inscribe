@@ -2,10 +2,11 @@ package io.github.daomephsta.inscribe.client.guide;
 
 import io.github.daomephsta.inscribe.common.util.Identifiers;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InvalidIdentifierException;
 
 public class GuideIdentifier extends Identifier
 {
+    /**Index of the path segment that defines the type of asset**/
+    private static final int ASSET_TYPE_INDEX = 3;
     private final Identifier guideId;
     private final String sectionPath, langCode;
 
@@ -13,22 +14,19 @@ public class GuideIdentifier extends Identifier
     {
         super(identifier.getNamespace(), identifier.getPath());
         Identifiers.Working working = Identifiers.working(identifier);
-        int entriesIndex = working.indexOf("entries");
-        if (entriesIndex != -1)
-        {
-            int langCodeIndex = entriesIndex - 1;
-            this.langCode = working.getSegment(langCodeIndex);
-            this.guideId = Identifiers.working(identifier).subIdentifier(1, langCodeIndex).toIdentifier();
-            this.sectionPath = Identifiers.working(identifier).subIdentifier(entriesIndex + 1, -1).toPath();
-        }
-        else if (getPath().endsWith(GuideManager.GUIDE_DEFINITION_FILENAME))
+        if (getPath().endsWith(GuideManager.GUIDE_DEFINITION_FILENAME))
         {
             this.langCode = ""; //Universal. Same convention as Locale.ROOT
             this.sectionPath = GuideManager.GUIDE_DEFINITION_FILENAME;
             this.guideId = working.subIdentifier(1, -2).toIdentifier();
         }
         else
-            throw new InvalidIdentifierException(identifier + " isn't a guide part or guide definition identifier");
+        {
+            int langCodeIndex = ASSET_TYPE_INDEX - 1;
+            this.langCode = working.getSegment(langCodeIndex);
+            this.guideId = Identifiers.working(identifier).subIdentifier(1, ASSET_TYPE_INDEX - 1).toIdentifier();
+            this.sectionPath = Identifiers.working(identifier).subIdentifier(ASSET_TYPE_INDEX + 1, -1).toPath();
+        }
     }
 
     public Identifier getGuideId()
