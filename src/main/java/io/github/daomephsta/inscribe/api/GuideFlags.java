@@ -1,37 +1,26 @@
 package io.github.daomephsta.inscribe.api;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.util.Identifier;
 
 public class GuideFlags
 {
-    private final Object2BooleanMap<Identifier> flags = new Object2BooleanOpenHashMap<>();
+    private final Map<Identifier, BooleanSupplier> flags = new HashMap<>();
 
     public boolean isTrue(Identifier flagId)
     {
-        assertExists(flagId);
-        return flags.getBoolean(flagId);
+        if (!has(flagId))
+            throw new IllegalArgumentException("Unregistered flag " + flagId);
+        return flags.get(flagId).getAsBoolean();
     }
     
     public boolean isFalse(Identifier flagId)
     {
-        assertExists(flagId);
-        return !flags.getBoolean(flagId);
-    }
-
-    public void set(Identifier flagId, boolean value)
-    {
-        assertExists(flagId);
-        flags.put(flagId, value);
-    }
-
-    private void assertExists(Identifier flagId)
-    {
-        if (!has(flagId))
-            throw new IllegalArgumentException("Unregistered flag " + flagId);
+        return !isTrue(flagId);
     }
 
     public boolean has(Identifier flagId)
@@ -39,11 +28,11 @@ public class GuideFlags
         return flags.containsKey(flagId);
     }
     
-    public void register(Identifier key, boolean defaultValue)
+    public void register(Identifier key, BooleanSupplier supplier)
     {
         if (has(key))
             throw new IllegalArgumentException("Duplicate flag " + key);
-        flags.put(key, defaultValue);
+        flags.put(key, supplier);
     }
 
     public Set<Identifier> getIds()
