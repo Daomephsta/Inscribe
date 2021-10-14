@@ -12,16 +12,12 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.definition.GuideItem
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 
-final class GuideItemAccessMethodElementType extends XmlElementType<GuideItemAccessMethod>
+final class GuideItemAccessMethodElementType implements XmlElementType<GuideItemAccessMethod>
 {
+    public static final String ID = "guide_item";
     private static final String ITEM_GROUP = "item_group",
                                 MODEL = "model";
     private static final Map<String, ItemGroup> ID_TO_GROUP = new HashMap<>();
-
-    GuideItemAccessMethodElementType()
-    {
-        super("guide_item");
-    }
 
     @Override
     public GuideItemAccessMethod fromXml(Element xml) throws GuideLoadingException

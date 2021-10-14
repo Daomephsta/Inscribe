@@ -21,12 +21,9 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
-final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
+final class XmlEntityDisplayElementType implements XmlElementType<XmlEntityDisplay>
 {
-    XmlEntityDisplayElementType()
-    {
-        super("entity_display");
-    }
+    public static final String ID = "entity_display";
 
     @Override
     public XmlEntityDisplay fromXml(Element xml) throws GuideLoadingException
@@ -89,7 +86,7 @@ final class XmlEntityDisplayElementType extends XmlElementType<XmlEntityDisplay>
         {
             XmlAttributes.requireAttributes(element, "axis", "speed");
             String axis = element.getAttribute("axis");
-            Vec3f axisVector = switch (axis) 
+            Vec3f axisVector = switch (axis)
             {
                 case "x" -> Vec3f.POSITIVE_X;
                 case "y" -> Vec3f.POSITIVE_Y;

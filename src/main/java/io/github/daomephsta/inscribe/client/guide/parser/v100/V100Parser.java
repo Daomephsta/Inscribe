@@ -35,7 +35,6 @@ import io.github.daomephsta.inscribe.client.guide.template.TemplateLoader;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.ContentDeserialiser;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.InscribeSyntaxException;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser;
-import io.github.daomephsta.inscribe.client.guide.xmlformat.SubtypeDeserialiser.Impl;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XPaths;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlElements;
@@ -61,20 +60,28 @@ public class V100Parser implements Parser
 {
     public static final Parser INSTANCE = new V100Parser();
     private static final Logger LOGGER = Inscribe.getDedicatedLogger("parser.v100");
-    private static final SubtypeDeserialiser<GuideAccessMethod> GUIDE_ACCESS_METHOD_DESERIALISER = new Impl<>(GuideAccessMethod.class)
-                .registerDeserialiser(V100ElementTypes.NO_GUIDE_ACCESS_METHOD)
-                .registerDeserialiser(V100ElementTypes.GUIDE_ITEM_ACCESS_METHOD);
-    private static final SubtypeDeserialiser<XmlGuideGuiElement> GUIDE_GUI_ELEMENT_DESERIALISER = new Impl<>(XmlGuideGuiElement.class)
-        .registerDeserialiser(V100ElementTypes.IMAGE)
-        .registerDeserialiser(V100ElementTypes.ITEMSTACK)
-        .registerDeserialiser(V100ElementTypes.ENTITY_DISPLAY);
-    public static final ContentDeserialiser ENTRY_DESERIALISER = new ContentDeserialiser.Impl()
-        .registerDeserialisers(V100ElementTypes.IMAGE, V100ElementTypes.ITEMSTACK, V100ElementTypes.ENTITY_DISPLAY,
-            V100ElementTypes.RECIPE_DISPLAY, V100ElementTypes.BUTTON, V100ElementTypes.IF_ELSE)
+    private static final SubtypeDeserialiser<GuideAccessMethod> GUIDE_ACCESS_METHOD_DESERIALISER =
+        new SubtypeDeserialiser<>(GuideAccessMethod.class)
+            .registerDeserialiser("none", V100ElementTypes.NO_GUIDE_ACCESS_METHOD)
+            .registerDeserialiser("guide_item", V100ElementTypes.GUIDE_ITEM_ACCESS_METHOD);
+    private static final SubtypeDeserialiser<XmlGuideGuiElement> GUIDE_GUI_ELEMENT_DESERIALISER =
+        new SubtypeDeserialiser<>(XmlGuideGuiElement.class)
+            .registerDeserialiser("image", V100ElementTypes.IMAGE)
+            .registerDeserialiser("itemstack", V100ElementTypes.ITEMSTACK)
+            .registerDeserialiser(XmlEntityDisplayElementType.ID, V100ElementTypes.ENTITY_DISPLAY);
+    public static final ContentDeserialiser ENTRY_DESERIALISER = new ContentDeserialiser()
+        .registerDeserialiser("image", V100ElementTypes.IMAGE)
+        .registerDeserialiser("itemstack", V100ElementTypes.ITEMSTACK)
+        .registerDeserialiser(XmlEntityDisplayElementType.ID, V100ElementTypes.ENTITY_DISPLAY)
+        .registerDeserialiser("recipe_display", V100ElementTypes.RECIPE_DISPLAY)
+        .registerDeserialiser(XmlButtonElementType.ID, V100ElementTypes.BUTTON)
+        .registerDeserialiser("if_else", V100ElementTypes.IF_ELSE)
         .registerDeserialisers(V100ElementTypes.HEADINGS);
 
     @Override
-    public GuideDefinition loadGuideDefinition(Document doc, ResourceManager resourceManager, GuideIdentifier filePath) throws GuideLoadingException
+    public GuideDefinition loadGuideDefinition(
+        Document doc, ResourceManager resourceManager, GuideIdentifier filePath)
+        throws GuideLoadingException
     {
         Element root = doc.getDocumentElement();
         Identifier guideId = filePath.getGuideId();
@@ -85,7 +92,8 @@ public class V100Parser implements Parser
             .toIdentifier();
         try
         {
-            GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(XmlElements.getChild(root, "access_method"));
+            GuideAccessMethod guideAccess = GUIDE_ACCESS_METHOD_DESERIALISER.deserialise(
+                XmlElements.getChild(root, "access_method"));
             Element themeXml = XmlElements.getChildNullable(root, "theme");
             Theme theme = themeXml != null ? Theme.fromXml(themeXml) : Theme.DEFAULT;
             return new GuideDefinition(guideId, guideAccess, mainTocPath, theme);
@@ -93,18 +101,24 @@ public class V100Parser implements Parser
         catch (GuideLoadingException loadingException)
         {
             if (loadingException.isFatal())
-                throw new RuntimeException("An unrecoverable error occured while loading guide definition '" + filePath + "'", loadingException);
+            {
+                throw new RuntimeException("An unrecoverable error occured while loading guide definition '" +
+                    filePath + "'", loadingException);
+            }
             else
             {
-                LOGGER.error("Guide definition at {} failed to load correctly:\n\t{}", filePath, loadingException.getMessage());
-                Notifier.DEFAULT.notify(new TranslatableText(Inscribe.MOD_ID + ".chat_message.load_failure.guide_definition"));
+                LOGGER.error("Guide definition at {} failed to load correctly:\n\t{}", filePath,
+                    loadingException.getMessage());
+                Notifier.DEFAULT.notify(new TranslatableText(
+                    Inscribe.MOD_ID + ".chat_message.load_failure.guide_definition"));
             }
         }
         return GuideDefinition.FALLBACK;
     }
 
     @Override
-    public TableOfContents loadTableOfContents(Document doc, Identifier id, GuideIdentifier filePath) throws GuideLoadingException
+    public TableOfContents loadTableOfContents(Document doc, Identifier id, GuideIdentifier filePath)
+        throws GuideLoadingException
     {
         Element root = doc.getDocumentElement();
         String directory = Identifiers.working(id).subIdentifier(0, -2).toIdentifier().toString();
@@ -191,12 +205,12 @@ public class V100Parser implements Parser
         for (int i = 0; i < pageElements.getLength(); i++)
         {
             Node page = pageElements.item(i);
-            pages.add(new XmlPage(ENTRY_DESERIALISER.deserialise(XPaths.nodes((Element) page, "./node()"))));
+            pages.add(new XmlPage(ENTRY_DESERIALISER.deserialise(XPaths.nodes(page, "./node()"))));
         }
         return pages;
     }
 
-    static List<TextNode> parseContentAsText0(Element xml, List<TextNode> text, 
+    static List<TextNode> parseContentAsText0(Element xml, List<TextNode> text,
         Deque<FormatFlags> formatting, int colour) throws InscribeSyntaxException
     {
         for (int i = 0; i < xml.getChildNodes().getLength(); i++)
@@ -204,8 +218,8 @@ public class V100Parser implements Parser
             Node node = xml.getChildNodes().item(i);
             switch (node.getNodeType())
             {
-            case Node.TEXT_NODE -> 
-                text.add(new FormattedTextNode(node.getNodeValue(), MinecraftClient.DEFAULT_FONT_ID, 
+            case Node.TEXT_NODE ->
+                text.add(new FormattedTextNode(node.getNodeValue(), MinecraftClient.DEFAULT_FONT_ID,
                     colour, formatting.toArray(new FormatFlags[0])));
             case Node.ELEMENT_NODE ->
                 {
@@ -216,7 +230,7 @@ public class V100Parser implements Parser
                     case "i" -> FormatFlags.ITALIC;
                     case "u" -> FormatFlags.UNDERLINE;
                     case "del" -> FormatFlags.STRIKETHROUGH;
-                    default -> 
+                    default ->
                         throw new InscribeSyntaxException("Unexpected tag " + element.getTagName());
                     });
                     parseContentAsText0(element, text, formatting, colour);

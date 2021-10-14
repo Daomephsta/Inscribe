@@ -14,14 +14,10 @@ import io.github.daomephsta.inscribe.client.guide.xmlformat.XmlAttributes;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlButton;
 import io.github.daomephsta.inscribe.common.Inscribe;
 
-public class XmlButtonElementType extends XmlElementType<XmlButton>
+public class XmlButtonElementType implements XmlElementType<XmlButton>
 {
+    public static final String ID = "button";
     private static final Logger LOGGER = Inscribe.getDedicatedLogger();
-    
-    protected XmlButtonElementType()
-    {
-        super("button");
-    }
 
     @Override
     public XmlButton fromXml(Element xml) throws GuideLoadingException
@@ -52,7 +48,7 @@ public class XmlButtonElementType extends XmlElementType<XmlButton>
         {
             LOGGER.error(e);
             throw new InscribeSyntaxException("Handler instantiation failed");
-        } 
+        }
         catch (InvocationTargetException e)
         {
             LOGGER.error(e.getCause());

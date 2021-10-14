@@ -10,13 +10,12 @@ import io.github.daomephsta.inscribe.client.guide.gui.widget.layout.Alignment;
 import io.github.daomephsta.inscribe.client.guide.parser.XmlElementType;
 import io.github.daomephsta.inscribe.client.guide.xmlformat.entry.elements.XmlHeading;
 
-public class XmlHeadingElementType extends XmlElementType<XmlHeading>
+public class XmlHeadingElementType implements XmlElementType<XmlHeading>
 {
     private final int level;
 
     protected XmlHeadingElementType(int level)
     {
-        super("h" + level);
         this.level = level;
     }
 
