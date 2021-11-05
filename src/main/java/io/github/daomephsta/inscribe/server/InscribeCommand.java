@@ -53,8 +53,8 @@ public class InscribeCommand
         Guide guide = getGuide(context);
         ItemStack guideStack = Inscribe.GUIDE_ITEM.forGuide(guide);
         String command = String.format("give %s %s%s", context.getArgument("selector", String.class),
-            Registry.ITEM.getId(guideStack.getItem()), guideStack.getTag().asString());
-        return context.getSource().getMinecraftServer().getCommandManager().getDispatcher()
+            Registry.ITEM.getId(guideStack.getItem()), guideStack.getNbt().asString());
+        return context.getSource().getServer().getCommandManager().getDispatcher()
             .execute(command, context.getSource());
     }
 

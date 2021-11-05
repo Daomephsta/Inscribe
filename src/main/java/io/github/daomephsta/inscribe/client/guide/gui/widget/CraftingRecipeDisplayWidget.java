@@ -56,7 +56,7 @@ public class CraftingRecipeDisplayWidget extends GuideWidget
             int x = originX + (i % 3) * 19 + 1,
                 y = y() + i / 3 * 19 + 1;
             Ingredient ingredient = ingredients.get(i);
-            ItemStack[] stacks = ingredient.getMatchingStacksClient();
+            ItemStack[] stacks = ingredient.getMatchingStacks();
             if (stacks.length != 0)
                 itemRenderer.renderGuiItemIcon(stacks[time / STACK_CHANGE_SPEED % stacks.length], x, y);
         }

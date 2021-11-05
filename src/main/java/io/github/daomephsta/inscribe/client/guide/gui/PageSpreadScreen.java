@@ -84,7 +84,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
 
     private TexturedButtonWidget createControl(int x, int y, int yOffset, PressAction pressAction)
     {
-        return new TexturedButtonWidget(x, y - yOffset, 18, 18, 402, 210 - yOffset, 
+        return new TexturedButtonWidget(x, y - yOffset, 18, 18, 402, 210 - yOffset,
             0, session.getGuide().getTheme().getGuiTexture(), 440, 290, pressAction);
     }
 
@@ -190,7 +190,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
         Guide owningGuide = GuideManager.INSTANCE.getGuide(guideId);
         GuidePart part = owningGuide.getPart(partId);
         if (part != null)
-            MinecraftClient.getInstance().openScreen(part.toScreen(session));
+            MinecraftClient.getInstance().setScreen(part.toScreen(session));
         else
             LOGGER.error("Could not open unknown guide part {}", partId);
     }

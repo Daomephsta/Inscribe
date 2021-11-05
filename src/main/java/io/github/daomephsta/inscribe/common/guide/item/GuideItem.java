@@ -40,7 +40,7 @@ public class GuideItem extends Item
     {
         ItemStack stack = playerEntity.getStackInHand(hand);
         if (world.isClient)
-            MinecraftClient.getInstance().openScreen(createScreen(stack));
+            MinecraftClient.getInstance().setScreen(createScreen(stack));
         return new TypedActionResult<>(ActionResult.SUCCESS, stack );
     }
 
@@ -94,9 +94,9 @@ public class GuideItem extends Item
 
     public Identifier getGuideId(ItemStack guideStack)
     {
-        if (!guideStack.hasTag() || (guideStack.hasTag() && !guideStack.getTag().contains(GUIDE_ID_TAG)))
+        if (!guideStack.hasNbt() || (guideStack.hasNbt() && !guideStack.getNbt().contains(GUIDE_ID_TAG)))
             return Guide.INVALID_GUIDE_ID;
-        return new Identifier(guideStack.getTag().getString(GUIDE_ID_TAG));
+        return new Identifier(guideStack.getNbt().getString(GUIDE_ID_TAG));
     }
 
     public ItemStack forGuide(Guide guide)
@@ -109,25 +109,25 @@ public class GuideItem extends Item
         ItemStack guideStack = new ItemStack(this);
         NbtCompound guideTag = new NbtCompound();
         guideTag.putString(GUIDE_ID_TAG, id.toString());
-        guideStack.setTag(guideTag);
+        guideStack.setNbt(guideTag);
         return guideStack;
     }
 
     @Nullable
     private GuidePart getLastOpen(ItemStack stack)
     {
-        if (stack.getOrCreateTag().contains(LAST_OPEN_TAG))
+        if (stack.getOrCreateNbt().contains(LAST_OPEN_TAG))
         {
-            Identifier partId = new Identifier(stack.getTag().getString(LAST_OPEN_TAG));
+            Identifier partId = new Identifier(stack.getNbt().getString(LAST_OPEN_TAG));
             GuidePart lastOpen = getGuide(stack).getPart(partId);
             if (lastOpen != null)
                 return lastOpen;
             else
-                stack.getTag().remove(LAST_OPEN_TAG);
+                stack.getNbt().remove(LAST_OPEN_TAG);
         }
         return null;
     }
-    
+
     public Identifier getLastOpenId(ItemStack stack)
     {
         GuidePart lastOpen = getLastOpen(stack);
@@ -136,7 +136,7 @@ public class GuideItem extends Item
 
     public ItemStack setLastOpen(ItemStack stack, GuidePart last)
     {
-        stack.getOrCreateTag().putString(LAST_OPEN_TAG, last.getId().toString());
+        stack.getOrCreateNbt().putString(LAST_OPEN_TAG, last.getId().toString());
         return stack;
     }
 }

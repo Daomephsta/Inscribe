@@ -23,7 +23,7 @@ public class GuideSession
         this.guideStack = guideStack;
         this.history = new ArrayDeque<>(MAX_HISTORY_SIZE);
     }
-    
+
     public GuideSession reload()
     {
         this.guide = GuideManager.INSTANCE.getGuide(guide.getIdentifier());
@@ -45,17 +45,17 @@ public class GuideSession
     {
         if (!hasHistory())
             return;
-        // Close open part 
+        // Close open part
         history.pop();
         GuidePart last = history.pop();
-        MinecraftClient.getInstance().openScreen(last.toScreen(this));
+        MinecraftClient.getInstance().setScreen(last.toScreen(this));
     }
 
     public boolean hasHistory()
     {
         return history.size() > 1;
     }
-    
+
     public GuideSession open(GuidePart part)
     {
         if (history.size() == MAX_HISTORY_SIZE)
@@ -63,12 +63,12 @@ public class GuideSession
         history.push(part);
         return this;
     }
-    
+
     public GuidePart getOpenPart()
     {
         return history.peek();
     }
-    
+
     public void end()
     {
         if (!history.isEmpty())

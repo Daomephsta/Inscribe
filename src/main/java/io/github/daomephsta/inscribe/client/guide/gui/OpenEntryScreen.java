@@ -45,7 +45,7 @@ public class OpenEntryScreen extends PageSpreadScreen
     @Override
     public void reopen()
     {
-        MinecraftClient.getInstance().openScreen(new OpenEntryScreen(session.reload()));
+        MinecraftClient.getInstance().setScreen(new OpenEntryScreen(session.reload()));
     }
 
     @Override

@@ -97,7 +97,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
         {
             GuideFlow linkElement = new GuideFlow(session.getGuide(), Direction.HORIZONTAL);
             link.addIcon(linkElement);
-            TextBlockWidget label = new TextBlockWidget(Alignment.LEADING, Alignment.CENTER, 
+            TextBlockWidget label = new TextBlockWidget(Alignment.LEADING, Alignment.CENTER,
                 new FormattedTextNode(link.name, MinecraftClient.DEFAULT_FONT_ID, 0x000000));
             label.margin().setLeft(1);
             linkElement.add(label);
@@ -111,7 +111,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
             return linkElement;
         }
         case TEXT:
-            return new TextBlockWidget(Alignment.LEADING, Alignment.CENTER, 
+            return new TextBlockWidget(Alignment.LEADING, Alignment.CENTER,
                 new FormattedTextNode(link.name, MinecraftClient.DEFAULT_FONT_ID, 0x000000));
         default:
             throw new IllegalArgumentException("Unknown link style " + link.style);
@@ -121,7 +121,7 @@ public class OpenTableOfContentsScreen extends PageSpreadScreen
     @Override
     public void reopen()
     {
-        MinecraftClient.getInstance().openScreen(new OpenTableOfContentsScreen(session.reload()));
+        MinecraftClient.getInstance().setScreen(new OpenTableOfContentsScreen(session.reload()));
     }
 
     @Override

@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 public class ImageWidget extends GuideWidget
 {
     private final Identifier src;
+    @SuppressWarnings("unused") // For future narration
     private final String altText;
     private final int imageWidth,
                       imageHeight;

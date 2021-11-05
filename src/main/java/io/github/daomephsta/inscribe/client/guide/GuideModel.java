@@ -87,11 +87,11 @@ public class GuideModel
             this.modelMap = modelMap;
             this.missingModel = modelLoader.bake(ModelLoader.MISSING_ID, ModelRotation.X0_Y0);
         }
-        
-        
+
+
 
         @Override
-        public BakedModel apply(BakedModel baseModel, ItemStack stack, 
+        public BakedModel apply(BakedModel baseModel, ItemStack stack,
             ClientWorld world, LivingEntity entity, int seed)
         {
             Guide guide = Inscribe.GUIDE_ITEM.getGuide(stack);
@@ -147,7 +147,7 @@ public class GuideModel
         }
 
         @Override
-        public Sprite getSprite()
+        public Sprite getParticleSprite()
         {
             return null;
         }

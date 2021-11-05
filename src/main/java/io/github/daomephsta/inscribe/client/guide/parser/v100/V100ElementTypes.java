@@ -63,7 +63,7 @@ public class V100ElementTypes
             ItemStringReader itemReader = new ItemStringReader(new StringReader(itemString), false).consume();
             int amount = XmlAttributes.asInt(xml, "amount", 1);
             ItemStack stack = new ItemStack(itemReader.getItem(), amount);
-            stack.setTag(itemReader.getNbt());
+            stack.setNbt(itemReader.getNbt());
             EdgeSpacing padding = LayoutParameters.readPadding(xml);
             EdgeSpacing margin = LayoutParameters.readMargin(xml);
             return new XmlItemStack(stack, padding, margin, LayoutParameters.readSize(xml));

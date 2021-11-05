@@ -24,11 +24,11 @@ public class GotoURI extends WidgetComponent implements InteractableElement
         if (MinecraftClient.getInstance().options.chatLinksPrompt)
         {
             Screen prevScreen = MinecraftClient.getInstance().currentScreen;
-            MinecraftClient.getInstance().openScreen(new ConfirmChatLinkScreen(confirmed ->
+            MinecraftClient.getInstance().setScreen(new ConfirmChatLinkScreen(confirmed ->
             {
                 if (confirmed)
                     Util.getOperatingSystem().open(uri);
-                MinecraftClient.getInstance().openScreen(prevScreen);
+                MinecraftClient.getInstance().setScreen(prevScreen);
             }, uri.toString(), false));
         }
         else
