@@ -13,8 +13,8 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
-minecraft {
-    accessWidener =  file("src/main/resources/inscribe.accesswidener")
+loom {
+    accessWidenerPath =  file("src/main/resources/inscribe.accesswidener")
 }
 
 configurations {
@@ -68,12 +68,12 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 jar {
     // Store in temporary folder instead of outputting directly
-    destinationDir = file("${buildDir}/tmp/thinJar")
+    destinationDirectory = file("${buildDir}/tmp/thinJar")
 }
 
 shadowJar {
     // Store in temporary folder instead of outputting directly
-    destinationDir = file("${buildDir}/tmp/allJar")
+    destinationDirectory = file("${buildDir}/tmp/allJar")
     // Only shade dependencies not provided by Minecraft/FAPI/FLoader
     configurations = [project.configurations.shade]
     relocate 'com.pivovarit.function', 'io.github.daomephsta.inscribe.shadow.com.pivovarit.function'
