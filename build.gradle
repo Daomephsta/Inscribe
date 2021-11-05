@@ -14,7 +14,6 @@ version = project.mod_version
 group = project.maven_group
 
 loom {
-    accessWidenerPath =  file("src/main/resources/inscribe.accesswidener")
 }
 
 configurations {

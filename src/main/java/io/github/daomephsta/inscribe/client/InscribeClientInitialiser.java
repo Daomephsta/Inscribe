@@ -19,6 +19,8 @@ public class InscribeClientInitialiser implements ClientModInitializer
         registerModels();
         BlockEntityRendererRegistry.register(Inscribe.POSTER_BLOCK_ENTITY, PosterBlockEntityRenderer::new);
         KeyBindings.initialise();
+        // Force init to cause early failure if there are errors
+        InscribeRenderLayers.initialise();
     }
 
     public void registerModels()

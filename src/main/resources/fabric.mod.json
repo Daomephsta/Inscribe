@@ -20,6 +20,5 @@
       "config": "inscribe.client.json",
       "environment": "client"
     }
-  ],
-  "accessWidener" : "inscribe.accesswidener"
+  ]
 }
