@@ -62,8 +62,8 @@ public abstract class GuideWidget extends MosaicWidget implements GuideGuiElemen
         int g = (color & 0x00FF0000) >> 16;
         int b = (color & 0x0000FF00) >> 8;
         int a =  color & 0x000000FF;
-        Matrix4f model = matrices.peek().getModel();
-        Matrix3f normal = matrices.peek().getNormal();
+        Matrix4f model = matrices.peek().getPositionMatrix();
+        Matrix3f normal = matrices.peek().getNormalMatrix();
         boxBuilder.vertex(model, left, top, z).color(r, g, b, a).normal(normal, 0, 0, 0).next();
         boxBuilder.vertex(model, right, top, z).color(r, g, b, a).normal(normal, 0, 0, 0).next();
         boxBuilder.vertex(model, right, bottom, z).color(r, g, b, a).normal(normal, 0, 0, 0).next();

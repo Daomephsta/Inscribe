@@ -31,7 +31,7 @@ public class FormattedTextNode extends ElementHostNode
         float x, float y, int mouseX, int mouseY, float lastFrameDuration)
     {
         MinecraftClient.getInstance().textRenderer.draw(text, x, y, colour, false, 
-            matrices.peek().getModel(), vertices, false, /*No highlight*/ 0, Lighting.MAX);
+            matrices.peek().getPositionMatrix(), vertices, false, /*No highlight*/ 0, Lighting.MAX);
     }
 
     @Override

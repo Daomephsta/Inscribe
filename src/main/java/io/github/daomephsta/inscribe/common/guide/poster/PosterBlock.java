@@ -34,7 +34,6 @@ public class PosterBlock extends Block implements BlockEntityProvider
     public PosterBlock()
     {
         super(FabricBlockSettings.of(Material.CARPET, MapColor.WHITE)
-            .breakByHand(true)
             .breakInstantly()
             .nonOpaque());
         setDefaultState(stateManager.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH));
@@ -66,7 +65,8 @@ public class PosterBlock extends Block implements BlockEntityProvider
             ((PosterBlockEntity) world.getBlockEntity(board)).setBounds(from, to);
         }
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public void onStateReplaced(BlockState replacement, World world, BlockPos pos, BlockState removed, boolean moved)
     {

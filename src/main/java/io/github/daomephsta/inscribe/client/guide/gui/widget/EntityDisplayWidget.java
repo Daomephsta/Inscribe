@@ -60,7 +60,7 @@ public class EntityDisplayWidget extends GuideWidget
 
     private boolean isOnGui(MatrixStack matrices)
     {
-        return matrices.peek().getNormal().equals(IDENTITY_3F);
+        return matrices.peek().getNormalMatrix().equals(IDENTITY_3F);
     }
 
     private void applyTransform(MatrixStack matrixStack, Quaternion rotation, Transform transform)

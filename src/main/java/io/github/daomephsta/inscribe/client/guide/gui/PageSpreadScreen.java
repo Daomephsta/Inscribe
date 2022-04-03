@@ -170,13 +170,13 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     {
         if (pageSpreads == null) return false; // Not initialised
         GameOptions options = MinecraftClient.getInstance().options;
-        if (pageSpreads.hasPrevious() && options.keyLeft.matchesKey(key, scancode))
+        if (pageSpreads.hasPrevious() && options.leftKey.matchesKey(key, scancode))
             prevPage.onPress();
-        else if (pageSpreads.hasNext() && options.keyRight.matchesKey(key, scancode))
+        else if (pageSpreads.hasNext() && options.rightKey.matchesKey(key, scancode))
             nextPage.onPress();
-        else if (session.hasHistory() && options.keyForward.matchesKey(key, scancode))
+        else if (session.hasHistory() && options.forwardKey.matchesKey(key, scancode))
             back.onPress();
-        else if (options.keyJump.matchesKey(key, scancode))
+        else if (options.jumpKey.matchesKey(key, scancode))
             home.onPress();
         else
             return super.keyPressed(key, scancode, modifiers);
@@ -205,7 +205,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
     }
 
     @Override
-    public void onClose()
+    public void close()
     {
         session.end();
         for (Pair<GuideFlow, GuideFlow> spread : pageSpreads)
@@ -213,7 +213,7 @@ public abstract class PageSpreadScreen extends Screen implements GuideGui
             spread.getLeft().dispose();
             spread.getRight().dispose();
         }
-        super.onClose();
+        super.close();
     }
 
     @Override

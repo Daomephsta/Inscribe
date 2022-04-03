@@ -7,54 +7,51 @@ import java.util.concurrent.Executor;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.github.daomephsta.inscribe.client.guide.GuideManager;
+import net.fabricmc.fabric.impl.resource.loader.FabricLifecycledResourceManager;
 import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.resource.ReloadableResourceManager;
-import net.minecraft.resource.ReloadableResourceManagerImpl;
-import net.minecraft.resource.ResourcePack;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReload;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.SimpleResourceReload;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Unit;
 
-@Mixin(ReloadableResourceManagerImpl.class)
-public abstract class MixinReloadableResourceManagerImpl implements ReloadableResourceManager
+@Mixin(SimpleResourceReload.class)
+public abstract class MixinSimpleResourceReload implements ResourceReload
 {
-    @Shadow
-    private @Final ResourceType type;
-    @Shadow
-    private @Final List<ResourceReloader> reloaders;
     @Unique
-    private static final Logger LOGGER = LogManager.getLogger("Inscribe");
+    private static final Logger INSCRIBE_LOGGER = LogManager.getLogger("Inscribe");
 
-    @Inject(at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;isDebugEnabled()Z", remap = false), method = "reload")
-    public void inscribe_reload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs, CallbackInfoReturnable<ResourceReload> info)
+    @Inject(method = "start", at = @At("HEAD"))
+    private static void inscribe_insertGuideManagerListener(
+        ResourceManager manager, List<ResourceReloader> reloaders,
+        Executor a, Executor b, CompletableFuture<Unit> c, boolean d, CallbackInfoReturnable<ResourceReload> info)
     {
-        if (type == ResourceType.CLIENT_RESOURCES)
+        if (manager instanceof FabricLifecycledResourceManager flrm &&
+            flrm.fabric_getResourceType() == ResourceType.CLIENT_RESOURCES)
         {
-            ActionResult injectionResult = injectListenerBefore(
+            ActionResult injectionResult = insertListenerBefore(
                 reloaders, GuideManager.INSTANCE, BakedModelManager.class);
             if (injectionResult == ActionResult.SUCCESS)
-                LOGGER.info("Registered Guide Manager as a resource reload listener");
+                INSCRIBE_LOGGER.info("Registered Guide Manager as a resource reload listener");
             else if (injectionResult == ActionResult.FAIL)
             {
-                LOGGER.error("Failed to register Guide Manager as a resource reload listener. "
+                INSCRIBE_LOGGER.error("Failed to register Guide Manager as a resource reload listener. "
                     + "Listeners: {}", reloaders);
             }
         }
     }
 
     @Unique
-    private ActionResult injectListenerBefore(List<ResourceReloader> listeners, 
+    private static ActionResult insertListenerBefore(List<ResourceReloader> listeners,
         ResourceReloader listener, Class<? extends ResourceReloader> targetClass)
     {
         int targetIndex = -1;
@@ -71,7 +68,7 @@ public abstract class MixinReloadableResourceManagerImpl implements ReloadableRe
                     targetIndex = i;
                 else
                 {
-                    throw new IllegalStateException("[Inscribe] Did not expect multiple instances of " + 
+                    throw new IllegalStateException("[Inscribe] Did not expect multiple instances of " +
                         targetClass.getName() + " in resource reload listener list");
                 }
             }

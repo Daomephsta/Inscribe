@@ -3,7 +3,6 @@ package io.github.daomephsta.inscribe.common.guide.poster;
 import java.util.stream.Stream;
 
 import io.github.daomephsta.inscribe.common.Inscribe;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -15,7 +14,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
-public class PosterBlockEntity extends BlockEntity implements BlockEntityClientSerializable
+public class PosterBlockEntity extends BlockEntity
 {
     private BlockPos from = BlockPos.ORIGIN,
                      to = BlockPos.ORIGIN;
@@ -77,17 +76,11 @@ public class PosterBlockEntity extends BlockEntity implements BlockEntityClientS
     }
 
     @Override
-    public void fromClientTag(NbtCompound tag)
-    {
-        readNbt(tag);
-    }
-
-    @Override
     public void readNbt(NbtCompound tag)
     {
+        super.readNbt(tag);
         this.from = getBlockPos(tag, "from");
         this.to = getBlockPos(tag, "to");
-        super.readNbt(tag);
     }
 
     private BlockPos getBlockPos(NbtCompound tag, String key)
@@ -97,17 +90,11 @@ public class PosterBlockEntity extends BlockEntity implements BlockEntityClientS
     }
 
     @Override
-    public NbtCompound toClientTag(NbtCompound tag)
+    public void writeNbt(NbtCompound tag)
     {
-        return writeNbt(tag);
-    }
-
-    @Override
-    public NbtCompound writeNbt(NbtCompound tag)
-    {
+        super.writeNbt(tag);
         putBlockPos(tag, "from", from);
         putBlockPos(tag, "to", to);
-        return super.writeNbt(tag);
     }
 
     private void putBlockPos(NbtCompound tag, String key, BlockPos pos)

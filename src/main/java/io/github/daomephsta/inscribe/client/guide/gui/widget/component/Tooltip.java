@@ -74,7 +74,7 @@ public class Tooltip extends WidgetComponent implements RenderableElement
             // Lower highlight
             fillGradient(vertices, matrices, left - 3, top + height + 2, left + width + 3, top + height + 3, OUTLINE_DARK, OUTLINE_DARK, 300);
             matrices.translate(0.0D, 0.0D, mc.getItemRenderer().zOffset);
-            Matrix4f model = matrices.peek().getModel();
+            Matrix4f model = matrices.peek().getPositionMatrix();
             for (OrderedText line : lines)
             {
                 mc.textRenderer.draw(line, left, top, TEXT_COLOUR,
@@ -98,7 +98,7 @@ public class Tooltip extends WidgetComponent implements RenderableElement
         float greenEnd = (colourEnd & 255) / 255.0F;
 
         VertexConsumer vertexBuf = vertices.getBuffer(InscribeRenderLayers.COLOUR_QUADS);
-        Matrix4f model = matrices.peek().getModel();
+        Matrix4f model = matrices.peek().getPositionMatrix();
         vertexBuf.vertex(model, right, top, blitOffset).color(redStart, blueStart, greenStart, alphaStart).light(Lighting.MAX).next();
         vertexBuf.vertex(model, left, top, blitOffset).color(redStart, blueStart, greenStart, alphaStart).light(Lighting.MAX).next();
         vertexBuf.vertex(model, left, bottom, blitOffset).color(redEnd, blueEnd, greenEnd, alphaEnd).light(Lighting.MAX).next();

@@ -42,7 +42,7 @@ public class InlineImage extends ElementHostNode
     public void render(VertexConsumerProvider vertices, MatrixStack matrices, float x, float y, int mouseX, int mouseY, float lastFrameDuration)
     {
         VertexConsumer vertexBuf = vertices.getBuffer(renderLayer);
-        Matrix4f model = matrices.peek().getModel();
+        Matrix4f model = matrices.peek().getPositionMatrix();
         float right = x + width, bottom = y + height;
 
         vertexBuf.vertex(model, x, bottom, 0).texture(0.0F, 1.0F).next();

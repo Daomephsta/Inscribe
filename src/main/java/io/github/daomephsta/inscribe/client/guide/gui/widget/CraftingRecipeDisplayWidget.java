@@ -41,7 +41,7 @@ public class CraftingRecipeDisplayWidget extends GuideWidget
         matrices.translate(originX, y() + padding().top(), 0);
         // Slots
         RenderSystem.setShaderTexture(0, guiTexture);
-        Matrix4f model = matrices.peek().getModel();
+        Matrix4f model = matrices.peek().getPositionMatrix();
         vertices.vertex(model, 0, 0, 0).texture(LEFT / 440F, (TOP - HEIGHT) / 290F).next();
         vertices.vertex(model, 0, HEIGHT, 0).texture(LEFT / 440F, TOP / 290F).next();
         vertices.vertex(model, WIDTH, HEIGHT, 0).texture((LEFT + WIDTH) / 440F, TOP / 290F).next();

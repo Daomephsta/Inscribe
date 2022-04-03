@@ -53,7 +53,7 @@ public class PosterBlockEntityRenderer implements BlockEntityRenderer<PosterBloc
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180));
             matrices.translate(-0.5, -3, 6.85F / 16F);
             matrices.scale(0.01F, 0.01F, 0.01F);
-            Matrix4f model = matrices.peek().getModel();
+            Matrix4f model = matrices.peek().getPositionMatrix();
             RenderLayer renderLayer = InscribeRenderLayers.textureQuads(guide.getTheme().getGuiTexture());
             VertexConsumer buffer = vertices.getBuffer(renderLayer);
             buffer.vertex(model, minX, minY + height, 0).texture(0, maxV).next();
