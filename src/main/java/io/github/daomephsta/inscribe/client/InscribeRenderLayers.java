@@ -23,7 +23,6 @@ public abstract class InscribeRenderLayers extends RenderLayer
             .cull(RenderPhase.DISABLE_CULLING)
             .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
             .build(false);
-        long start = System.currentTimeMillis();
         COLOUR_QUADS = RenderLayerAccessors.create(Inscribe.MOD_ID + ":colour_quads",
             VertexFormats.POSITION_COLOR, DrawMode.QUADS, 256, multiPhaseParameters);
     }
