@@ -57,12 +57,8 @@ tasks.withType(JavaCompile).configureEach {
     it.options.release = 16
 }
 
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
+java {
+	withSourcesJar()
 }
 
 jar {
@@ -87,6 +83,10 @@ shadowJar {
     }
 }
 
+prepareRemapJar {
+    dependsOn shadowJar
+}
+
 remapJar {
     dependsOn shadowJar
     input = shadowJar.archivePath
@@ -101,23 +101,10 @@ test {
     useJUnitPlatform()
 }
 
-// configure the maven publication
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
-
-    // select the repositories you want to publish to
-    repositories {
-        // uncomment to publish to the local maven
-        // mavenLocal()
-    }
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
 }
