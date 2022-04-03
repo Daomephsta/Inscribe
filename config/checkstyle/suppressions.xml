@@ -3,4 +3,7 @@
     <!--Mixins are allowed to have odd names-->
     <suppress checks="MethodName"
         files="mixin"/>
+    <!--MethodHandles are allowed to have odd names-->
+	<suppress checks="ConstantName"
+        files="RenderLayerAccessors.java"/>
 </suppressions>
