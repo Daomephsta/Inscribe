@@ -73,9 +73,9 @@ public class V100Parser implements Parser
         .registerDeserialiser("image", V100ElementTypes.IMAGE)
         .registerDeserialiser("itemstack", V100ElementTypes.ITEMSTACK)
         .registerDeserialiser(XmlEntityDisplayElementType.ID, V100ElementTypes.ENTITY_DISPLAY)
-        .registerDeserialiser("recipe_display", V100ElementTypes.RECIPE_DISPLAY)
+        .registerDeserialiser("recipe", V100ElementTypes.RECIPE_DISPLAY)
         .registerDeserialiser(XmlButtonElementType.ID, V100ElementTypes.BUTTON)
-        .registerDeserialiser("if_else", V100ElementTypes.IF_ELSE)
+        .registerDeserialiser("if", V100ElementTypes.IF_ELSE)
         .registerDeserialisers(V100ElementTypes.HEADINGS);
 
     @Override
