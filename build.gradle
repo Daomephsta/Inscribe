@@ -14,12 +14,15 @@ version = project.mod_version
 group = project.maven_group
 
 loom {
-    accessWidenerPath =  file("src/main/resources/inscribe.accesswidener")
+    accessWidenerPath = file("src/main/resources/inscribe.accesswidener")
 }
 
 configurations {
     // Determines shaded dependencies
     shade
+    developmentElements {
+        extendsFrom(implementation, namedElements)
+    }
 }
 
 dependencies {
