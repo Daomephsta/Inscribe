@@ -88,7 +88,6 @@ prepareRemapJar {
 }
 
 remapJar {
-    dependsOn shadowJar
     input = shadowJar.archivePath
 }
 
